@@ -226,10 +226,6 @@ Hamiltonian Monte Carlo. The working paper distinguishes established components
 from FluxMMM's software and governance contribution and links the primary
 literature.
 
-The bundled simulated fixture remains subject to the license and attribution of
-Meta's Robyn repository. Robyn is not the FluxMMM modeling engine, and Meta does
-not sponsor or endorse this project.
-
 ## License
 
 Copyright © 2026 Gustavo Bramao and FluxMMM contributors. Released under the
