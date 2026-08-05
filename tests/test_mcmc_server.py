@@ -1,0 +1,246 @@
+from __future__ import annotations
+
+import importlib.util
+import sys
+import unittest
+from pathlib import Path
+
+import numpy as np
+import pymc as pm
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location(
+    "flux_mcmc_server_tested",
+    ROOT / "scripts" / "mcmc_server.py",
+)
+assert SPEC and SPEC.loader
+MCMC = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = MCMC
+SPEC.loader.exec_module(MCMC)
+
+
+def synthetic_contract(planning: bool = False) -> tuple[dict, float]:
+    rng = np.random.default_rng(41)
+    row_count = 64
+    time = np.linspace(0, 1, row_count)
+    planning_proxy = np.sin(2 * np.pi * time)
+    spend = np.maximum(rng.gamma(2, 2, row_count) - 1, 0)
+    carried: list[float] = []
+    for value in spend:
+        carried.append(value + 0.4 * (carried[-1] if carried else 0))
+    carried_array = np.asarray(carried)
+    half = float(np.median(carried_array[carried_array > 0]))
+    transformed = carried_array**1.25 / (carried_array**1.25 + half**1.25)
+    media_coefficient = 4.0
+    outcome = (
+        9
+        + (0.8 * planning_proxy if planning else 0)
+        + media_coefficient * transformed
+        + rng.normal(0, 0.55, row_count)
+    )
+    columns = [np.ones(row_count)]
+    names = ["Intercept"]
+    priors = [
+        {
+            "kind": "normal",
+            "mean": 9,
+            "standardDeviation": 10,
+            "initialValue": 9,
+        }
+    ]
+    planning_index = None
+    if planning:
+        planning_index = len(columns)
+        columns.append(planning_proxy)
+        names.append("Planning intensity")
+        priors.append(
+            {
+                "kind": "normal",
+                "mean": 0,
+                "standardDeviation": 3,
+                "initialValue": 0.8,
+            }
+        )
+    media_index = len(columns)
+    columns.append(transformed)
+    names.append("Paid search effect")
+    priors.append(
+        {
+            "kind": "log-normal",
+            "mean": 4,
+            "standardDeviation": 2,
+            "initialValue": 4,
+        }
+    )
+    matrix = np.column_stack(columns)
+    contract = {
+        "matrix": matrix.tolist(),
+        "target": outcome.tolist(),
+        "outcome": outcome.tolist(),
+        "parameterNames": names,
+        "priors": priors,
+        "media": [
+            {
+                "channel": "paid_search",
+                "indexes": [media_index],
+                "spend": float(spend.sum()),
+                "rawSpend": spend.tolist(),
+                "halfSaturation": half,
+                "screeningRoi": 1.0,
+                "screeningLow": 0.2,
+                "screeningHigh": 3.0,
+                "plausibleUpperRoi": 8.0,
+                "roiWeights": [1.0],
+            }
+        ],
+        "calibrations": [],
+        "response": {
+            "adstockType": "geometric",
+            "adstockDecay": 0.4,
+            "weibullShape": 2.5,
+            "weibullScale": 4,
+            "hillShape": 1.25,
+            "timeVarying": False,
+            "kernelKnots": 1,
+            "kernelBandwidth": 0.18,
+            "planningIntensity": planning,
+            "planningParameterIndex": planning_index,
+            "planningInitial": planning_proxy.tolist() if planning else [],
+        },
+        "likelihood": "gaussian",
+        "studentTDegreesFreedom": 4,
+        "screeningPredicted": outcome.tolist(),
+        "dates": [f"2025-01-{(index % 28) + 1:02d}" for index in range(row_count)],
+        "validationEligible": True,
+        "promotedFingerprint": "synthetic",
+        "promotedId": "synthetic",
+        "version": MCMC.SAMPLING_CONTRACT_VERSION,
+    }
+    return contract, media_coefficient
+
+
+class McmcContractTests(unittest.TestCase):
+    def test_stale_contract_fails_before_sampling(self) -> None:
+        contract, _ = synthetic_contract()
+        del contract["media"][0]["rawSpend"]
+        with self.assertRaisesRegex(ValueError, "raw spend history is missing"):
+            MCMC.validate_compiled_model(contract)
+
+    def test_hdi_is_shortest_interval_not_equal_tail_alias(self) -> None:
+        values = np.random.default_rng(7).exponential(size=20_000)
+        low, high = MCMC.hdi_bounds(values)
+        equal_low, equal_high = np.quantile(values, [0.025, 0.975])
+        self.assertLess(high - low, equal_high - equal_low)
+        self.assertLess(low, equal_low)
+
+    def test_posterior_predictive_contains_observation_noise(self) -> None:
+        linear = np.zeros((4_000, 3))
+        sigma = np.ones(4_000)
+        draws = MCMC.posterior_predictive_draws(
+            linear,
+            sigma,
+            "gaussian",
+            4,
+            np.random.default_rng(9),
+        )
+        self.assertGreater(float(draws.std()), 0.9)
+        self.assertLess(float(draws.std()), 1.1)
+
+    def test_decision_gates_reject_converged_but_unidentified_roi(self) -> None:
+        metrics = MCMC.posterior_decision_metrics(
+            [{"implausibleProbability": 0.35, "relativeIntervalWidth": 4.2}],
+            np.asarray([1.0, 2.0]),
+            np.asarray([0.0, 1.0]),
+            np.asarray([2.0, 3.0]),
+        )
+        self.assertFalse(metrics["plausibilityPassed"])
+        self.assertFalse(metrics["precisionPassed"])
+        self.assertTrue(metrics["predictivePassed"])
+
+    def test_nuts_recovers_media_and_samples_response_parameters(self) -> None:
+        contract, true_coefficient = synthetic_contract()
+        model, initial_values, *_ = MCMC.build_model(contract)
+        with model:
+            idata = pm.sample(
+                draws=250,
+                tune=300,
+                chains=2,
+                cores=1,
+                random_seed=202603,
+                initvals=initial_values,
+                init="jitter+adapt_diag",
+                progressbar=False,
+                compute_convergence_checks=False,
+                return_inferencedata=True,
+                nuts={"target_accept": 0.95},
+            )
+        coefficient = np.asarray(idata.posterior["beta_001"]).reshape(-1)
+        low, high = MCMC.hdi_bounds(coefficient)
+        self.assertLess(low, true_coefficient)
+        self.assertGreater(high, true_coefficient)
+        self.assertEqual(int(np.asarray(idata.sample_stats.diverging).sum()), 0)
+        self.assertIn("adstock_decay", idata.posterior)
+        self.assertIn("hill_shape", idata.posterior)
+        self.assertIn("media_contribution_000", idata.posterior)
+        summary = MCMC.sampling_summary(
+            MCMC.Job(id="synthetic", fingerprint="synthetic"),
+            contract,
+            {
+                "chains": 2,
+                "draws": 250,
+                "tune": 300,
+                "seed": 202603,
+                "targetAccept": 0.95,
+                "maxTreeDepth": 12,
+            },
+            "synthetic",
+            idata,
+            1.0,
+        )
+        gate_ids = {gate["id"] for gate in summary["gates"]}
+        self.assertTrue(
+            {"roi-plausibility", "roi-precision", "predictive-coverage"}.issubset(
+                gate_ids
+            )
+        )
+        predictive_width = np.mean(
+            np.asarray(summary["predictive"]["high"])
+            - np.asarray(summary["predictive"]["low"])
+        )
+        response_width = np.mean(
+            np.asarray(summary["predictive"]["meanHigh"])
+            - np.asarray(summary["predictive"]["meanLow"])
+        )
+        self.assertGreater(predictive_width, response_width)
+        self.assertFalse(summary["inferenceContract"]["sharedPosterior"])
+        parameter_labels = {parameter["label"] for parameter in summary["parameters"]}
+        self.assertIn("Geometric decay", parameter_labels)
+        self.assertIn("Hill shape", parameter_labels)
+        self.assertIn("Residual scale", parameter_labels)
+
+    def test_planning_intensity_is_a_probabilistic_latent_path(self) -> None:
+        contract, _ = synthetic_contract(planning=True)
+        model, initial_values, *_ = MCMC.build_model(contract)
+        self.assertIn("planning_deviation_weight", model.named_vars)
+        self.assertIn("planning_factor", model.named_vars)
+        self.assertNotIn("planning_proxy_measurement", model.named_vars)
+        with model:
+            idata = pm.sample(
+                draws=100,
+                tune=150,
+                chains=2,
+                cores=1,
+                random_seed=202604,
+                initvals=initial_values,
+                init="jitter+adapt_diag",
+                progressbar=False,
+                compute_convergence_checks=False,
+                return_inferencedata=True,
+                nuts={"target_accept": 0.95},
+            )
+        self.assertEqual(int(np.asarray(idata.sample_stats.diverging).sum()), 0)
+
+
+if __name__ == "__main__":
+    unittest.main()
