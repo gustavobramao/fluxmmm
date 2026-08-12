@@ -632,7 +632,7 @@ button {
 /* Score Lab · simulation-calibrated validation research */
 .score-lab-mode-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 18px;
 }
@@ -668,6 +668,136 @@ button {
   background: linear-gradient(125deg, #f7f6ff, #fbfffd);
   box-shadow: inset 0 0 0 1px #dddafb;
 }
+
+.score-lab-status.active {
+  border-color: #b7e1d7;
+  background: #f1fbf8;
+  color: #217c69;
+}
+
+.learned-score-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 30px;
+  padding: 30px;
+  background:
+    radial-gradient(circle at 87% 18%, rgba(172, 232, 217, .35), transparent 34%),
+    linear-gradient(130deg, #f8f7ff, #fff);
+}
+
+.learned-score-hero h2 {
+  max-width: 680px;
+  margin: 8px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(26px, 2.4vw, 40px);
+  font-weight: 500;
+  letter-spacing: -.025em;
+}
+
+.learned-score-hero p,
+.learned-score-contract p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.learned-score-activation {
+  min-width: 190px;
+  border-left: 1px solid var(--line);
+  padding-left: 28px;
+}
+
+.learned-score-activation span,
+.learned-score-activation small { display: block; }
+.learned-score-activation span { color: #258a73; font-size: 8px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.learned-score-activation strong { display: block; margin: 5px 0; color: #22967d; font-family: Georgia, serif; font-size: 48px; font-weight: 400; }
+.learned-score-activation small { color: var(--muted); font-size: 8px; }
+
+.learned-score-weights,
+.learned-score-contract,
+.learned-score-receipt { margin-top: 14px; padding: 24px; }
+
+.learned-weight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.learned-weight-grid article {
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 15px;
+}
+
+.learned-weight-grid span,
+.learned-weight-grid small { display: block; }
+.learned-weight-grid span { color: var(--muted); font-size: 8px; font-weight: 700; }
+.learned-weight-grid strong { display: block; margin: 7px 0 10px; font-family: Georgia, serif; font-size: 28px; font-weight: 500; }
+.learned-weight-grid small { margin-top: 7px; color: var(--muted); font-size: 7px; }
+.learned-weight-grid article > div { position: relative; height: 7px; border-radius: 99px; background: #eeece8; }
+.learned-weight-grid article > div i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6d67e8, #9994f2); }
+.learned-weight-grid article > div em { position: absolute; top: -3px; width: 2px; height: 13px; background: #262532; transform: translateX(-1px); }
+
+.learned-score-formula {
+  margin: 17px 0 0;
+  border-radius: 11px;
+  background: #f5f4fb;
+  padding: 13px;
+  color: #4d496b;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  text-align: center;
+}
+
+.learned-score-proof {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.learned-score-proof article { padding: 22px; }
+.learned-score-proof article.sealed { border-color: #bae0d7; background: #f8fcfb; }
+.learned-score-proof > article > strong { display: block; margin: 10px 0 5px; font-family: Georgia, serif; font-size: 27px; font-weight: 500; }
+.learned-score-proof p { margin: 0 0 15px; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.learned-score-proof article > div { display: flex; justify-content: space-between; gap: 18px; border-top: 1px solid var(--line); padding: 9px 0; font-size: 8px; }
+.learned-score-proof article > div span { color: var(--muted); }
+
+.learned-score-contract {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(430px, 1.15fr);
+  align-items: center;
+  gap: 30px;
+  border-color: #dbd7f4;
+  background: linear-gradient(130deg, #fbfaff, #fff);
+}
+
+.learned-score-contract h2 { margin: 7px 0; font-family: Georgia, serif; font-size: 25px; font-weight: 500; }
+.learned-score-flow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.learned-score-flow > span { flex: 1; border: 1px solid #e0ddf4; border-radius: 12px; background: #fff; padding: 13px; }
+.learned-score-flow > span i { display: grid; width: 20px; height: 20px; place-content: center; border-radius: 50%; background: #efedff; color: var(--score-blue); font-size: 8px; font-style: normal; font-weight: 800; }
+.learned-score-flow b,
+.learned-score-flow small { display: block; }
+.learned-score-flow b { margin-top: 8px; font-size: 8px; }
+.learned-score-flow small { margin-top: 3px; color: var(--muted); font-size: 7px; }
+.learned-score-flow > em { color: #918da7; font-style: normal; }
+
+.learned-score-receipt summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+.learned-score-receipt summary::-webkit-details-marker { display: none; }
+.learned-score-receipt summary span b,
+.learned-score-receipt summary span small { display: block; }
+.learned-score-receipt summary b { font-size: 10px; }
+.learned-score-receipt summary small { margin-top: 4px; color: var(--muted); font-size: 7px; }
+.learned-score-receipt summary > i { color: var(--score-blue); font-size: 17px; font-style: normal; }
+.learned-score-receipt[open] summary > i { transform: rotate(45deg); }
+.learned-score-receipt > div { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 14px; }
+.learned-score-receipt p,
+.learned-score-receipt li,
+.learned-score-receipt > div > small { color: var(--muted); font-size: 8px; line-height: 1.55; }
+.learned-score-receipt ul { margin: 10px 0; padding-left: 17px; }
 
 .audit-v3-hero {
   display: grid;
@@ -9324,6 +9454,29 @@ input[type="range"] {
   .distribution-explanation-grid article:last-child,
   .advanced-planning-chart {
     grid-column: auto;
+  }
+  .score-lab-mode-tabs,
+  .learned-score-proof,
+  .learned-weight-grid,
+  .learned-score-contract {
+    grid-template-columns: 1fr;
+  }
+  .learned-score-hero {
+    grid-template-columns: 1fr;
+  }
+  .learned-score-activation {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    padding-top: 18px;
+    padding-left: 0;
+  }
+  .learned-score-flow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .learned-score-flow > em {
+    transform: rotate(90deg);
+    text-align: center;
   }
   .advanced-run-action {
     width: 100%;

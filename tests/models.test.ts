@@ -60,6 +60,11 @@ import {
   matrixVector,
   solveLeastSquares,
 } from "../lib/mmm/math";
+import {
+  ACTIVE_SCORE_CONTRACT,
+  HEURISTIC_SCORE_WEIGHTS,
+  scoreValidationLayers,
+} from "../lib/mmm/score-contract";
 import { createDataset } from "../lib/mmm/schema";
 import {
   compileSamplingModel,
@@ -1667,13 +1672,20 @@ test("validation runs all four layers with deterministic scoring", async () => {
         validation.finalScore <= 100),
   );
   if (validation.finalScore !== null) {
-    const expected =
-      100 *
-      (validation.layers.generalization.score / 100) ** 0.2 *
-      (validation.layers.structure.score / 100) ** 0.15 *
-      (validation.layers.causal.score / 100) ** 0.25 *
-      (validation.layers.decision.score / 100) ** 0.4;
+    const layerScores = Object.fromEntries(
+      Object.entries(validation.layers).map(([id, layer]) => [id, layer.score]),
+    ) as Record<"generalization" | "structure" | "causal" | "decision", number>;
+    const expected = scoreValidationLayers(layerScores);
     assert.ok(Math.abs(validation.finalScore - expected) < 1e-9);
+    assert.equal(validation.scoreContract.version, ACTIVE_SCORE_CONTRACT.version);
+    assert.equal(validation.scoreContract.kind, "learned");
+    assert.ok(validation.heuristicScore !== null);
+    assert.ok(
+      Math.abs(
+        (validation.heuristicScore ?? 0) -
+          scoreValidationLayers(layerScores, HEURISTIC_SCORE_WEIGHTS),
+      ) < 1e-9,
+    );
   }
 });
 

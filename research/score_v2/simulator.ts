@@ -717,7 +717,7 @@ export function generateSyntheticBusiness(
       : {}),
   }));
   const experiments = simulatedExperiments(scenario, channelTruth, random);
-  const business = {
+  const business: SyntheticBusiness = {
     scenario,
     observedCsv: toCsv(observedRows),
     observedRows,

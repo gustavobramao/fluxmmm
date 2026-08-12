@@ -1,4 +1,5 @@
 import type { ModelResult } from "../types";
+import type { ValidationScoreContract } from "../score-contract";
 
 export type ValidationModelKind = ModelResult["kind"];
 export type ValidationLayerId =
@@ -216,6 +217,8 @@ export interface ValidationResult {
   fingerprint: string;
   cached: boolean;
   finalScore: number | null;
+  heuristicScore: number | null;
+  scoreContract: ValidationScoreContract;
   eligible: boolean;
   evidenceGrade: "A" | "B" | "C" | "Incomplete";
   recommendation:

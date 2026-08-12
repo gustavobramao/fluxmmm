@@ -20,7 +20,7 @@ import type {
 } from "./types";
 
 const VALIDATION_VERSION =
-  "flux-validation-v1.5.0-roi-decision-coherence";
+  "flux-validation-v1.6.0-learned-decision-score";
 export const DEFAULT_VALIDATION_OPTIONS: ValidationOptions = {
   anchorIndependenceConfirmed: false,
   industryPriorChannels: [],

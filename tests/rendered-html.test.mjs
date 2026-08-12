@@ -51,6 +51,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
     viteConfig,
     scoreLabSource,
     auditArtifact,
+    learnedScoreArtifact,
   ] =
     await Promise.all([
       readFile(new URL("../public/data/robyn_weekly.csv", import.meta.url), "utf8"),
@@ -68,6 +69,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
       readFile(new URL("../vite.config.ts", import.meta.url), "utf8"),
       readFile(new URL("../app/components/score-lab-view.tsx", import.meta.url), "utf8"),
       readFile(new URL("../research/score_v3/artifacts/simulator-audit-v3-summary.json", import.meta.url), "utf8"),
+      readFile(new URL("../research/score_v4/artifacts/learned-score-v4.json", import.meta.url), "utf8"),
     ]);
 
   assert.match(sample, /"DATE","revenue","tv_S"/);
@@ -81,7 +83,8 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.doesNotMatch(workbenchSource, /Prior, not likelihood/);
   assert.match(workbenchSource, /Global channel search · v5/);
   assert.match(workbenchSource, /Mandatory channel-response grid/);
-  assert.match(workbenchSource, /20% G · 15% S · 25% C · 40% D/);
+  assert.match(workbenchSource, /Learned decision-regret score · V4/);
+  assert.match(workbenchSource, /Two-sided coherence gate · immutable/);
   assert.match(workbenchSource, /Mandatory Advanced challenge/);
   assert.match(workbenchSource, /restart-balanced refinements/);
   assert.match(workbenchSource, /Champion neighborhood/);
@@ -153,9 +156,12 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.doesNotMatch(viteConfig, /hostingConfig|sites\(\)/);
   assert.match(scoreLabSource, /Simulator Audit V3/);
   assert.match(scoreLabSource, /Split generators—not random rows/);
-  assert.match(scoreLabSource, /No learned score yet/);
+  assert.match(scoreLabSource, /Learned Score V4 · offline artifact/);
+  assert.match(scoreLabSource, /Business plausibility is a gate before it is a preference/);
   assert.match(auditArtifact, /"businessCount": 500/);
   assert.match(auditArtifact, /"audit": 80/);
+  assert.match(learnedScoreArtifact, /"activation": "active"/);
+  assert.match(learnedScoreArtifact, /"candidates": 3200/);
   await access(new URL("../public/og.png", import.meta.url));
   await assert.rejects(
     access(new URL("../app/chatgpt-auth.ts", import.meta.url)),

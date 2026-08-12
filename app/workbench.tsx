@@ -95,6 +95,11 @@ import {
 import { formatCompact, formatFull, parseCsv, toNumber } from "../lib/mmm/csv";
 import { runEda } from "../lib/mmm/eda";
 import { mean } from "../lib/mmm/math";
+import {
+  ACTIVE_SCORE_CONTRACT,
+  activeScoreFormula,
+  scoreWeightPercent,
+} from "../lib/mmm/score-contract";
 import { responseForChannel } from "../lib/mmm/response";
 import {
   defaultExperimentsForDataset,
@@ -3594,34 +3599,34 @@ function ValidationGuide({
     { kicker: string; title: string; summary: string }
   > = {
     generalization: {
-      kicker: "Layer 01 · 20% weight",
+      kicker: `Layer 01 · ${scoreWeightPercent("generalization")}% learned weight`,
       title: "Can the model handle unseen conditions?",
       summary:
         "Temporal folds and observed spend-regime holdouts test prediction without allowing future outcomes into training.",
     },
     structure: {
-      kicker: "Layer 02 · 15% weight",
+      kicker: `Layer 02 · ${scoreWeightPercent("structure")}% learned weight`,
       title: "Does the fitted structure match its assumptions?",
       summary:
         "Diagnostics adapt to the selected likelihood and coefficient structure instead of applying one universal regression checklist.",
     },
     causal: {
-      kicker: "Layer 03 · 25% weight",
+      kicker: `Layer 03 · ${scoreWeightPercent("causal")}% learned weight`,
       title: "How credible is the causal interpretation?",
       summary:
         "Qualified external prediction, refit stability, confounder stress, and temporal placebos test whether ROI survives reasonable challenges.",
     },
     decision: {
-      kicker: "Layer 04 · 40% weight",
+      kicker: `Layer 04 · ${scoreWeightPercent("decision")}% learned weight`,
       title: "Are the channel ROI estimates usable for business decisions?",
       summary:
         "Posterior plausibility, stability, resolution, identification, and economic consistency test every material channel under its declared evidence contract.",
     },
     scoring: {
       kicker: "Winner methodology",
-      title: "A high fit cannot erase an implausible ROI",
+      title: "Decision regret ranks candidates only after gates",
       summary:
-        "The four-layer score gives ROI Decision Coherence the largest weight while retaining hard evidence gates and an independent completeness grade.",
+        "Offline simulation learned the four ranking weights from known profit regret. Evidence, identification, and two-sided ROI plausibility gates remain immutable and cannot be traded for a higher score.",
     },
   };
   return (
@@ -3795,24 +3800,25 @@ function ValidationGuide({
         {topic === "scoring" && (
           <div className="validation-guide-body">
             <section className="winner-formula">
-              <span>Winner score</span>
-              <h3>
-                100 × G<sup>0.20</sup> × S<sup>0.15</sup> × C<sup>0.25</sup> × D<sup>0.40</sup>
-              </h3>
+              <span>{ACTIVE_SCORE_CONTRACT.kind === "learned" ? "Learned winner score" : "Fallback winner score"}</span>
+              <h3>{activeScoreFormula()}</h3>
               <p>
                 G, S, C, and D are layer scores expressed from 0 to 1. The
-                geometric form means one weak layer materially lowers the
-                result.
+                geometric form keeps every layer visible. These ranking weights
+                were selected against held-out synthetic decision regret; they
+                apply only after immutable evidence and ROI coherence gates.
               </p>
             </section>
             <section className="score-weight-visual">
-              <div style={{ width: "20%" }}><b>20%</b><span>Generalization</span></div>
-              <div style={{ width: "15%" }}><b>15%</b><span>Structure</span></div>
-              <div style={{ width: "25%" }}><b>25%</b><span>Causal</span></div>
-              <div style={{ width: "40%" }}><b>40%</b><span>ROI coherence</span></div>
+              {(["generalization", "structure", "causal", "decision"] as const).map((id) => (
+                <div key={id} style={{ width: `${scoreWeightPercent(id)}%` }}>
+                  <b>{scoreWeightPercent(id)}%</b>
+                  <span>{VALIDATION_LAYER_META[id].title}</span>
+                </div>
+              ))}
             </section>
             <section className="validation-explanation-grid">
-              <article><span className="detail-icon mint">✓</span><h3>Score</h3><p>Compares models only when all four layers have enough evidence to run.</p></article>
+              <article><span className="detail-icon mint">✓</span><h3>Learned rank</h3><p>Compares models only when all four layers have enough evidence to run and the candidate is inside the zero-failed-gate pool.</p></article>
               <article><span className="detail-icon orange">◆</span><h3>Gates</h3><p>Only applicable gates affect the score. External prediction becomes a gate only when the anchor evidence qualifies.</p></article>
               <article><span className="detail-icon">A</span><h3>Evidence grade</h3><p>Reports how complete the validation evidence is independently of the numerical score.</p></article>
               <article><span className="detail-icon">≠</span><h3>No false winner</h3><p>An untestable anchor does not lower the numeric score, but it caps the evidence grade and prevents a decision-grade label.</p></article>
@@ -3978,17 +3984,11 @@ function ValidationScoreSummary({
         <div className="validation-profile">
           {(["generalization", "structure", "causal", "decision"] as const).map((id) => {
             const layer = result.layers[id];
-            const weights: Record<ValidationLayerId, number> = {
-              generalization: 20,
-              structure: 15,
-              causal: 25,
-              decision: 40,
-            };
             return (
               <div key={id}>
                 <span>
                   {VALIDATION_LAYER_META[id].title}
-                  <small>{weights[id]}% weight</small>
+                  <small>{scoreWeightPercent(id)}% learned weight</small>
                 </span>
                 <i>
                   <b
@@ -4003,7 +4003,9 @@ function ValidationScoreSummary({
         </div>
       </div>
       <div className="validation-score-evidence">
-        <span className="eyebrow">Evidence</span>
+        <span className="eyebrow">
+          {result.scoreContract.kind === "learned" ? "Learned score · evidence" : "Fallback score · evidence"}
+        </span>
         <strong>{result.evidenceGrade}</strong>
         <p>
           {passedGates.length}/{applicableGates.length} applicable gates passed
@@ -4011,6 +4013,11 @@ function ValidationScoreSummary({
             ? ` · ${unavailableGates.length} not testable`
             : ""}
         </p>
+        {result.heuristicScore !== null && result.finalScore !== null && (
+          <small className="validation-score-receipt">
+            Fixed heuristic {result.heuristicScore.toFixed(1)} · artifact {result.scoreContract.version.replace("flux-score-learner-", "")}
+          </small>
+        )}
         <div className="validation-gates compact">
           {result.gates.map((gate) => (
             <span
@@ -5080,7 +5087,19 @@ function AgenticView({
             <div className="agentic-contract-list">
               <div>
                 <span>Objective</span>
-                <b>20% G · 15% S · 25% C · 40% D</b>
+                <b>
+                  {ACTIVE_SCORE_CONTRACT.kind === "learned"
+                    ? "Learned decision-regret score · V4"
+                    : "Audited heuristic fallback"}
+                </b>
+              </div>
+              <div>
+                <span>Ranking weights</span>
+                <b>{activeScoreFormula().replace("100 × ", "")}</b>
+              </div>
+              <div>
+                <span>ROI plausibility</span>
+                <b>Two-sided coherence gate · immutable</b>
               </div>
               <div>
                 <span>Experiments</span>

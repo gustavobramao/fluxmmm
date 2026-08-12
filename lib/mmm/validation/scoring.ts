@@ -4,6 +4,11 @@ import type {
   ValidationLayerResult,
   ValidationResult,
 } from "./types";
+import {
+  ACTIVE_SCORE_CONTRACT,
+  HEURISTIC_SCORE_WEIGHTS,
+  scoreValidationLayers,
+} from "../score-contract";
 
 export function scoreValidation(
   layers: {
@@ -15,7 +20,7 @@ export function scoreValidation(
   evidenceCoherence: EvidenceCoherenceAssessment,
 ): Pick<
   ValidationResult,
-  "finalScore" | "eligible" | "evidenceGrade" | "recommendation" | "gates"
+  "finalScore" | "heuristicScore" | "scoreContract" | "eligible" | "evidenceGrade" | "recommendation" | "gates"
 > {
   const criticalStructure = layers.structure.tests.filter(
     (test) => test.importance === "critical",
@@ -97,13 +102,21 @@ export function scoreValidation(
   const complete =
     layers.generalization.status !== "incomplete" &&
     layers.decision.status !== "incomplete";
-  const rawScore =
-    100 *
-    (layers.generalization.score / 100) ** 0.2 *
-    (layers.structure.score / 100) ** 0.15 *
-    (layers.causal.score / 100) ** 0.25 *
-    (layers.decision.score / 100) ** 0.4;
+  const layerScores = {
+    generalization: layers.generalization.score,
+    structure: layers.structure.score,
+    causal: layers.causal.score,
+    decision: layers.decision.score,
+  };
+  const rawScore = scoreValidationLayers(layerScores);
+  const rawHeuristicScore = scoreValidationLayers(
+    layerScores,
+    HEURISTIC_SCORE_WEIGHTS,
+  );
   const finalScore = complete ? Math.max(0, Math.min(100, rawScore)) : null;
+  const heuristicScore = complete
+    ? Math.max(0, Math.min(100, rawHeuristicScore))
+    : null;
   const eligible =
     complete &&
     anchorApplicable &&
@@ -128,6 +141,8 @@ export function scoreValidation(
           : "Not decision-grade";
   return {
     finalScore,
+    heuristicScore,
+    scoreContract: ACTIVE_SCORE_CONTRACT,
     eligible,
     evidenceGrade,
     recommendation,

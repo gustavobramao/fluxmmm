@@ -1,0 +1,151 @@
+{
+  "artifactId": "flux-learned-score-v4-2026.08.2-risk-aware",
+  "version": "flux-score-learner-v4.1.0",
+  "trainedAt": "2026-08-12T17:33:23.739Z",
+  "activation": "active",
+  "activationReason": "At least 2% lower family-held-out mean regret, no held-out P90 regression, no validation-family regression above 1%, and no material untouched-audit regression.",
+  "simulatorVersion": "flux-score-v3-dgp-2026.08.1",
+  "cohort": {
+    "businesses": 200,
+    "candidates": 3200,
+    "splits": {
+      "train": 120,
+      "validation": 40,
+      "audit": 40
+    },
+    "generatorFamilies": {
+      "train": [
+        "balanced-dtc",
+        "search-demand-harvesting",
+        "social-frequency-pressure"
+      ],
+      "validation": [
+        "delayed-tv",
+        "correlated-planning"
+      ],
+      "audit": [
+        "wrong-evidence",
+        "swapped-channel-mechanics"
+      ]
+    }
+  },
+  "model": {
+    "family": "constrained-geometric-ensemble",
+    "target": "mean-four-decision-profit-regret",
+    "weights": {
+      "generalization": 0.5,
+      "structure": 0.25,
+      "causal": 0.15,
+      "decision": 0.1
+    },
+    "heuristicWeights": {
+      "generalization": 0.2,
+      "structure": 0.15,
+      "causal": 0.25,
+      "decision": 0.4
+    },
+    "minimumLayerWeight": 0.05,
+    "gridStep": 0.025,
+    "candidatesConsidered": 6545,
+    "formula": "100 × G^wG × S^wS × C^wC × D^wD"
+  },
+  "performance": {
+    "train": {
+      "heuristic": {
+        "businesses": 120,
+        "eligibleBusinessShare": 0.35,
+        "meanRegret": 0.4818762989717669,
+        "medianRegret": 0.4283822996927522,
+        "p90Regret": 0.9999999999999998,
+        "meanExcessRegret": 0.12428781891148791,
+        "lowestRegretSelectionRate": 0.4166666666666667,
+        "familyMeanRegret": {
+          "balanced-dtc": 0.38909230073670265,
+          "search-demand-harvesting": 0.447837315479448,
+          "social-frequency-pressure": 0.60869928069915
+        }
+      },
+      "learned": {
+        "businesses": 120,
+        "eligibleBusinessShare": 0.35,
+        "meanRegret": 0.478497021644582,
+        "medianRegret": 0.4283822996927522,
+        "p90Regret": 1,
+        "meanExcessRegret": 0.120908541584303,
+        "lowestRegretSelectionRate": 0.43333333333333335,
+        "familyMeanRegret": {
+          "balanced-dtc": 0.4103304621093525,
+          "search-demand-harvesting": 0.4482607953750204,
+          "social-frequency-pressure": 0.576899807449373
+        }
+      },
+      "relativeMeanRegretReduction": 0.0070127485713566825
+    },
+    "validation": {
+      "heuristic": {
+        "businesses": 40,
+        "eligibleBusinessShare": 0.3,
+        "meanRegret": 0.4508083982038259,
+        "medianRegret": 0.45523346211771565,
+        "p90Regret": 0.8149688154844569,
+        "meanExcessRegret": 0.1324852285779729,
+        "lowestRegretSelectionRate": 0.5,
+        "familyMeanRegret": {
+          "delayed-tv": 0.4689227986985447,
+          "correlated-planning": 0.43269399770910705
+        }
+      },
+      "learned": {
+        "businesses": 40,
+        "eligibleBusinessShare": 0.3,
+        "meanRegret": 0.43851182938257816,
+        "medianRegret": 0.45523346211771565,
+        "p90Regret": 0.8149688154844569,
+        "meanExcessRegret": 0.12018865975672526,
+        "lowestRegretSelectionRate": 0.475,
+        "familyMeanRegret": {
+          "delayed-tv": 0.47283626515123417,
+          "correlated-planning": 0.40418739361392236
+        }
+      },
+      "relativeMeanRegretReduction": 0.027276707510865947
+    },
+    "audit": {
+      "heuristic": {
+        "businesses": 40,
+        "eligibleBusinessShare": 0.525,
+        "meanRegret": 0.5853004318291778,
+        "medianRegret": 0.66577847911607,
+        "p90Regret": 0.9999999999999961,
+        "meanExcessRegret": 0.14168775138685602,
+        "lowestRegretSelectionRate": 0.45,
+        "familyMeanRegret": {
+          "wrong-evidence": 0.5633711602157323,
+          "swapped-channel-mechanics": 0.6072297034426233
+        }
+      },
+      "learned": {
+        "businesses": 40,
+        "eligibleBusinessShare": 0.525,
+        "meanRegret": 0.5786838272838353,
+        "medianRegret": 0.597852831978762,
+        "p90Regret": 0.9999999999999988,
+        "meanExcessRegret": 0.13507114684151358,
+        "lowestRegretSelectionRate": 0.45,
+        "familyMeanRegret": {
+          "wrong-evidence": 0.5604537464852404,
+          "swapped-channel-mechanics": 0.5969139080824304
+        }
+      },
+      "relativeMeanRegretReduction": 0.011304629529597888
+    }
+  },
+  "guardrails": [
+    "Validation, evidence-coherence, and ROI plausibility gates remain immutable.",
+    "Candidate ranking is learned only within the zero-failed-gate pool; if no such candidate exists, the score ranks review candidates without changing their status.",
+    "Truth labels never enter a real advertiser fit; they train this versioned offline artifact only.",
+    "Generator families, rather than random candidate rows, define train, validation, and audit splits.",
+    "Activation requires held-out P90 regret not to exceed the heuristic and allows at most 1% relative mean-regret tolerance in any validation family.",
+    "The fixed heuristic remains the runtime fallback whenever the learned artifact is absent or fails activation."
+  ]
+}
