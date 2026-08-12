@@ -23,11 +23,14 @@ import {
   agenticAdvancedCoverage,
   agenticBoundaryParameters,
   agenticCandidateSignature,
+  agenticChannelResponseBudget,
+  agenticChannelResponseCoverage,
   agenticSeedBudget,
   agenticLocalChallengeBudget,
   agenticSearchConfidence,
   agenticStoppingDecision,
   generateAgenticAdvancedChallenge,
+  generateAgenticChannelResponseChallenge,
   generateAgenticLocalChallenge,
   generateAgenticSeeds,
   isAgenticSpecWithinBounds,
@@ -584,7 +587,10 @@ test("budget optimizer conserves spend and answers all three planning scenarios"
 });
 
 test("agentic search is diverse, bounded, and ranks gate-passing models first", () => {
-  const capabilities = { likelihoodCalibration: true };
+  const capabilities = {
+    likelihoodCalibration: true,
+    mediaColumns: ["tv_S", "search_S", "facebook_S"],
+  };
   const candidates = generateAgenticSeeds(
     DEFAULT_CONFIG,
     DEFAULT_ADVANCED_CONFIG,
@@ -685,6 +691,42 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
     state: "complete" as const,
     validation: validation(65 + index, true),
   }));
+  const responseChallenges = Array.from(
+    {
+      length: agenticChannelResponseBudget(
+        DEFAULT_AGENTIC_SEARCH_CONTRACT,
+        capabilities,
+      ),
+    },
+    (_, index) => {
+      const spec = generateAgenticChannelResponseChallenge(
+        DEFAULT_CONFIG,
+        DEFAULT_ADVANCED_CONFIG,
+        DEFAULT_AGENTIC_SEARCH_CONTRACT,
+        candidates.length + index + 1,
+        capabilities,
+      );
+      return {
+        spec,
+        state: "complete" as const,
+        validation: validation(72 + (index % 5), true),
+      };
+    },
+  );
+  const responseCoverage = agenticChannelResponseCoverage(
+    responseChallenges,
+    DEFAULT_AGENTIC_SEARCH_CONTRACT,
+    capabilities,
+  );
+  assert.equal(responseCoverage.complete, true);
+  assert.ok(responseCoverage.channels.every((channel) => channel.complete));
+  assert.ok(
+    responseChallenges.every(
+      (run) =>
+        Object.keys(run.spec.config.channelResponses ?? {}).length ===
+        capabilities.mediaColumns.length,
+    ),
+  );
   const advancedChallenges = Array.from(
     {
       length: agenticAdvancedChallengeBudget(
@@ -695,8 +737,8 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
       const spec = generateAgenticAdvancedChallenge(
         DEFAULT_CONFIG,
         DEFAULT_AGENTIC_SEARCH_CONTRACT,
-        evaluatedSeeds,
-        candidates.length + index + 1,
+        [...evaluatedSeeds, ...responseChallenges],
+        candidates.length + responseChallenges.length + index + 1,
         capabilities,
       );
       return {
@@ -723,12 +765,12 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
   );
 
   const firstAdaptiveNumber =
-    candidates.length + advancedChallenges.length + 1;
+    candidates.length + responseChallenges.length + advancedChallenges.length + 1;
   const adaptive = proposeAgenticCandidate(
     DEFAULT_CONFIG,
     DEFAULT_ADVANCED_CONFIG,
     DEFAULT_AGENTIC_SEARCH_CONTRACT,
-    [...evaluatedSeeds, ...advancedChallenges],
+    [...evaluatedSeeds, ...responseChallenges, ...advancedChallenges],
     firstAdaptiveNumber,
     capabilities,
   );
@@ -736,7 +778,7 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
     DEFAULT_CONFIG,
     DEFAULT_ADVANCED_CONFIG,
     DEFAULT_AGENTIC_SEARCH_CONTRACT,
-    [...evaluatedSeeds, ...advancedChallenges],
+    [...evaluatedSeeds, ...responseChallenges, ...advancedChallenges],
     firstAdaptiveNumber,
     capabilities,
   );
@@ -759,7 +801,11 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
   assert.deepEqual(adaptive, repeated, "adaptive proposals must be deterministic");
   assert.ok(
     !new Set(
-      [...candidates, ...advancedChallenges.map((run) => run.spec)].map(
+      [
+        ...candidates,
+        ...responseChallenges.map((run) => run.spec),
+        ...advancedChallenges.map((run) => run.spec),
+      ].map(
         agenticCandidateSignature,
       ),
     ).has(
@@ -773,7 +819,7 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
         DEFAULT_CONFIG,
         DEFAULT_ADVANCED_CONFIG,
         DEFAULT_AGENTIC_SEARCH_CONTRACT,
-        [...evaluatedSeeds, ...advancedChallenges],
+        [...evaluatedSeeds, ...responseChallenges, ...advancedChallenges],
         firstAdaptiveNumber + offset,
         capabilities,
       ).family,
@@ -785,6 +831,7 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
       ...run,
       validation: validation(80, true),
     })),
+    ...responseChallenges,
     ...advancedChallenges,
   ];
   const stopping = agenticStoppingDecision(
@@ -792,16 +839,22 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
     DEFAULT_AGENTIC_SEARCH_CONTRACT,
     capabilities,
   );
-  assert.equal(agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT), 9);
-  assert.equal(agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT), 18);
-  assert.equal(agenticLocalChallengeBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT), 6);
+  assert.equal(
+    agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities),
+    27,
+  );
+  assert.equal(
+    agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities),
+    84,
+  );
+  assert.equal(agenticLocalChallengeBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT), 24);
   assert.equal(stopping.shouldStop, false);
   assert.match(stopping.reason, /Restart-aware refinement/);
 
   const adaptivelyRefinedRuns = [...convergedRuns];
   for (
     let index = 0;
-    index < agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT);
+    index < agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities);
     index += 1
   ) {
     const spec = proposeAgenticCandidate(
@@ -836,8 +889,8 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
   );
 
   for (
-    let index = agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT);
-    index < agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT);
+    let index = agenticAdaptiveMinimumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities);
+    index < agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities);
     index += 1
   ) {
     const spec = proposeAgenticCandidate(
@@ -856,8 +909,9 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
   }
   const firstLocalNumber =
     agenticSeedBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT) +
+    agenticChannelResponseBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities) +
     agenticAdvancedChallengeBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT) +
-    agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT) +
+    agenticAdaptiveMaximumBudget(DEFAULT_AGENTIC_SEARCH_CONTRACT, capabilities) +
     1;
   for (
     let index = 0;
@@ -891,9 +945,9 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
     capabilities,
   );
   assert.equal(confidence.restartCount, 3);
-  assert.equal(confidence.localChallengeCount, 6);
+  assert.equal(confidence.localChallengeCount, 24);
   assert.ok(confidence.structuralCoverage > 0.8);
-  assert.equal(confidence.frontier.length, 48);
+  assert.equal(confidence.frontier.length, 192);
 
   const rescuedConfidence = agenticSearchConfidence(
     [
@@ -936,7 +990,7 @@ test("agentic search is diverse, bounded, and ranks gate-passing models first", 
     capabilities,
   );
   assert.equal(incompleteCoverage.shouldStop, false);
-  assert.match(incompleteCoverage.reason, /Advanced challenge coverage/);
+  assert.match(incompleteCoverage.reason, /Channel-response coverage/);
 });
 
 test("agentic ROI review catches unanchored extremes and preserves experiment anchors", () => {

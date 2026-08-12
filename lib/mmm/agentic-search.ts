@@ -24,10 +24,26 @@ export const AGENTIC_PARAMETER_BOUNDS = {
   kernelKnots: { min: 3, max: 10, step: 1 },
   kernelBandwidth: { min: 0.08, max: 0.35, step: 0.01 },
   studentTDegreesFreedom: { min: 3, max: 30, step: 1 },
+  halfSaturationQuantile: { min: 0.2, max: 0.8, step: 0.05 },
 } as const;
 
 export interface AgenticSearchCapabilities {
   likelihoodCalibration: boolean;
+  mediaColumns?: string[];
+}
+
+export interface AgenticChannelResponseCoverage {
+  requiredChallenges: number;
+  completedChallenges: number;
+  complete: boolean;
+  channels: {
+    channel: string;
+    adstockFamilies: string[];
+    saturationProfiles: string[];
+    halfSaturationProfiles: string[];
+    normalizations: string[];
+    complete: boolean;
+  }[];
 }
 
 export interface AgenticStopDecision {
@@ -91,6 +107,10 @@ interface ProposalScore {
 
 const HALTON_BASES = [
   2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
+  59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113,
+  127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
+  191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251,
+  257, 263, 269, 271, 277, 281, 283, 293, 307, 311,
 ];
 
 function activeFamilies(
@@ -147,8 +167,34 @@ function halton(index: number, base: number): number {
   return result;
 }
 
-function haltonPoint(index: number): number[] {
-  return HALTON_BASES.map((base) => halton(index, base));
+function primeForDimension(dimension: number): number {
+  if (dimension < HALTON_BASES.length) return HALTON_BASES[dimension];
+  let candidate = HALTON_BASES[HALTON_BASES.length - 1] + 2;
+  let found = HALTON_BASES.length;
+  while (true) {
+    let isPrime = true;
+    for (let divisor = 3; divisor * divisor <= candidate; divisor += 2) {
+      if (candidate % divisor === 0) {
+        isPrime = false;
+        break;
+      }
+    }
+    if (isPrime) {
+      if (found === dimension) return candidate;
+      found += 1;
+    }
+    candidate += 2;
+  }
+}
+
+function haltonPoint(index: number, dimensions = HALTON_BASES.length): number[] {
+  return Array.from({ length: dimensions }, (_, dimension) =>
+    halton(index, primeForDimension(dimension)),
+  );
+}
+
+function searchDimensions(capabilities: AgenticSearchCapabilities): number {
+  return Math.max(16, 16 + (capabilities.mediaColumns?.length ?? 0) * 7);
 }
 
 function interpolate(
@@ -180,6 +226,47 @@ function categoricalChoice<T>(
 
 function boundModelConfig(config: ModelConfig): ModelConfig {
   const cyclePeriods = cyclePeriodChoices(config);
+  const channelResponses = config.channelResponses
+    ? Object.fromEntries(
+        Object.entries(config.channelResponses).map(([channel, response]) => [
+          channel,
+          {
+            ...response,
+            adstock: roundToStep(
+              response.adstock ?? config.adstock,
+              AGENTIC_PARAMETER_BOUNDS.adstock.min,
+              AGENTIC_PARAMETER_BOUNDS.adstock.max,
+              AGENTIC_PARAMETER_BOUNDS.adstock.step,
+            ),
+            weibullShape: roundToStep(
+              response.weibullShape ?? config.weibullShape,
+              AGENTIC_PARAMETER_BOUNDS.weibullShape.min,
+              AGENTIC_PARAMETER_BOUNDS.weibullShape.max,
+              AGENTIC_PARAMETER_BOUNDS.weibullShape.step,
+            ),
+            weibullScale: roundToStep(
+              response.weibullScale ?? config.weibullScale,
+              AGENTIC_PARAMETER_BOUNDS.weibullScale.min,
+              AGENTIC_PARAMETER_BOUNDS.weibullScale.max,
+              AGENTIC_PARAMETER_BOUNDS.weibullScale.step,
+            ),
+            saturation: roundToStep(
+              response.saturation ?? config.saturation,
+              AGENTIC_PARAMETER_BOUNDS.saturation.min,
+              AGENTIC_PARAMETER_BOUNDS.saturation.max,
+              AGENTIC_PARAMETER_BOUNDS.saturation.step,
+            ),
+            halfSaturationQuantile: roundToStep(
+              response.halfSaturationQuantile ?? 0.5,
+              AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.min,
+              AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.max,
+              AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.step,
+            ),
+            kernelNormalization: response.kernelNormalization ?? "peak",
+          },
+        ]),
+      )
+    : undefined;
   return {
     ...config,
     adstock: roundToStep(
@@ -220,7 +307,124 @@ function boundModelConfig(config: ModelConfig): ModelConfig {
       config.cyclePeriod,
       cyclePeriods,
     ),
+    channelResponses,
   };
+}
+
+function channelResponsesFromPoint(
+  baseConfig: ModelConfig,
+  point: number[],
+  mediaColumns: string[],
+  offset = 16,
+): ModelConfig["channelResponses"] {
+  if (!mediaColumns.length) return baseConfig.channelResponses;
+  return Object.fromEntries(
+    mediaColumns.map((channel, channelIndex) => {
+      const start = offset + channelIndex * 7;
+      return [
+        channel,
+        {
+          adstockType: point[start] < 0.5 ? "geometric" : "weibull",
+          adstock: interpolate(
+            point[start + 1],
+            AGENTIC_PARAMETER_BOUNDS.adstock.min,
+            AGENTIC_PARAMETER_BOUNDS.adstock.max,
+          ),
+          weibullShape: interpolate(
+            point[start + 2],
+            AGENTIC_PARAMETER_BOUNDS.weibullShape.min,
+            AGENTIC_PARAMETER_BOUNDS.weibullShape.max,
+          ),
+          weibullScale: interpolate(
+            point[start + 3],
+            AGENTIC_PARAMETER_BOUNDS.weibullScale.min,
+            AGENTIC_PARAMETER_BOUNDS.weibullScale.max,
+          ),
+          saturation: interpolate(
+            point[start + 4],
+            AGENTIC_PARAMETER_BOUNDS.saturation.min,
+            AGENTIC_PARAMETER_BOUNDS.saturation.max,
+          ),
+          halfSaturationQuantile: interpolate(
+            point[start + 5],
+            AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.min,
+            AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.max,
+          ),
+          kernelNormalization: point[start + 6] < 0.5 ? "peak" : "sum",
+        },
+      ];
+    }),
+  );
+}
+
+function localChannelResponses(
+  baseConfig: ModelConfig,
+  point: number[],
+  mediaColumns: string[],
+  offset = 16,
+): ModelConfig["channelResponses"] {
+  if (!mediaColumns.length) return baseConfig.channelResponses;
+  return Object.fromEntries(
+    mediaColumns.map((channel, channelIndex) => {
+      const start = offset + channelIndex * 7;
+      const source = baseConfig.channelResponses?.[channel] ?? {};
+      const adstockType = source.adstockType ?? baseConfig.adstockType;
+      const kernelNormalization = source.kernelNormalization ?? "peak";
+      return [
+        channel,
+        {
+          ...source,
+          adstockType:
+            point[start] > 0.94
+              ? adstockType === "geometric"
+                ? "weibull"
+                : "geometric"
+              : adstockType,
+          adstock: shifted(
+            source.adstock ?? baseConfig.adstock,
+            point[start + 1],
+            AGENTIC_PARAMETER_BOUNDS.adstock.min,
+            AGENTIC_PARAMETER_BOUNDS.adstock.max,
+            0.3,
+          ),
+          weibullShape: shifted(
+            source.weibullShape ?? baseConfig.weibullShape,
+            point[start + 2],
+            AGENTIC_PARAMETER_BOUNDS.weibullShape.min,
+            AGENTIC_PARAMETER_BOUNDS.weibullShape.max,
+            0.3,
+          ),
+          weibullScale: shifted(
+            source.weibullScale ?? baseConfig.weibullScale,
+            point[start + 3],
+            AGENTIC_PARAMETER_BOUNDS.weibullScale.min,
+            AGENTIC_PARAMETER_BOUNDS.weibullScale.max,
+            0.3,
+          ),
+          saturation: shifted(
+            source.saturation ?? baseConfig.saturation,
+            point[start + 4],
+            AGENTIC_PARAMETER_BOUNDS.saturation.min,
+            AGENTIC_PARAMETER_BOUNDS.saturation.max,
+            0.3,
+          ),
+          halfSaturationQuantile: shifted(
+            source.halfSaturationQuantile ?? 0.5,
+            point[start + 5],
+            AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.min,
+            AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.max,
+            0.3,
+          ),
+          kernelNormalization:
+            point[start + 6] > 0.94
+              ? kernelNormalization === "peak"
+                ? "sum"
+                : "peak"
+              : kernelNormalization,
+        },
+      ];
+    }),
+  );
 }
 
 function boundAdvancedConfig(
@@ -300,6 +504,11 @@ function configurationFromPoint(
     cyclePeriod: categoricalChoice(
       point[7],
       cyclePeriods,
+    ),
+    channelResponses: channelResponsesFromPoint(
+      baseConfig,
+      point,
+      capabilities.mediaColumns ?? [],
     ),
   });
   const advancedConfig = boundAdvancedConfig(
@@ -420,6 +629,11 @@ function localConfiguration(
           cyclePeriods.length - 1,
         )
       ],
+    channelResponses: localChannelResponses(
+      source,
+      point,
+      capabilities.mediaColumns ?? Object.keys(source.channelResponses ?? {}),
+    ),
   });
   const advancedConfig = boundAdvancedConfig(
     anchor.family === "advanced"
@@ -499,8 +713,12 @@ function summaryFor(
       : `Weibull ${config.weibullShape.toFixed(1)}/${config.weibullScale.toFixed(1)}`;
   const cycleUnit = config.cyclePeriod <= 12 ? "m" : "w";
   const base = `${carryover} · Hill ${config.saturation.toFixed(1)} · ridge ${config.ridge.toFixed(2)} · F${config.fourierOrder}/${config.cyclePeriod}${cycleUnit}`;
-  if (family !== "advanced") return base;
-  return `${base} · ${advancedConfig.timeVarying ? "dynamic" : "static"} · ${advancedConfig.likelihoodDistribution}`;
+  const responseProfiles = Object.keys(config.channelResponses ?? {}).length;
+  const responseLabel = responseProfiles
+    ? ` · ${responseProfiles} channel-specific responses`
+    : " · global media response";
+  if (family !== "advanced") return `${base}${responseLabel}`;
+  return `${base}${responseLabel} · ${advancedConfig.timeVarying ? "dynamic" : "static"} · ${advancedConfig.likelihoodDistribution}`;
 }
 
 function makeSpec(
@@ -517,6 +735,8 @@ function makeSpec(
       ? "Seed"
       : searchPhase === "advanced-challenge"
         ? "Paired challenge"
+        : searchPhase === "response-coverage"
+          ? "Response grid"
         : searchPhase === "local-challenge"
           ? "Local challenge"
           : "Adaptive";
@@ -555,7 +775,19 @@ export function agenticCandidateSignature(
 export function agenticSeedBudget(
   contract: AgenticSearchContract,
 ): number {
-  return Math.min(12, contract.candidateBudget);
+  return Math.min(24, contract.candidateBudget);
+}
+
+export function agenticChannelResponseBudget(
+  contract: AgenticSearchContract,
+  capabilities: AgenticSearchCapabilities,
+): number {
+  if (!(capabilities.mediaColumns?.length ?? 0)) return 0;
+  return contract.candidateBudget >= 384
+    ? 72
+    : contract.candidateBudget >= 192
+      ? 48
+      : 24;
 }
 
 export function agenticAdvancedChallengeBudget(
@@ -571,17 +803,22 @@ export function agenticAdvancedChallengeBudget(
 export function agenticLocalChallengeBudget(
   contract: AgenticSearchContract,
 ): number {
-  if (contract.candidateBudget <= 24) return 0;
-  return contract.candidateBudget >= 72 ? 12 : 6;
+  return contract.candidateBudget >= 384
+    ? 36
+    : contract.candidateBudget >= 192
+      ? 24
+      : 12;
 }
 
 export function agenticAdaptiveMaximumBudget(
   contract: AgenticSearchContract,
+  capabilities: AgenticSearchCapabilities = { likelihoodCalibration: true },
 ): number {
   return Math.max(
     0,
     contract.candidateBudget -
       agenticSeedBudget(contract) -
+      agenticChannelResponseBudget(contract, capabilities) -
       agenticAdvancedChallengeBudget(contract) -
       agenticLocalChallengeBudget(contract),
   );
@@ -589,14 +826,15 @@ export function agenticAdaptiveMaximumBudget(
 
 export function agenticAdaptiveMinimumBudget(
   contract: AgenticSearchContract,
+  capabilities: AgenticSearchCapabilities = { likelihoodCalibration: true },
 ): number {
   const families = activeFamilies(contract);
   if (!families.length) return 0;
   const available = Math.max(
     0,
-    agenticAdaptiveMaximumBudget(contract),
+    agenticAdaptiveMaximumBudget(contract, capabilities),
   );
-  const perFamilyRestart = contract.candidateBudget >= 72 ? 2 : 1;
+  const perFamilyRestart = contract.candidateBudget >= 384 ? 4 : contract.candidateBudget >= 192 ? 3 : 2;
   return Math.min(available, families.length * 3 * perFamilyRestart);
 }
 
@@ -643,7 +881,7 @@ export function generateAgenticSeeds(
       1) as 1 | 2 | 3;
     const { config, advancedConfig } = configurationFromPoint(
       family,
-      haltonPoint(attempt + 7),
+      haltonPoint(attempt + 7, searchDimensions(capabilities)),
       baseConfig,
       baseAdvancedConfig,
       capabilities,
@@ -673,6 +911,153 @@ export function generateAgenticSeeds(
     ...spec,
     id: `C${String(index + 1).padStart(2, "0")}`,
   }));
+}
+
+const RESPONSE_DECAYS = [0.1, 0.3, 0.55, 0.8] as const;
+const RESPONSE_WEIBULL_SHAPES = [0.8, 1.5, 3, 5] as const;
+const RESPONSE_WEIBULL_SCALES = [1.5, 3.5, 7, 11] as const;
+const RESPONSE_SATURATIONS = [0.6, 1.3, 2.2, 3] as const;
+const RESPONSE_HALF_SATURATION = [0.2, 0.5, 0.8] as const;
+
+function coveringChannelResponses(
+  channels: string[],
+  challengeIndex: number,
+): NonNullable<ModelConfig["channelResponses"]> {
+  return Object.fromEntries(
+    channels.map((channel, channelIndex) => {
+      const offset = challengeIndex + channelIndex * 5;
+      return [
+        channel,
+        {
+          adstockType: offset % 2 === 0 ? "geometric" : "weibull",
+          adstock: RESPONSE_DECAYS[offset % RESPONSE_DECAYS.length],
+          weibullShape:
+            RESPONSE_WEIBULL_SHAPES[(challengeIndex * 3 + channelIndex) % RESPONSE_WEIBULL_SHAPES.length],
+          weibullScale:
+            RESPONSE_WEIBULL_SCALES[(challengeIndex + channelIndex * 3) % RESPONSE_WEIBULL_SCALES.length],
+          saturation:
+            RESPONSE_SATURATIONS[(challengeIndex * 3 + channelIndex * 2) % RESPONSE_SATURATIONS.length],
+          halfSaturationQuantile:
+            RESPONSE_HALF_SATURATION[(challengeIndex + channelIndex) % RESPONSE_HALF_SATURATION.length],
+          kernelNormalization: offset % 4 < 2 ? "peak" : "sum",
+        },
+      ];
+    }),
+  );
+}
+
+export function generateAgenticChannelResponseChallenge(
+  baseConfig: ModelConfig,
+  baseAdvancedConfig: AdvancedModelConfig,
+  contract: AgenticSearchContract,
+  candidateNumber: number,
+  capabilities: AgenticSearchCapabilities,
+): AgenticCandidateSpec {
+  const responseBudget = agenticChannelResponseBudget(contract, capabilities);
+  const challengeIndex = candidateNumber - agenticSeedBudget(contract) - 1;
+  if (
+    challengeIndex < 0 ||
+    challengeIndex >= responseBudget ||
+    !(capabilities.mediaColumns?.length ?? 0)
+  ) {
+    throw new Error("Candidate is outside the channel-response coverage phase.");
+  }
+  const families = activeFamilies(contract);
+  const family = families[challengeIndex % families.length];
+  const point = haltonPoint(
+    candidateNumber * 149 + 31,
+    searchDimensions(capabilities),
+  );
+  const generated = configurationFromPoint(
+    family,
+    point,
+    baseConfig,
+    baseAdvancedConfig,
+    capabilities,
+  );
+  const config = boundModelConfig({
+    ...generated.config,
+    channelResponses: coveringChannelResponses(
+      capabilities.mediaColumns ?? [],
+      challengeIndex,
+    ),
+  });
+  return makeSpec(
+    `C${String(candidateNumber).padStart(3, "0")}`,
+    family,
+    config,
+    generated.advancedConfig,
+    "response-coverage",
+    {
+      method: "response-covering-array",
+      reason:
+        "Predeclared channel-response covering array tests distinct carryover, saturation, half-saturation, and normalization contracts before adaptive refinement.",
+    },
+    ((Math.floor(challengeIndex / Math.max(families.length, 1)) % 3) + 1) as 1 | 2 | 3,
+  );
+}
+
+function responseProfile(value: number): string {
+  return value <= 0.8 ? "Low" : value >= 2.2 ? "High" : "Medium";
+}
+
+function halfSaturationProfile(value: number): string {
+  return value <= 0.3 ? "Early" : value >= 0.7 ? "Late" : "Middle";
+}
+
+export function agenticChannelResponseCoverage(
+  runs: AgenticCandidateRun[],
+  contract: AgenticSearchContract,
+  capabilities: AgenticSearchCapabilities,
+): AgenticChannelResponseCoverage {
+  const channels = capabilities.mediaColumns ?? [];
+  const requiredChallenges = agenticChannelResponseBudget(contract, capabilities);
+  const challenges = completedWithScores(runs).filter(
+    (run) => run.spec.searchPhase === "response-coverage",
+  );
+  const coverage = channels.map((channel) => {
+    const responses = challenges.flatMap((run) => {
+      const match = Object.entries(run.spec.config.channelResponses ?? {}).find(
+        ([key]) => key.toLowerCase() === channel.toLowerCase(),
+      );
+      return match?.[1] ? [match[1]] : [];
+    });
+    const adstockFamilies = uniqueValues(
+      responses.map((response) => response.adstockType ?? "geometric"),
+    );
+    const saturationProfiles = uniqueValues(
+      responses.map((response) => responseProfile(response.saturation ?? 1)),
+    );
+    const halfSaturationProfiles = uniqueValues(
+      responses.map((response) =>
+        halfSaturationProfile(response.halfSaturationQuantile ?? 0.5),
+      ),
+    );
+    const normalizations = uniqueValues(
+      responses.map((response) => response.kernelNormalization ?? "peak"),
+    );
+    const complete =
+      ["geometric", "weibull"].every((value) => adstockFamilies.includes(value)) &&
+      ["Low", "Medium", "High"].every((value) => saturationProfiles.includes(value)) &&
+      ["Early", "Middle", "Late"].every((value) => halfSaturationProfiles.includes(value)) &&
+      ["peak", "sum"].every((value) => normalizations.includes(value));
+    return {
+      channel,
+      adstockFamilies,
+      saturationProfiles,
+      halfSaturationProfiles,
+      normalizations,
+      complete,
+    };
+  });
+  return {
+    requiredChallenges,
+    completedChallenges: challenges.length,
+    complete:
+      challenges.length >= requiredChallenges &&
+      coverage.every((channel) => channel.complete),
+    channels: coverage,
+  };
 }
 
 const ADVANCED_CHALLENGE_DESIGNS: AdvancedModelConfig[] = [
@@ -832,7 +1217,10 @@ export function generateAgenticAdvancedChallenge(
 ): AgenticCandidateSpec {
   const challengeBudget = agenticAdvancedChallengeBudget(contract);
   const challengeIndex =
-    candidateNumber - agenticSeedBudget(contract) - 1;
+    candidateNumber -
+    agenticSeedBudget(contract) -
+    agenticChannelResponseBudget(contract, capabilities) -
+    1;
   if (
     !contract.families.advanced ||
     challengeIndex < 0 ||
@@ -1059,6 +1447,43 @@ function encodeSpecification(
       AGENTIC_PARAMETER_BOUNDS.weibullScale.max,
     );
   }
+  Object.entries(spec.config.channelResponses ?? {})
+    .sort(([left], [right]) => left.localeCompare(right))
+    .forEach(([channel, response]) => {
+      const prefix = `channel:${channel.toLowerCase()}`;
+      const adstockType = response.adstockType ?? spec.config.adstockType;
+      categorical[`${prefix}:adstockType`] = adstockType;
+      categorical[`${prefix}:normalization`] =
+        response.kernelNormalization ?? "peak";
+      numeric[`${prefix}:saturation`] = normalize(
+        response.saturation ?? spec.config.saturation,
+        AGENTIC_PARAMETER_BOUNDS.saturation.min,
+        AGENTIC_PARAMETER_BOUNDS.saturation.max,
+      );
+      numeric[`${prefix}:halfSaturation`] = normalize(
+        response.halfSaturationQuantile ?? 0.5,
+        AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.min,
+        AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.max,
+      );
+      if (adstockType === "geometric") {
+        numeric[`${prefix}:decay`] = normalize(
+          response.adstock ?? spec.config.adstock,
+          AGENTIC_PARAMETER_BOUNDS.adstock.min,
+          AGENTIC_PARAMETER_BOUNDS.adstock.max,
+        );
+      } else {
+        numeric[`${prefix}:weibullShape`] = normalize(
+          response.weibullShape ?? spec.config.weibullShape,
+          AGENTIC_PARAMETER_BOUNDS.weibullShape.min,
+          AGENTIC_PARAMETER_BOUNDS.weibullShape.max,
+        );
+        numeric[`${prefix}:weibullScale`] = normalize(
+          response.weibullScale ?? spec.config.weibullScale,
+          AGENTIC_PARAMETER_BOUNDS.weibullScale.min,
+          AGENTIC_PARAMETER_BOUNDS.weibullScale.max,
+        );
+      }
+    });
   if (spec.family === "advanced") {
     categorical.timeVarying = String(spec.advancedConfig.timeVarying);
     categorical.planningIntensity = String(
@@ -1292,6 +1717,7 @@ export function proposeAgenticCandidate(
     0,
     candidateNumber -
       agenticSeedBudget(contract) -
+      agenticChannelResponseBudget(contract, capabilities) -
       agenticAdvancedChallengeBudget(contract) -
       1,
   );
@@ -1335,7 +1761,10 @@ export function proposeAgenticCandidate(
   const poolSize = 160;
 
   for (let attempt = 0; attempt < poolSize; attempt += 1) {
-    const point = haltonPoint(candidateNumber * 389 + attempt + 29);
+    const point = haltonPoint(
+      candidateNumber * 389 + attempt + 29,
+      searchDimensions(capabilities),
+    );
     const generated = configurationFromPoint(
       targetFamily,
       point,
@@ -1365,7 +1794,10 @@ export function proposeAgenticCandidate(
   if (good.length) {
     for (let attempt = 0; attempt < poolSize; attempt += 1) {
       const anchor = good[attempt % good.length].spec;
-      const point = haltonPoint(candidateNumber * 521 + attempt + 71);
+      const point = haltonPoint(
+        candidateNumber * 521 + attempt + 71,
+        searchDimensions(capabilities),
+      );
       const generated = localConfiguration(
         anchor,
         point,
@@ -1421,12 +1853,46 @@ function localChallengeConfiguration(
   capabilities: AgenticSearchCapabilities,
 ): { config: ModelConfig; advancedConfig: AdvancedModelConfig } {
   const config = { ...champion.config };
+  config.channelResponses = champion.config.channelResponses
+    ? Object.fromEntries(
+        Object.entries(champion.config.channelResponses).map(([channel, response]) => [
+          channel,
+          { ...response },
+        ]),
+      )
+    : undefined;
   const advancedConfig = { ...champion.advancedConfig };
   const cyclePeriods = cyclePeriodChoices(config);
   const cycleIndex = cyclePeriods.indexOf(
     nearestChoice(config.cyclePeriod, cyclePeriods),
   );
-  switch (challengeIndex % 12) {
+  const channels = Object.keys(config.channelResponses ?? {});
+  if (channels.length && challengeIndex >= 12) {
+    const channel = channels[(challengeIndex - 12) % channels.length];
+    const response = { ...(config.channelResponses?.[channel] ?? {}) };
+    const dimension = Math.floor((challengeIndex - 12) / channels.length) % 7;
+    if (dimension === 0) {
+      response.adstockType = response.adstockType === "weibull" ? "geometric" : "weibull";
+    } else if (dimension === 1) {
+      response.adstock = (response.adstock ?? config.adstock) * 0.8;
+    } else if (dimension === 2) {
+      response.weibullShape = (response.weibullShape ?? config.weibullShape) * 1.2;
+    } else if (dimension === 3) {
+      response.weibullScale = (response.weibullScale ?? config.weibullScale) * 1.2;
+    } else if (dimension === 4) {
+      response.saturation = (response.saturation ?? config.saturation) * 1.2;
+    } else if (dimension === 5) {
+      response.halfSaturationQuantile =
+        (response.halfSaturationQuantile ?? 0.5) >= 0.5 ? 0.35 : 0.65;
+    } else {
+      response.kernelNormalization =
+        response.kernelNormalization === "sum" ? "peak" : "sum";
+    }
+    config.channelResponses = {
+      ...config.channelResponses,
+      [channel]: response,
+    };
+  } else switch (challengeIndex % 12) {
     case 0:
       config.adstock *= 0.8;
       config.weibullScale *= 0.8;
@@ -1507,8 +1973,9 @@ export function generateAgenticLocalChallenge(
   const localBudget = agenticLocalChallengeBudget(contract);
   const localStart =
     agenticSeedBudget(contract) +
+    agenticChannelResponseBudget(contract, capabilities) +
     agenticAdvancedChallengeBudget(contract) +
-    agenticAdaptiveMaximumBudget(contract);
+    agenticAdaptiveMaximumBudget(contract, capabilities);
   const challengeIndex = candidateNumber - localStart - 1;
   if (challengeIndex < 0 || challengeIndex >= localBudget) {
     throw new Error("Candidate is outside the local champion challenge phase.");
@@ -1546,7 +2013,10 @@ export function generateAgenticLocalChallenge(
   ) {
     configuration = localConfiguration(
       source.spec,
-      haltonPoint(candidateNumber * 733 + attempt + 17),
+      haltonPoint(
+        candidateNumber * 733 + attempt + 17,
+        searchDimensions(capabilities),
+      ),
       capabilities,
     );
     attempt += 1;
@@ -1584,6 +2054,18 @@ export function agenticStoppingDecision(
       evaluationsSinceImprovement: 0,
     };
   }
+  const responseCoverage = agenticChannelResponseCoverage(
+    runs,
+    contract,
+    capabilities,
+  );
+  if (!responseCoverage.complete) {
+    return {
+      shouldStop: false,
+      reason: `Channel-response coverage is ${responseCoverage.completedChallenges}/${responseCoverage.requiredChallenges}; convergence is locked until every media channel spans carryover, saturation, half-saturation, and normalization profiles.`,
+      evaluationsSinceImprovement: 0,
+    };
+  }
   const advancedCoverage = agenticAdvancedCoverage(
     runs,
     contract,
@@ -1597,8 +2079,8 @@ export function agenticStoppingDecision(
     };
   }
   const families = activeFamilies(contract);
-  const adaptiveMinimum = agenticAdaptiveMinimumBudget(contract);
-  const requiredPerFamilyRestart = contract.candidateBudget >= 72 ? 2 : 1;
+  const adaptiveMinimum = agenticAdaptiveMinimumBudget(contract, capabilities);
+  const requiredPerFamilyRestart = contract.candidateBudget >= 384 ? 4 : contract.candidateBudget >= 192 ? 3 : 2;
   const missingAdaptiveCells = families.flatMap((family) =>
     ([1, 2, 3] as const).flatMap((restart) =>
       completed.filter(
@@ -1637,11 +2119,12 @@ export function agenticStoppingDecision(
     Math.max(
       24,
       agenticSeedBudget(contract) +
+        agenticChannelResponseBudget(contract, capabilities) +
         agenticAdvancedChallengeBudget(contract) +
         adaptiveMinimum,
     ),
   );
-  const patience = contract.candidateBudget >= 72 ? 16 : 12;
+  const patience = contract.candidateBudget >= 384 ? 30 : contract.candidateBudget >= 192 ? 22 : 16;
   if (completed.length < minimumEvaluations) {
     return {
       shouldStop: false,
@@ -1723,7 +2206,19 @@ export function isAgenticSpecWithinBounds(
     advancedConfig.studentTDegreesFreedom >=
       AGENTIC_PARAMETER_BOUNDS.studentTDegreesFreedom.min &&
     advancedConfig.studentTDegreesFreedom <=
-      AGENTIC_PARAMETER_BOUNDS.studentTDegreesFreedom.max
+      AGENTIC_PARAMETER_BOUNDS.studentTDegreesFreedom.max &&
+    Object.values(config.channelResponses ?? {}).every((response) =>
+      (response.adstock ?? config.adstock) >= AGENTIC_PARAMETER_BOUNDS.adstock.min &&
+      (response.adstock ?? config.adstock) <= AGENTIC_PARAMETER_BOUNDS.adstock.max &&
+      (response.weibullShape ?? config.weibullShape) >= AGENTIC_PARAMETER_BOUNDS.weibullShape.min &&
+      (response.weibullShape ?? config.weibullShape) <= AGENTIC_PARAMETER_BOUNDS.weibullShape.max &&
+      (response.weibullScale ?? config.weibullScale) >= AGENTIC_PARAMETER_BOUNDS.weibullScale.min &&
+      (response.weibullScale ?? config.weibullScale) <= AGENTIC_PARAMETER_BOUNDS.weibullScale.max &&
+      (response.saturation ?? config.saturation) >= AGENTIC_PARAMETER_BOUNDS.saturation.min &&
+      (response.saturation ?? config.saturation) <= AGENTIC_PARAMETER_BOUNDS.saturation.max &&
+      (response.halfSaturationQuantile ?? 0.5) >= AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.min &&
+      (response.halfSaturationQuantile ?? 0.5) <= AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile.max,
+    )
   );
 }
 
@@ -1803,6 +2298,54 @@ export function agenticBoundaryParameters(
   ) {
     hits.push("Student-t degrees of freedom");
   }
+  Object.entries(spec.config.channelResponses ?? {}).forEach(
+    ([channel, response]) => {
+      const responseAdstock = response.adstockType ?? spec.config.adstockType;
+      if (
+        responseAdstock === "geometric" &&
+        atBoundary(
+          response.adstock ?? spec.config.adstock,
+          AGENTIC_PARAMETER_BOUNDS.adstock,
+        )
+      ) {
+        hits.push(`${channel} decay`);
+      }
+      if (responseAdstock === "weibull") {
+        if (
+          atBoundary(
+            response.weibullShape ?? spec.config.weibullShape,
+            AGENTIC_PARAMETER_BOUNDS.weibullShape,
+          )
+        ) {
+          hits.push(`${channel} Weibull shape`);
+        }
+        if (
+          atBoundary(
+            response.weibullScale ?? spec.config.weibullScale,
+            AGENTIC_PARAMETER_BOUNDS.weibullScale,
+          )
+        ) {
+          hits.push(`${channel} Weibull scale`);
+        }
+      }
+      if (
+        atBoundary(
+          response.saturation ?? spec.config.saturation,
+          AGENTIC_PARAMETER_BOUNDS.saturation,
+        )
+      ) {
+        hits.push(`${channel} Hill shape`);
+      }
+      if (
+        atBoundary(
+          response.halfSaturationQuantile ?? 0.5,
+          AGENTIC_PARAMETER_BOUNDS.halfSaturationQuantile,
+        )
+      ) {
+        hits.push(`${channel} half-saturation`);
+      }
+    },
+  );
   return hits;
 }
 
@@ -1901,8 +2444,43 @@ export function agenticSearchConfidence(
     ? advancedCoverage.completedChallenges /
       Math.max(advancedCoverage.requiredChallenges, 1)
     : 1;
+  const responseCoverage = agenticChannelResponseCoverage(
+    runs,
+    contract,
+    capabilities,
+  );
+  const responseDimensionShare = responseCoverage.channels.length
+    ? responseCoverage.channels.reduce((total, channel) => {
+        const dimensions = [
+          channel.adstockFamilies.includes("geometric") &&
+            channel.adstockFamilies.includes("weibull"),
+          ["Low", "Medium", "High"].every((profile) =>
+            channel.saturationProfiles.includes(profile),
+          ),
+          ["Early", "Middle", "Late"].every((profile) =>
+            channel.halfSaturationProfiles.includes(profile),
+          ),
+          channel.normalizations.includes("peak") &&
+            channel.normalizations.includes("sum"),
+        ];
+        return (
+          total +
+          dimensions.filter(Boolean).length / Math.max(dimensions.length, 1)
+        );
+      }, 0) / responseCoverage.channels.length
+    : 1;
+  const responseShare = responseCoverage.requiredChallenges
+    ? 0.5 *
+        clamp(
+          responseCoverage.completedChallenges /
+            Math.max(responseCoverage.requiredChallenges, 1),
+          0,
+          1,
+        ) +
+      0.5 * responseDimensionShare
+    : 1;
   const structuralCoverage = clamp(
-    0.6 * baseCoverage + 0.4 * advancedShare,
+    0.35 * baseCoverage + 0.25 * advancedShare + 0.4 * responseShare,
     0,
     1,
   );
@@ -1929,7 +2507,12 @@ export function agenticSearchConfidence(
     ? clamp(localChallenges.length / localBudget, 0, 1) *
       (localImprovements ? 0.75 : 1)
     : 0.35;
-  const plateauTarget = contract.candidateBudget >= 72 ? 12 : 8;
+  const plateauTarget =
+    contract.candidateBudget >= 384
+      ? 24
+      : contract.candidateBudget >= 192
+        ? 16
+        : 12;
   const plateauConfidence = clamp(
     evaluationsSinceImprovement / plateauTarget,
     0,

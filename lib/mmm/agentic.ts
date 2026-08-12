@@ -18,16 +18,17 @@ import type {
   ValidationResult,
 } from "./validation";
 
-export const AGENTIC_SEARCH_VERSION = "flux-agentic-search-v4.1.0-decision-coherence";
+export const AGENTIC_SEARCH_VERSION = "flux-agentic-search-v5.0.0-global-channel-response";
 
 export interface AgenticSearchContract {
   families: Record<ValidationModelKind, boolean>;
-  candidateBudget: 24 | 48 | 72;
+  candidateBudget: 96 | 192 | 384;
 }
 
 export interface AgenticProposalEvidence {
   method:
     | "space-filling"
+    | "response-covering-array"
     | "covering-array"
     | "tpe"
     | "local-challenge"
@@ -48,6 +49,7 @@ export interface AgenticCandidateSpec {
   advancedConfig: AdvancedModelConfig;
   searchPhase:
     | "seed"
+    | "response-coverage"
     | "advanced-challenge"
     | "adaptive"
     | "local-challenge"
@@ -118,7 +120,7 @@ export const DEFAULT_AGENTIC_SEARCH_CONTRACT: AgenticSearchContract = {
     bayesian: true,
     advanced: true,
   },
-  candidateBudget: 48,
+  candidateBudget: 192,
 };
 
 export function passesApplicableGates(
@@ -232,10 +234,12 @@ export function agenticSearchStage(
   seedCount = Math.min(12, total),
   advancedChallengeCount = 0,
   localChallengeCount = 0,
-): "seed" | "advanced" | "adaptive" | "local" | "select" {
+  responseChallengeCount = 0,
+): "seed" | "response" | "advanced" | "adaptive" | "local" | "select" {
   if (total <= 0 || completed < seedCount) return "seed";
-  if (completed < seedCount + advancedChallengeCount) return "advanced";
-  if (completed < Math.max(seedCount + advancedChallengeCount, total - localChallengeCount)) {
+  if (completed < seedCount + responseChallengeCount) return "response";
+  if (completed < seedCount + responseChallengeCount + advancedChallengeCount) return "advanced";
+  if (completed < Math.max(seedCount + responseChallengeCount + advancedChallengeCount, total - localChallengeCount)) {
     return "adaptive";
   }
   if (completed < total) return "local";

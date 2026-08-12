@@ -79,7 +79,9 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(workbenchSource, /Calibration evidence/);
   assert.match(workbenchSource, /Prior or likelihood/);
   assert.doesNotMatch(workbenchSource, /Prior, not likelihood/);
-  assert.match(workbenchSource, /Confidence search · v4/);
+  assert.match(workbenchSource, /Global channel search · v5/);
+  assert.match(workbenchSource, /Mandatory channel-response grid/);
+  assert.match(workbenchSource, /20% G · 15% S · 25% C · 40% D/);
   assert.match(workbenchSource, /Mandatory Advanced challenge/);
   assert.match(workbenchSource, /restart-balanced refinements/);
   assert.match(workbenchSource, /Champion neighborhood/);

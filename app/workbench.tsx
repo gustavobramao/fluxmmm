@@ -72,11 +72,14 @@ import {
   agenticAdvancedChallengeBudget,
   agenticAdvancedCoverage,
   agenticBoundaryParameters,
+  agenticChannelResponseBudget,
+  agenticChannelResponseCoverage,
   agenticSeedBudget,
   agenticLocalChallengeBudget,
   agenticSearchConfidence,
   agenticStoppingDecision,
   generateAgenticAdvancedChallenge,
+  generateAgenticChannelResponseChallenge,
   generateAgenticLocalChallenge,
   generateAgenticSeeds,
   proposeAgenticCandidate,
@@ -1714,6 +1717,31 @@ function agenticSpecificationGroups(
     },
   ];
 
+  const channelResponses = Object.entries(config.channelResponses ?? {});
+  if (channelResponses.length) {
+    groups.push({
+      title: "Channel-specific response",
+      description:
+        "The V5 search lets each media channel carry over and saturate independently.",
+      parameters: channelResponses.flatMap(([channel, response]) => {
+        const adstockType = response.adstockType ?? config.adstockType;
+        return [
+          {
+            label: `${cleanChannel(channel)} response`,
+            value:
+              adstockType === "geometric"
+                ? `Geometric θ ${(response.adstock ?? config.adstock).toFixed(2)}`
+                : `Weibull k ${(response.weibullShape ?? config.weibullShape).toFixed(1)} · λ ${(response.weibullScale ?? config.weibullScale).toFixed(1)}`,
+          },
+          {
+            label: `${cleanChannel(channel)} saturation`,
+            value: `Hill ${(response.saturation ?? config.saturation).toFixed(1)} · Q${Math.round((response.halfSaturationQuantile ?? 0.5) * 100)} · ${response.kernelNormalization ?? "peak"} normalized`,
+          },
+        ];
+      }),
+    });
+  }
+
   if (family === "advanced") {
     groups.push(
       {
@@ -1897,7 +1925,9 @@ function SpecificationInspector({
                     ? `Local challenge of ${run.spec.challengeOf ?? "champion"}`
                   : run.spec.searchPhase === "rescue"
                     ? `Evidence rescue of ${run.spec.rescueOf ?? "candidate"}`
-                    : "Space-filling seed"}
+                    : run.spec.searchPhase === "response-coverage"
+                      ? "Channel-response covering array"
+                      : "Space-filling seed"}
             </span>
             <h2 id="specification-inspector-title">{run.spec.label}</h2>
             <p>{run.spec.hypothesis}</p>
@@ -1925,6 +1955,8 @@ function SpecificationInspector({
             <strong>
               {run.spec.proposal.method === "tpe"
                 ? `Start ${run.spec.restart}`
+                : run.spec.proposal.method === "response-covering-array"
+                  ? `Response grid · Start ${run.spec.restart}`
                 : run.spec.proposal.method === "covering-array"
                   ? "Paired"
                   : run.spec.proposal.method === "local-challenge"
@@ -4704,9 +4736,9 @@ function AgenticSearchConfidencePanel({
         </div>
         <div className="agentic-confidence-metrics">
           <div>
-            <span>Structure coverage</span>
+            <span>Search-space coverage</span>
             <b>{Math.round(confidence.structuralCoverage * 100)}%</b>
-            <small>Families, adstock, Advanced assumptions</small>
+            <small>Families, channel response, Advanced assumptions</small>
           </div>
           <div>
             <span>Restart agreement</span>
@@ -4807,12 +4839,17 @@ function AgenticView({
   const candidateCount = contract.candidateBudget;
   const seedCount = agenticSeedBudget(contract);
   const advancedChallengeCount = agenticAdvancedChallengeBudget(contract);
-  const adaptiveMinimum = agenticAdaptiveMinimumBudget(contract);
-  const adaptiveMaximum = agenticAdaptiveMaximumBudget(contract);
-  const localChallengeBudget = agenticLocalChallengeBudget(contract);
   const searchCapabilities = {
     likelihoodCalibration: experiments.length > 0,
+    mediaColumns: dataset.mediaColumns,
   };
+  const adaptiveMinimum = agenticAdaptiveMinimumBudget(contract, searchCapabilities);
+  const adaptiveMaximum = agenticAdaptiveMaximumBudget(contract, searchCapabilities);
+  const localChallengeBudget = agenticLocalChallengeBudget(contract);
+  const responseChallengeCount = agenticChannelResponseBudget(
+    contract,
+    searchCapabilities,
+  );
   const scoredRuns = runs.map((run) =>
     run.model
       ? {
@@ -4825,6 +4862,11 @@ function AgenticView({
           ),
         }
       : run,
+  );
+  const responseCoverage = agenticChannelResponseCoverage(
+    scoredRuns,
+    contract,
+    searchCapabilities,
   );
   const completed = scoredRuns.filter(
     (run) => run.state === "complete" && run.spec.searchPhase !== "rescue",
@@ -4880,6 +4922,7 @@ function AgenticView({
           seedCount,
           advancedChallengeCount,
           localChallengeBudget,
+          responseChallengeCount,
         );
   const activeFamilies = (
     ["frequentist", "bayesian", "advanced"] as const
@@ -4931,7 +4974,7 @@ function AgenticView({
             starts, feasibility-aware refinement, and local champion challenges.
           </p>
         </div>
-        <span className="agentic-protocol-pill">Confidence search · v4</span>
+        <span className="agentic-protocol-pill">Global channel search · v5</span>
       </section>
 
       <section className="agentic-workspace-tabs" aria-label="Agentic search stages">
@@ -4992,7 +5035,10 @@ function AgenticView({
               <div>
                 <b>Candidate budget</b>
                 <small>
-                  {seedCount} balanced seeds
+                  {seedCount} global seeds
+                  {responseChallengeCount
+                    ? ` + ${responseChallengeCount} channel-response grid challenges`
+                    : ""}
                   {advancedChallengeCount
                     ? ` + ${advancedChallengeCount} paired Advanced challenges`
                     : ""}
@@ -5005,7 +5051,7 @@ function AgenticView({
                 </small>
               </div>
               <div className="segmented-control">
-                {([24, 48, 72] as const).map((budget) => (
+                {([96, 192, 384] as const).map((budget) => (
                   <button
                     key={budget}
                     className={
@@ -5034,7 +5080,7 @@ function AgenticView({
             <div className="agentic-contract-list">
               <div>
                 <span>Objective</span>
-                <b>30% G · 25% S · 45% C</b>
+                <b>20% G · 15% S · 25% C · 40% D</b>
               </div>
               <div>
                 <span>Experiments</span>
@@ -5085,6 +5131,13 @@ function AgenticView({
                 </b>
               </div>
               <div>
+                <span>Channel-response coverage</span>
+                <b>
+                  {responseChallengeCount} covering-array candidates across{" "}
+                  {dataset.mediaColumns.length} channels
+                </b>
+              </div>
+              <div>
                 <span>Adaptive coverage</span>
                 <b>
                   {adaptiveMinimum
@@ -5096,8 +5149,8 @@ function AgenticView({
                 <span>Local optimality</span>
                 <b>
                   {localChallengeBudget
-                    ? `${localChallengeBudget} champion perturbations reserved`
-                    : "Not available in 24-candidate screen"}
+                    ? `${localChallengeBudget} global + channel-level champion perturbations reserved`
+                    : "No local refinement reserved"}
                 </b>
               </div>
               <div>
@@ -5169,12 +5222,13 @@ function AgenticView({
           <section className="agentic-pipeline" aria-label="Agentic search progress">
             {([
               ["seed", "Screen", "Balanced family coverage"],
+              ["response", "Responses", "Per-channel covering array"],
               ["advanced", "Challenge", "Paired Advanced coverage"],
               ["adaptive", "Refine", "3-start constrained search"],
               ["local", "Polish", "Champion neighborhood"],
               ["select", "Select", "Rank candidates"],
             ] as const).map(([id, label, detail]) => {
-              const order = ["seed", "advanced", "adaptive", "local", "select"];
+              const order = ["seed", "response", "advanced", "adaptive", "local", "select"];
               const stateIndex = order.indexOf(searchStage);
               const itemIndex = order.indexOf(id);
               return (
@@ -5195,6 +5249,43 @@ function AgenticView({
               );
             })}
           </section>
+
+          {responseChallengeCount > 0 && (
+            <details
+              className={`card agentic-coverage-card ${responseCoverage.complete ? "complete" : "running"}`}
+            >
+              <summary>
+                <div>
+                  <span className="eyebrow">Mandatory channel-response grid</span>
+                  <h2>
+                    {responseCoverage.completedChallenges}/
+                    {responseCoverage.requiredChallenges} response challengers
+                  </h2>
+                  <p>
+                    Every material media channel receives distinct carryover,
+                    saturation, half-saturation, and normalization challenges.
+                  </p>
+                </div>
+                <div className="agentic-coverage-progress">
+                  <span><i style={{ width: `${Math.min(100, responseCoverage.completedChallenges / Math.max(responseCoverage.requiredChallenges, 1) * 100)}%` }} /></span>
+                  <b>{responseCoverage.complete ? "Coverage complete ✓" : "Convergence locked"}</b>
+                </div>
+              </summary>
+              <div className="agentic-coverage-grid">
+                {responseCoverage.channels.map((channel) => (
+                  <div key={channel.channel} className={channel.complete ? "complete" : "pending"}>
+                    <span>{cleanChannel(channel.channel)}</span>
+                    <b>{channel.adstockFamilies.join(" · ") || "Awaiting response tests"}</b>
+                    <small>
+                      {channel.complete
+                        ? "Carryover · saturation · half-saturation · normalization covered"
+                        : "Required response profiles remain incomplete"}
+                    </small>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
 
           {advancedChallengeCount > 0 && (
             <details
@@ -5406,7 +5497,7 @@ function AgenticView({
               <h2>Up to {contract.candidateBudget} bounded candidates</h2>
               <p>
                 {stopReason ??
-                  `The search completes ${seedCount} global seeds, ${advancedChallengeCount} Advanced structure challenges, ${adaptiveMaximum} feasibility-aware proposals, and ${localChallengeBudget} local champion tests before ranking the best-known eligible model.`}
+                  `The search completes ${seedCount} global seeds, ${responseChallengeCount} channel-response grid challenges, ${advancedChallengeCount} Advanced structure challenges, ${adaptiveMaximum} feasibility-aware proposals, and ${localChallengeBudget} local champion tests before ranking the best-known eligible model.`}
               </p>
             </article>
           </section>
@@ -5452,6 +5543,16 @@ function AgenticView({
                   <p>{comparisonLeader.spec.summary}</p>
                   <div className="agentic-champion-spec">
                     <span>{comparisonLeader.spec.config.adstockType} adstock</span>
+                    {Object.keys(
+                      comparisonLeader.spec.config.channelResponses ?? {},
+                    ).length > 0 && (
+                      <span>
+                        {Object.keys(
+                          comparisonLeader.spec.config.channelResponses ?? {},
+                        ).length}{" "}
+                        channel response profiles
+                      </span>
+                    )}
                     <span>
                       Hill {comparisonLeader.spec.config.saturation.toFixed(2)}
                     </span>
@@ -8245,6 +8346,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     agenticGenerationRef.current = generation;
     const capabilities = {
       likelihoodCalibration: experiments.length > 0,
+      mediaColumns: dataset.mediaColumns,
     };
     const seedSpecifications = generateAgenticSeeds(
       config,
@@ -8254,6 +8356,10 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     );
     const advancedChallengeBudget =
       agenticAdvancedChallengeBudget(agenticContract);
+    const responseChallengeBudget = agenticChannelResponseBudget(
+      agenticContract,
+      capabilities,
+    );
     const localChallengeBudget =
       agenticLocalChallengeBudget(agenticContract);
     const localChallengeStart =
@@ -8280,8 +8386,22 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       if (attemptIndex < seedSpecifications.length) {
         spec = seedSpecifications[attemptIndex];
       } else if (
+        attemptIndex < seedSpecifications.length + responseChallengeBudget
+      ) {
+        spec = generateAgenticChannelResponseChallenge(
+          config,
+          advancedConfig,
+          agenticContract,
+          attemptIndex + 1,
+          capabilities,
+        );
+        setAgenticRuns((current) => [
+          ...current,
+          { spec, state: "queued" },
+        ]);
+      } else if (
         attemptIndex <
-        seedSpecifications.length + advancedChallengeBudget
+        seedSpecifications.length + responseChallengeBudget + advancedChallengeBudget
       ) {
         spec = generateAgenticAdvancedChallenge(
           config,
