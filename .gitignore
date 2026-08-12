@@ -44,5 +44,6 @@ next-env.d.ts
 /work/
 /.venv/
 /.flux-artifacts/
+/research/score_v2/artifacts/
 __pycache__/
 *.pyc
