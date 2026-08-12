@@ -53,13 +53,6 @@ const scoreLayerLabels = {
   decision: "ROI coherence",
 };
 
-const familyLabels: Record<string, string> = {
-  "delayed-tv": "Unseen delayed TV",
-  "correlated-planning": "Unseen planning confounding",
-  "wrong-evidence": "Sealed wrong evidence",
-  "swapped-channel-mechanics": "Sealed mechanics swap",
-};
-
 function LearnedScoreV4Panel() {
   const artifact = LEARNED_SCORE_ARTIFACT;
   const active = ACTIVE_SCORE_CONTRACT.kind === "learned";
@@ -69,12 +62,12 @@ function LearnedScoreV4Panel() {
     <>
       <section className={`card learned-score-hero ${active ? "active" : "fallback"}`}>
         <div>
-          <span className="eyebrow">Learned Score V4 · offline artifact</span>
-          <h2>{active ? "Simulation now informs candidate ranking" : "Heuristic fallback remains active"}</h2>
+          <span className="eyebrow">The outcome</span>
+          <h2>{active ? "Flux learned how to rank valid MMMs" : "The transparent fallback remains active"}</h2>
           <p>
-            Flux learned one interpretable geometric ensemble from known four-decision
-            profit regret. Real advertiser outcomes never enter training, and the model
-            cannot relax evidence, identification, or ROI plausibility gates.
+            Synthetic businesses provide the answer key that real MMM data cannot.
+            Flux learns which combination of four validation signals most often leads
+            to the lowest-regret budget decision—without exposing that answer key to fitting.
           </p>
         </div>
         <div className="learned-score-activation">
@@ -84,78 +77,80 @@ function LearnedScoreV4Panel() {
         </div>
       </section>
 
+      <section className="card learned-score-science">
+        <div className="card-heading">
+          <div><span className="eyebrow">How the science works</span><h2>Learn from truth. Test without it.</h2></div>
+          <span className="score-lab-inspect">No real advertiser truth is assumed</span>
+        </div>
+        <div className="learned-science-flow" aria-label="How Flux learns the validation score">
+          <article><i>1</i><span>Simulate truth</span><b>Generate realistic media, confounding, saturation, carryover, and known ROI.</b></article>
+          <em>→</em>
+          <article><i>2</i><span>Fit candidates</span><b>Fit competing MMMs using only the observational data and declared evidence.</b></article>
+          <em>→</em>
+          <article><i>3</i><span>Reveal regret</span><b>Replay each model’s budget decisions against the hidden causal response.</b></article>
+          <em>→</em>
+          <article><i>4</i><span>Learn and audit</span><b>Choose weights on training worlds; activate only if unseen worlds improve.</b></article>
+        </div>
+      </section>
+
       <section className="card learned-score-weights">
         <div className="card-heading">
-          <div><span className="eyebrow">The model</span><h2>Four visible weights—not a black box</h2></div>
-          <span className="score-lab-inspect">{artifact.model.candidatesConsidered.toLocaleString()} predeclared weight vectors</span>
+          <div><span className="eyebrow">The learned validation score</span><h2>One score from four interpretable signals</h2></div>
+          <span className="score-lab-inspect">Higher is better · only after gates</span>
         </div>
-        <div className="learned-weight-grid">
+        <div className="learned-weight-grid simple">
           {SCORE_LAYER_ORDER.map((layer) => {
             const learned = artifact.model.weights[layer];
-            const heuristic = HEURISTIC_SCORE_WEIGHTS[layer];
             return (
               <article key={layer}>
                 <span>{scoreLayerLabels[layer]}</span>
                 <strong>{percentage(learned)}</strong>
-                <div><i style={{ width: `${learned * 100}%` }} /><em style={{ left: `${heuristic * 100}%` }} /></div>
-                <small>Previous heuristic {percentage(heuristic)}</small>
+                <div><i style={{ width: `${learned * 100}%` }} /></div>
               </article>
             );
           })}
         </div>
-        <p className="learned-score-formula">
-          100 × G<sup>{artifact.model.weights.generalization.toFixed(3)}</sup>
-          {" × "}S<sup>{artifact.model.weights.structure.toFixed(3)}</sup>
-          {" × "}C<sup>{artifact.model.weights.causal.toFixed(3)}</sup>
-          {" × "}D<sup>{artifact.model.weights.decision.toFixed(3)}</sup>
+        <p className="learned-score-plain-language">
+          <b>What “optimal” means here:</b> among the {artifact.model.candidatesConsidered.toLocaleString()} transparent weight combinations tested,
+          this one produced the lowest acceptable held-out decision regret under the predeclared risk limits. It is the best validated combination in this search—not proof of a universal global optimum.
         </p>
       </section>
 
-      <section className="learned-score-proof">
-        <article className="card">
-          <span className="eyebrow">Family-held-out validation</span>
-          <strong>{percentage(validation.heuristic.meanRegret)} → {percentage(validation.learned.meanRegret)}</strong>
-          <p>Mean profit regret across {artifact.cohort.splits.validation} businesses from generator families absent during fitting.</p>
-          {Object.keys(validation.heuristic.familyMeanRegret).map((family) => (
-            <div key={family}><span>{familyLabels[family] ?? family}</span><b>{percentage(validation.heuristic.familyMeanRegret[family])} → {percentage(validation.learned.familyMeanRegret[family])}</b></div>
-          ))}
-        </article>
-        <article className="card sealed">
-          <span className="eyebrow">Untouched audit</span>
-          <strong>{percentage(audit.heuristic.meanRegret)} → {percentage(audit.learned.meanRegret)}</strong>
-          <p>The final check used {artifact.cohort.splits.audit} sealed adversarial businesses only after model selection.</p>
-          {Object.keys(audit.heuristic.familyMeanRegret).map((family) => (
-            <div key={family}><span>{familyLabels[family] ?? family}</span><b>{percentage(audit.heuristic.familyMeanRegret[family])} → {percentage(audit.learned.familyMeanRegret[family])}</b></div>
-          ))}
-        </article>
+      <section className="card learned-score-proof-simple">
+        <div>
+          <span className="eyebrow">Did it generalize?</span>
+          <h2>Yes—modestly, without worse tail risk</h2>
+          <p>The learned score was frozen before the final adversarial audit. It improved average decisions while retaining the same held-out P90 regret.</p>
+        </div>
+        <div className="learned-proof-metrics">
+          <article><span>Unseen families</span><strong>{percentage(validation.relativeMeanRegretReduction)}</strong><small>lower mean regret</small></article>
+          <article><span>Held-out P90</span><strong>Unchanged</strong><small>{percentage(validation.learned.p90Regret)}</small></article>
+          <article><span>Sealed audit</span><strong>{percentage(audit.relativeMeanRegretReduction)}</strong><small>lower mean regret</small></article>
+        </div>
       </section>
 
-      <section className="card learned-score-contract">
-        <div>
-          <span className="eyebrow">Why ROI coherence has {percentage(artifact.model.weights.decision)} ranking weight</span>
-          <h2>Business plausibility is a gate before it is a preference</h2>
-          <p>
-            The learner ranks candidates inside the zero-failed-gate pool. An implausible
-            channel ROI is blocked before the weighted score is compared, so the D weight
-            does not let prediction compensate for an incoherent ROI. Within already-plausible
-            candidates, held-out regret favored the other diagnostics more strongly.
-          </p>
-        </div>
-        <div className="learned-score-flow" aria-label="Learned score decision flow">
-          <span><i>1</i><b>Evidence gates</b><small>Immutable</small></span>
-          <em>→</em>
-          <span><i>2</i><b>ROI coherence</b><small>Two-sided gate</small></span>
-          <em>→</em>
-          <span><i>3</i><b>Learned rank</b><small>Lowest expected regret</small></span>
-        </div>
+      <section className="learned-score-safety">
+        <i>◆</i>
+        <div><b>The score cannot rescue a scientifically invalid model</b><p>Evidence, identification, placebo, and two-sided ROI plausibility checks run first. Only candidates passing those gates are ranked by the learned score.</p></div>
       </section>
 
       <details className="card learned-score-receipt">
-        <summary><span><b>Open the activation receipt</b><small>{artifact.version} · {artifact.artifactId}</small></span><i>＋</i></summary>
+        <summary><span><b>Research details</b><small>Formula, cohort, family checks, and activation receipt</small></span><i>＋</i></summary>
         <div>
+          <p className="learned-score-formula">
+            100 × G<sup>{artifact.model.weights.generalization.toFixed(3)}</sup>
+            {" × "}S<sup>{artifact.model.weights.structure.toFixed(3)}</sup>
+            {" × "}C<sup>{artifact.model.weights.causal.toFixed(3)}</sup>
+            {" × "}D<sup>{artifact.model.weights.decision.toFixed(3)}</sup>
+          </p>
           <p>{artifact.activationReason}</p>
+          <div className="learned-receipt-comparison">
+            <span>Validation <b>{percentage(validation.heuristic.meanRegret)} → {percentage(validation.learned.meanRegret)}</b></span>
+            <span>Audit <b>{percentage(audit.heuristic.meanRegret)} → {percentage(audit.learned.meanRegret)}</b></span>
+            <span>Previous heuristic <b>{SCORE_LAYER_ORDER.map((layer) => percentage(HEURISTIC_SCORE_WEIGHTS[layer])).join(" / ")}</b></span>
+          </div>
           <ul>{artifact.guardrails.map((guardrail) => <li key={guardrail}>{guardrail}</li>)}</ul>
-          <small>{artifact.cohort.businesses} businesses · {artifact.cohort.candidates.toLocaleString()} fitted candidates · train {artifact.cohort.splits.train} / validation {artifact.cohort.splits.validation} / untouched audit {artifact.cohort.splits.audit}</small>
+          <small>{artifact.version} · {artifact.artifactId} · {artifact.cohort.businesses} businesses · {artifact.cohort.candidates.toLocaleString()} fitted candidates · train {artifact.cohort.splits.train} / validation {artifact.cohort.splits.validation} / untouched audit {artifact.cohort.splits.audit}</small>
         </div>
       </details>
     </>
@@ -358,23 +353,20 @@ export function ScoreLabView() {
         <div>
           <span className="kicker">Simulation-calibrated validation · research V4</span>
           <h1>Score Lab</h1>
-          <p>
-            Give Flux a dataset without its answer key, fit competing models,
-            then reveal the synthetic causal truth and measure the decision each model would make.
-          </p>
+          <p>See how Flux learns the validation score from known synthetic truth, then proves that it generalizes before Agentic can use it.</p>
         </div>
         <span className={`score-lab-status ${ACTIVE_SCORE_CONTRACT.kind === "learned" ? "active" : ""}`}><i /> {ACTIVE_SCORE_CONTRACT.kind === "learned" ? "Learned score active" : "Heuristic fallback"}</span>
       </section>
 
-      <section className="score-lab-mode-tabs" aria-label="Score research views">
+      <section className="score-lab-mode-tabs compact" aria-label="Score research views">
         <button className={labMode === "learned" ? "active" : ""} onClick={() => setLabMode("learned")}>
-          <span>V4</span><b>Learned score</b><small>Weights, held-out evidence, guardrails</small>
+          <span>1</span><b>How the score works</b><small>The recommended explanation</small>
         </button>
         <button className={labMode === "audit" ? "active" : ""} onClick={() => setLabMode("audit")}>
-          <span>V3</span><b>Simulator audit</b><small>500-business coverage and labels</small>
+          <span>2</span><b>Audit the simulator</b><small>Optional research detail</small>
         </button>
         <button className={labMode === "pilot" ? "active" : ""} onClick={() => setLabMode("pilot")}>
-          <span>V2</span><b>Candidate pilot</b><small>Six fitted answer-key examples</small>
+          <span>3</span><b>See a worked example</b><small>Optional model comparison</small>
         </button>
       </section>
 

@@ -7,6 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const python = path.join(root, ".venv", "bin", "python");
 const vinext = path.join(root, "node_modules", ".bin", "vinext");
 const webPort = process.env.FLUX_PORT || "3003";
+const samplerPort = process.env.FLUX_MCMC_PORT || "8790";
 const children = [];
 
 function launch(command, args, label) {
@@ -27,7 +28,7 @@ function launch(command, args, label) {
 }
 
 if (existsSync(python)) {
-  launch(python, ["scripts/mcmc_server.py", "--port", "8789"], "MCMC service");
+  launch(python, ["scripts/mcmc_server.py", "--port", samplerPort], "MCMC service");
 } else {
   console.warn(
     "MCMC service is not installed. Run `pnpm mcmc:setup` before production sampling.",

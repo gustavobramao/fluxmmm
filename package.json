@@ -27,7 +27,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "mcmc:setup": "python3 -m venv .venv && .venv/bin/pip install -r requirements-mcmc.txt",
-    "mcmc:serve": ".venv/bin/python scripts/mcmc_server.py --port 8789",
+    "mcmc:serve": ".venv/bin/python scripts/mcmc_server.py --port 8790",
     "mcmc:test": "PYTENSOR_FLAGS=base_compiledir=.flux-artifacts/pytensor-test .venv/bin/python -m unittest tests/test_mcmc_server.py",
     "research:score-v2:pilot": "node --import tsx research/score_v2/run-pilot.ts",
     "research:score-v2:matrix": "node --import tsx research/score_v2/run-pilot.ts --all",

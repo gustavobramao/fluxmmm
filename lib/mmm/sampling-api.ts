@@ -5,7 +5,8 @@ import {
   type SamplingJobSnapshot,
 } from "./sampling";
 
-const SERVICE_URL = "http://127.0.0.1:8789";
+export const SAMPLING_SERVICE_PORT = 8790;
+const SERVICE_URL = `http://127.0.0.1:${SAMPLING_SERVICE_PORT}`;
 
 async function serviceError(response: Response): Promise<string> {
   try {
@@ -20,6 +21,7 @@ export async function samplingServiceHealth(): Promise<{
   ready: boolean;
   engine?: string;
   contractVersion?: string;
+  detail?: string;
 }> {
   try {
     const response = await fetch(`${SERVICE_URL}/health`);
@@ -33,9 +35,16 @@ export async function samplingServiceHealth(): Promise<{
       ...health,
       ready:
         health.ready && health.contractVersion === SAMPLING_ENGINE_VERSION,
+      detail:
+        health.contractVersion === SAMPLING_ENGINE_VERSION
+          ? undefined
+          : `Sampler contract ${health.contractVersion ?? "unknown"} does not match workspace contract ${SAMPLING_ENGINE_VERSION}.`,
     };
   } catch {
-    return { ready: false };
+    return {
+      ready: false,
+      detail: `No V2 sampling service is listening on port ${SAMPLING_SERVICE_PORT}. Start Flux with pnpm dev after running pnpm mcmc:setup.`,
+    };
   }
 }
 

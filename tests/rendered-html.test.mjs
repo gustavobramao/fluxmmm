@@ -44,6 +44,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
     modelSource,
     workbenchSource,
     agenticSearchSource,
+    samplingApiSource,
     samplingSource,
     budgetSource,
     samplingServiceSource,
@@ -62,6 +63,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
       readFile(new URL("../lib/mmm/models.ts", import.meta.url), "utf8"),
       readFile(new URL("../app/workbench.tsx", import.meta.url), "utf8"),
       readFile(new URL("../lib/mmm/agentic-search.ts", import.meta.url), "utf8"),
+      readFile(new URL("../lib/mmm/sampling-api.ts", import.meta.url), "utf8"),
       readFile(new URL("../lib/mmm/sampling.ts", import.meta.url), "utf8"),
       readFile(new URL("../lib/mmm/budget.ts", import.meta.url), "utf8"),
       readFile(new URL("../scripts/mcmc_server.py", import.meta.url), "utf8"),
@@ -131,6 +133,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(agenticSearchSource, /function generateAgenticLocalChallenge/);
   assert.match(agenticSearchSource, /function agenticSearchConfidence/);
   assert.match(agenticSearchSource, /function agenticStoppingDecision/);
+  assert.match(samplingApiSource, /SAMPLING_SERVICE_PORT = 8790/);
   assert.match(samplingSource, /SAMPLING_PRESETS/);
   assert.match(samplingSource, /compileSamplingModel/);
   assert.match(samplingSource, /full-response-latent-planning-ppc-hdi/);
@@ -156,8 +159,9 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.doesNotMatch(viteConfig, /hostingConfig|sites\(\)/);
   assert.match(scoreLabSource, /Simulator Audit V3/);
   assert.match(scoreLabSource, /Split generators—not random rows/);
-  assert.match(scoreLabSource, /Learned Score V4 · offline artifact/);
-  assert.match(scoreLabSource, /Business plausibility is a gate before it is a preference/);
+  assert.match(scoreLabSource, /Learn from truth\. Test without it\./);
+  assert.match(scoreLabSource, /The score cannot rescue a scientifically invalid model/);
+  assert.match(scoreLabSource, /What “optimal” means here/);
   assert.match(auditArtifact, /"businessCount": 500/);
   assert.match(auditArtifact, /"audit": 80/);
   assert.match(learnedScoreArtifact, /"activation": "active"/);

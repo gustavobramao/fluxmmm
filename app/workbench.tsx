@@ -5917,6 +5917,7 @@ function SamplingView({
   status,
   progress,
   serviceReady,
+  serviceDetail,
   onRun,
   onApplyRetry,
   onNewContract,
@@ -5931,6 +5932,7 @@ function SamplingView({
   status: JobStatus;
   progress?: SamplingJobProgress;
   serviceReady: boolean | null;
+  serviceDetail?: string;
   onRun: () => void;
   onApplyRetry: (contract: SamplingContract) => void;
   onNewContract: () => void;
@@ -6284,8 +6286,8 @@ function SamplingView({
             </div>
             {serviceReady === false && (
               <div className="sampling-service-warning">
-                <b>Local sampler unavailable</b>
-                <span>Restart the local Flux server to activate production sampling.</span>
+                <b>V2 local sampler unavailable</b>
+                <span>{serviceDetail ?? "Restart the V2 Flux server to activate production sampling."}</span>
               </div>
             )}
             <button
@@ -7748,6 +7750,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
   const [samplingServiceReady, setSamplingServiceReady] = useState<
     boolean | null
   >(null);
+  const [samplingServiceDetail, setSamplingServiceDetail] = useState<string>();
   const [budgetContract, setBudgetContract] = useState<BudgetOptimizationContract>(
     DEFAULT_BUDGET_CONTRACT,
   );
@@ -7857,7 +7860,10 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     if (view !== "sampling") return;
     let cancelled = false;
     void samplingServiceHealth().then((health) => {
-      if (!cancelled) setSamplingServiceReady(health.ready);
+      if (!cancelled) {
+        setSamplingServiceReady(health.ready);
+        setSamplingServiceDetail(health.detail);
+      }
     });
     return () => {
       cancelled = true;
@@ -8943,6 +8949,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     }
     const health = await samplingServiceHealth();
     setSamplingServiceReady(health.ready);
+    setSamplingServiceDetail(health.detail);
     if (!health.ready) {
       setToast(
         health.contractVersion
@@ -9231,6 +9238,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           status={samplingStatus}
           progress={samplingProgress}
           serviceReady={samplingServiceReady}
+          serviceDetail={samplingServiceDetail}
           onRun={() => void runProductionSampling()}
           onApplyRetry={applyRecommendedSamplingRetry}
           onNewContract={prepareNewSamplingRun}
@@ -9303,7 +9311,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       );
     }
     return <OverviewView dataset={dataset} validation={validation} eda={eda} edaStatus={edaStatus} models={models} onNavigate={setView} />;
-  }, [advancedConfig, advancedResult, advancedStatus, agenticContract, agenticRuns, agenticStatus, agenticStopReason, anchorIndependenceConfirmed, applyRecommendedSamplingRetry, benchmarkScreeningRois, budgetContract, budgetProgress, budgetResult, budgetStatus, config, dataset, demoMode, eda, edaStatus, experiments, forcePromoteAgenticCandidate, guardrailMode, handleAdvancedConfigChange, handleAgenticContractChange, handleAnchorIndependenceChange, handleBudgetContractChange, handleDatasetChange, handleExperimentsChange, handleGuardrailModeChange, handleIndustryChannelToggle, handleModelConfigChange, industryPriorChannels, inspectAgenticCandidate, modelStatuses, models, prepareNewSamplingRun, promoteAgenticCandidate, promotedAgenticSpecification, resetBudget, runAgenticSearch, runAllValidations, runBudgetPlan, runProductionSampling, runRequestedAdvancedModel, runRequestedModel, runRequestedValidation, samplingContract, samplingHistory, samplingProgress, samplingResult, samplingServiceReady, samplingStatus, upload, validation, validationProgress, validationResults, validationStatuses, view]);
+  }, [advancedConfig, advancedResult, advancedStatus, agenticContract, agenticRuns, agenticStatus, agenticStopReason, anchorIndependenceConfirmed, applyRecommendedSamplingRetry, benchmarkScreeningRois, budgetContract, budgetProgress, budgetResult, budgetStatus, config, dataset, demoMode, eda, edaStatus, experiments, forcePromoteAgenticCandidate, guardrailMode, handleAdvancedConfigChange, handleAgenticContractChange, handleAnchorIndependenceChange, handleBudgetContractChange, handleDatasetChange, handleExperimentsChange, handleGuardrailModeChange, handleIndustryChannelToggle, handleModelConfigChange, industryPriorChannels, inspectAgenticCandidate, modelStatuses, models, prepareNewSamplingRun, promoteAgenticCandidate, promotedAgenticSpecification, resetBudget, runAgenticSearch, runAllValidations, runBudgetPlan, runProductionSampling, runRequestedAdvancedModel, runRequestedModel, runRequestedValidation, samplingContract, samplingHistory, samplingProgress, samplingResult, samplingServiceDetail, samplingServiceReady, samplingStatus, upload, validation, validationProgress, validationResults, validationStatuses, view]);
 
   if (!dataset || !validation) return <EmptyState />;
 
