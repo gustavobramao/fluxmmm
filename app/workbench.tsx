@@ -21,6 +21,7 @@ import {
   type SamplingChartMode,
 } from "./components/sampling-chart";
 import { BudgetChart } from "./components/budget-chart";
+import { ScoreLabView } from "./components/score-lab-view";
 import {
   getCachedBudget,
   getCachedSampling,
@@ -155,6 +156,7 @@ type View =
   | "advanced"
   | "calibration"
   | "validation"
+  | "scorelab"
   | "agentic"
   | "sampling"
   | "budget";
@@ -169,6 +171,7 @@ const NAV_ITEMS: { id: View; label: string; glyph: string }[] = [
   { id: "calibration", label: "Calibration", glyph: "◎" },
   { id: "advanced", label: "Advanced", glyph: "◇" },
   { id: "validation", label: "Validation", glyph: "✓" },
+  { id: "scorelab", label: "Score Lab", glyph: "◈" },
   { id: "agentic", label: "Agentic", glyph: "✦" },
   { id: "sampling", label: "Production", glyph: "◉" },
   { id: "budget", label: "Budget", glyph: "$" },
@@ -9001,6 +9004,9 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           onForcePromote={forcePromoteAgenticCandidate}
         />
       );
+    }
+    if (view === "scorelab") {
+      return <ScoreLabView />;
     }
     if (view === "sampling") {
       return (
