@@ -1,21 +1,65 @@
-import type { ModelConfig, ModelResult } from "../../lib/mmm/types";
+import type {
+  Experiment,
+  ModelConfig,
+  ModelResult,
+} from "../../lib/mmm/types";
 import type { ValidationResult } from "../../lib/mmm/validation";
 
+export type SyntheticChannel = "paid_social" | "search" | "tv";
+
+export type DeliveryContract =
+  | {
+      kind: "auction";
+      priceLabel: "CPC" | "CPM";
+      averageUnitPrice: number;
+      priceVolatility: number;
+      inventoryDemandCoupling: number;
+    }
+  | {
+      kind: "reach";
+      priceLabel: "CPM";
+      averageUnitPrice: number;
+      priceVolatility: number;
+      frequencyInflation: number;
+    }
+  | {
+      kind: "flighted-grp";
+      priceLabel: "CPP";
+      averageUnitPrice: number;
+      priceVolatility: number;
+      flightStartProbability: number;
+      flightContinuationProbability: number;
+    };
+
 export interface SyntheticChannelConfig {
-  channel: "paid_social" | "search" | "tv";
+  channel: SyntheticChannel;
   spendColumn: string;
-  targetRoi: number;
+  roiEvidenceId: string;
+  /** Optional fixed override used only in explicit stress-test scenarios. */
+  targetRoi?: number;
   averageWeeklySpend: number;
   spendVolatility: number;
   demandCoupling: number;
   planningCoupling: number;
-  flightProbability?: number;
+  delivery: DeliveryContract;
+  experiment:
+    | {
+        design: "geo" | "platform-holdout";
+        spend: number;
+        standardErrorShare: number;
+        biasShare: number;
+      }
+    | { design: "none" };
+  allocation: {
+    maximumShareOfIncrement: number;
+  };
   response:
     | {
         family: "geometric";
         decay: number;
         hillShape: number;
         halfSaturationQuantile: number;
+        kernelNormalization: "sum";
       }
     | {
         family: "weibull";
@@ -23,6 +67,7 @@ export interface SyntheticChannelConfig {
         scale: number;
         hillShape: number;
         halfSaturationQuantile: number;
+        kernelNormalization: "sum";
       };
 }
 
@@ -34,43 +79,71 @@ export interface SyntheticScenarioConfig {
   periods: number;
   latentDemandPersistence: number;
   planningPersistence: number;
+  commercialPersistence: number;
   noiseShare: number;
+  eventShockProbability: number;
   observeDemandProxy: boolean;
+  grossMargin: number;
+  ltvRevenueMultiplier: number;
+  maximumIncrementShare: number;
+  decisionBudgetShares: number[];
   channels: SyntheticChannelConfig[];
-  industryBenchmarks: Record<string, number>;
+  industryBenchmarks: Record<SyntheticChannel, number>;
+}
+
+export interface SimulatedExperimentTruth {
+  channel: SyntheticChannel;
+  design: "geo" | "platform-holdout";
+  trueRoi: number;
+  observedRoi: number;
+  standardError: number;
+  biasShare: number;
+  experiment: Experiment;
 }
 
 export interface ChannelTruth {
-  channel: string;
+  channel: SyntheticChannel;
   spendColumn: string;
+  evidenceId: string;
   targetRoi: number;
   realizedRoi: number;
+  marginalRoiAtObserved: number;
   coefficient: number;
   totalSpend: number;
   totalContribution: number;
   halfSaturation: number;
   spend: number[];
+  deliveryUnits: number[];
+  deliveryEfficiency: number[];
   transformed: number[];
   contribution: number[];
 }
 
 export interface AllocationTruth {
-  extraBudget: number;
+  maximumAdditionalBudget: number;
   currentContribution: number;
   optimalContribution: number;
   optimalIncrementalOutcome: number;
+  optimalIncrementalProfit: number;
   optimalAdditionalBudget: Record<string, number>;
+  optimalSpend: number;
+  effectiveRevenueMargin: number;
+  evaluatedBudgetShares: number[];
   gridUnits: number;
 }
 
 export interface SyntheticTruth {
+  simulatorVersion: string;
+  evidenceRegistryVersion: string;
   scenarioId: string;
   seed: number;
   latentDemand: number[];
   planningIntensity: number[];
+  commercialIntensity: number[];
   baseline: number[];
   deterministicOutcome: number[];
   channels: ChannelTruth[];
+  experiments: SimulatedExperimentTruth[];
   allocation: AllocationTruth;
   industryBenchmarks: Record<string, number>;
 }
@@ -84,6 +157,7 @@ export interface SyntheticBusiness {
 
 export interface CandidateEvaluation {
   id: string;
+  evidenceArm: "experiments-only" | "benchmark-gap-fill";
   config: ModelConfig;
   model: ModelResult;
   validation: ValidationResult;
@@ -91,6 +165,10 @@ export interface CandidateEvaluation {
   weightedLogBenchmarkAgreement: number;
   contributionError: number;
   budgetRegret: number;
+  profitRegret: number;
+  revenueRegret: number;
   recommendedAdditionalBudget: Record<string, number>;
+  recommendedSpend: number;
   trueOutcomeUnderRecommendation: number;
+  trueProfitUnderRecommendation: number;
 }

@@ -36,7 +36,7 @@ function CandidateBars({
   return (
     <div className="score-lab-candidate-list">
       <div className="score-lab-candidate-row head">
-        <span>Candidate</span><span>Heuristic score</span><span>True budget regret</span>
+        <span>Candidate</span><span>Heuristic score</span><span>Simulator profit regret</span>
       </div>
       {candidates.map((candidate, index) => (
         <button
@@ -44,14 +44,14 @@ function CandidateBars({
           className={`score-lab-candidate-row ${candidate.id === selectedId ? "selected" : ""}`}
           onClick={() => onSelect(candidate.id)}
         >
-          <strong><i>{index + 1}</i>{candidate.label}</strong>
+          <strong><i>{index + 1}</i><span>{candidate.label}<small>{candidate.evidenceArm === "benchmark-gap-fill" ? "Benchmark gap-fill" : "Experiments only"}</small></span></strong>
           <span className="score-lab-bar heuristic">
             <i style={{ width: `${candidate.score}%` }} />
             <b>{candidate.score.toFixed(1)}</b>
           </span>
-          <span className={`score-lab-bar regret ${candidate.budgetRegret <= 0.025 ? "good" : ""}`}>
-            <i style={{ width: `${Math.min(candidate.budgetRegret * 100, 100)}%` }} />
-            <b>{percentage(candidate.budgetRegret)}</b>
+          <span className={`score-lab-bar regret ${candidate.profitRegret <= 0.025 ? "good" : ""}`}>
+            <i style={{ width: `${Math.min(candidate.profitRegret * 100, 100)}%` }} />
+            <b>{percentage(candidate.profitRegret)}</b>
           </span>
         </button>
       ))}
@@ -69,7 +69,7 @@ export function ScoreLabView() {
   const heuristicWinner = heuristicRanked[0];
   const truthRanked = useMemo(
     () => [...scenario.candidates].sort(
-      (left, right) => left.budgetRegret - right.budgetRegret || left.roiError - right.roiError,
+      (left, right) => left.profitRegret - right.profitRegret || left.roiError - right.roiError,
     ),
     [scenario],
   );
@@ -124,6 +124,44 @@ export function ScoreLabView() {
         <div className="score-lab-complication"><span>!</span><p>{scenario.complication}</p><small>Seed {scenario.seed}</small></div>
       </section>
 
+      <details className="card score-lab-contract" open>
+        <summary>
+          <span><span className="eyebrow">Audited simulator contract</span><b>What is actually different across channels</b></span>
+          <small>Versioned evidence · delivery · response · oracle</small>
+        </summary>
+        <div className="score-lab-contract-grid">
+          {scenario.truthChannels.map((channel) => (
+            <article key={channel.channel}>
+              <span>{channelLabels[channel.channel]}</span>
+              <strong>{channel.targetRoi.toFixed(2)}× <small>average iROAS</small></strong>
+              <p>{channel.marginalRoiAtObserved.toFixed(2)}× marginal iROAS at observed spend</p>
+              <ul>
+                <li>{channel.delivery.kind === "auction" ? "Demand-limited auction delivery" : channel.delivery.kind === "reach" ? "Reach and frequency delivery" : "Persistent flight / GRP delivery"}</li>
+                <li>{channel.response.family === "weibull" ? `Weibull ${channel.response.shape?.toFixed(1)} / ${channel.response.scale?.toFixed(1)} weeks` : `Geometric decay ${channel.response.decay?.toFixed(2)}`}</li>
+                <li>Hill {channel.response.hillShape.toFixed(2)} · half-saturation Q{Math.round(channel.response.halfSaturationQuantile * 100)}</li>
+              </ul>
+            </article>
+          ))}
+          <article className="oracle">
+            <span>Decision oracle</span>
+            <strong>{percentage(scenario.oracle.effectiveRevenueMargin)} <small>effective margin</small></strong>
+            <p>{scenario.oracle.optimalIncrementalProfit > 0 ? `$${Math.round(scenario.oracle.optimalIncrementalProfit / 1000)}K hidden optimal profit` : "Zero spend is the hidden optimum"}</p>
+            <ul>
+              <li>Tests {scenario.oracle.evaluatedBudgetShares.map((share) => `${Math.round(share * 100)}%`).join(", ")} spend increments</li>
+              <li>Channel concentration constraints enforced</li>
+              <li>Outcome is replayed through hidden delivery curves</li>
+            </ul>
+          </article>
+        </div>
+        <div className="score-lab-evidence-strip">
+          <b>Independent evidence generated after truth:</b>
+          {scenario.experiments.map((experiment) => (
+            <span key={experiment.channel}>{channelLabels[experiment.channel]} {experiment.observedRoi.toFixed(2)}× ± {experiment.standardError.toFixed(2)} <small>({experiment.design})</small></span>
+          ))}
+          <span>Search <small>benchmark gap-fill arm only</small></span>
+        </div>
+      </details>
+
       <section className={`score-lab-verdict ${winnersDiffer ? "disagrees" : "agrees"}`}>
         <article>
           <span className="eyebrow">What the current heuristic chooses</span>
@@ -138,15 +176,15 @@ export function ScoreLabView() {
         </div>
         <article>
           <span className="eyebrow">What synthetic truth reveals</span>
-          <div className="score-lab-big-number truth">{percentage(truthWinner.budgetRegret)}<small>budget regret</small></div>
+          <div className="score-lab-big-number truth">{percentage(truthWinner.profitRegret)}<small>profit regret</small></div>
           <h2>{truthWinner.label}</h2>
-          <p>Loses the least true incremental outcome versus the hidden optimal allocation.</p>
+          <p>Loses the least simulator-known incremental profit versus the hidden optimal spend and mix.</p>
         </article>
       </section>
 
       <section className="score-lab-metric-grid">
-        <article><span>Heuristic winner regret</span><strong className={heuristicWinner.budgetRegret > 0.1 ? "warning" : "good"}>{percentage(heuristicWinner.budgetRegret)}</strong><small>True opportunity lost</small></article>
-        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.budgetRegret)}</strong><small>Within five pilot candidates</small></article>
+        <article><span>Heuristic winner regret</span><strong className={heuristicWinner.profitRegret > 0.1 ? "warning" : "good"}>{percentage(heuristicWinner.profitRegret)}</strong><small>Simulator-known profit lost</small></article>
+        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.profitRegret)}</strong><small>Within fourteen fitted arms</small></article>
         <article><span>Winner ROI error</span><strong>{percentage(heuristicWinner.roiError)}</strong><small>Spend-weighted log error</small></article>
         <article><span>Benchmark vs truth</span><strong>{percentage(scenario.benchmarkError)}</strong><small>Benchmarks remain fallible</small></article>
       </section>
@@ -178,7 +216,7 @@ export function ScoreLabView() {
           <div className="score-lab-selected-truth">
             <div><span>ROI truth error</span><b>{percentage(selectedCandidate.roiError)}</b></div>
             <div><span>Contribution error</span><b>{percentage(selectedCandidate.contributionError)}</b></div>
-            <div><span>Budget regret</span><b>{percentage(selectedCandidate.budgetRegret)}</b></div>
+            <div><span>Profit regret</span><b>{percentage(selectedCandidate.profitRegret)}</b></div>
           </div>
         </article>
       </section>
@@ -217,22 +255,22 @@ export function ScoreLabView() {
           <span className="eyebrow">Proposed learned target</span>
           <h2>Predict whether the decision works</h2>
           <div className="score-lab-formula">P(regret &lt; 10% | validation evidence)</div>
-          <p>Simulation supplies labels such as true ROI error and budget regret. No learned score is displayed until held-out tests justify it.</p>
+          <p>Simulation supplies labels such as true ROI error and profit regret. No learned score is displayed until held-out tests justify it.</p>
         </article>
       </section>
 
       <details className="card score-lab-method">
         <summary><span><b>How the synthetic answer key is created</b><small>Open the method without leaving the product</small></span><i>＋</i></summary>
         <div>
-          <article><span>1</span><p><b>Generate spend and confounding</b><small>Latent demand, planning intensity, seasonality, and noise create realistic observational difficulty.</small></p></article>
-          <article><span>2</span><p><b>Inject exact causal ROI</b><small>Each response coefficient is scaled so total contribution divided by total spend equals the declared truth.</small></p></article>
-          <article><span>3</span><p><b>Hide the answer key</b><small>Flux receives only dates, revenue, media spend, and allowed controls—not latent demand or true contribution.</small></p></article>
-          <article><span>4</span><p><b>Evaluate the actual decision</b><small>The recommended allocation is replayed through the true nonlinear curves to calculate lost opportunity.</small></p></article>
+          <article><span>1</span><p><b>Draw a plausible business</b><small>ROI is sampled hierarchically from a versioned DTC evidence registry, with explicit outcome, geography, and limitations.</small></p></article>
+          <article><span>2</span><p><b>Generate delivery and confounding</b><small>Auctions, reach/frequency, TV flights, planning, commercial intensity, promotions, price variation, and multiplicative noise produce observational data.</small></p></article>
+          <article><span>3</span><p><b>Generate imperfect evidence</b><small>Independent experiments are noisy measurements. A paired arm adds industry priors only where an experiment is absent.</small></p></article>
+          <article><span>4</span><p><b>Reveal profit truth</b><small>After fitting, each recommendation is replayed through the hidden channel curves with margin, LTV, budget levels, and constraints.</small></p></article>
         </div>
       </details>
 
       <section className="score-lab-pilot-note">
-        <i>◇</i><div><b>What this pilot establishes</b><p>Across 30 candidate fits, the current heuristic selected a lowest-regret model in 1 of 6 scenarios; its winners averaged 36.7% regret. This supports a larger simulation study—not an immediate production score replacement.</p></div>
+        <i>◇</i><div><b>What this pilot establishes</b><p>This small audited matrix now separates model assumptions, evidence arms, channel delivery, and profit decisions. Its percentages are conditional on the declared simulator—not claims about your real business. Scale-up and held-out simulator families are still required before learning a replacement score.</p></div>
       </section>
     </div>
   );

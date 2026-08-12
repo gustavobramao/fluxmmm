@@ -264,14 +264,18 @@ def build_model(compiled: dict[str, Any]):
             beta[np.asarray(baseline_indexes, dtype=int)],
         )
 
-        hill_shape = relative_lognormal(
-            "hill_shape",
-            safe_number(response.get("hillShape"), 1.2),
-            0.25,
-            safe_number(response.get("hillShape"), 1.2),
-        )
-        initial_values["hill_shape"] = safe_number(response.get("hillShape"), 1.2)
-        if response.get("adstockType") == "weibull":
+        channel_specific_response = bool(response.get("channelSpecific"))
+        if not channel_specific_response:
+            hill_shape = relative_lognormal(
+                "hill_shape",
+                safe_number(response.get("hillShape"), 1.2),
+                0.25,
+                safe_number(response.get("hillShape"), 1.2),
+            )
+            initial_values["hill_shape"] = safe_number(response.get("hillShape"), 1.2)
+        else:
+            hill_shape = None
+        if not channel_specific_response and response.get("adstockType") == "weibull":
             weibull_shape = relative_lognormal(
                 "weibull_shape",
                 safe_number(response.get("weibullShape"), 2.5),
@@ -287,7 +291,7 @@ def build_model(compiled: dict[str, Any]):
             initial_values["weibull_shape"] = safe_number(response.get("weibullShape"), 2.5)
             initial_values["weibull_scale"] = safe_number(response.get("weibullScale"), 4.0)
             adstock_decay = None
-        else:
+        elif not channel_specific_response:
             decay_center = min(max(safe_number(response.get("adstockDecay"), 0.35), 0.01), 0.99)
             concentration = 30.0
             adstock_decay = pm.Beta(
@@ -297,6 +301,10 @@ def build_model(compiled: dict[str, Any]):
                 initval=decay_center,
             )
             initial_values["adstock_decay"] = decay_center
+            weibull_shape = None
+            weibull_scale = None
+        else:
+            adstock_decay = None
             weibull_shape = None
             weibull_scale = None
 
@@ -343,25 +351,80 @@ def build_model(compiled: dict[str, Any]):
         media_contributions = []
         for media_index, media in enumerate(media_contracts):
             raw_spend = np.asarray(media["rawSpend"], dtype=float)
-            if response.get("adstockType") == "weibull":
+            media_response = media.get("response", response)
+            if channel_specific_response:
+                suffix = f"_{media_index:03d}"
+                channel_hill_shape = relative_lognormal(
+                    f"hill_shape{suffix}",
+                    safe_number(media_response.get("saturation"), 1.2),
+                    0.25,
+                    safe_number(media_response.get("saturation"), 1.2),
+                )
+                initial_values[f"hill_shape{suffix}"] = safe_number(
+                    media_response.get("saturation"), 1.2
+                )
+                if media_response.get("adstockType") == "weibull":
+                    channel_weibull_shape = relative_lognormal(
+                        f"weibull_shape{suffix}",
+                        safe_number(media_response.get("weibullShape"), 2.5),
+                        0.25,
+                        safe_number(media_response.get("weibullShape"), 2.5),
+                    )
+                    channel_weibull_scale = relative_lognormal(
+                        f"weibull_scale{suffix}",
+                        safe_number(media_response.get("weibullScale"), 4.0),
+                        0.25,
+                        safe_number(media_response.get("weibullScale"), 4.0),
+                    )
+                    initial_values[f"weibull_shape{suffix}"] = safe_number(
+                        media_response.get("weibullShape"), 2.5
+                    )
+                    initial_values[f"weibull_scale{suffix}"] = safe_number(
+                        media_response.get("weibullScale"), 4.0
+                    )
+                    channel_adstock_decay = None
+                else:
+                    decay_center = min(
+                        max(safe_number(media_response.get("adstock"), 0.35), 0.01),
+                        0.99,
+                    )
+                    concentration = 30.0
+                    channel_adstock_decay = pm.Beta(
+                        f"adstock_decay{suffix}",
+                        alpha=decay_center * concentration,
+                        beta=(1 - decay_center) * concentration,
+                        initval=decay_center,
+                    )
+                    initial_values[f"adstock_decay{suffix}"] = decay_center
+                    channel_weibull_shape = None
+                    channel_weibull_scale = None
+            else:
+                channel_hill_shape = hill_shape
+                channel_weibull_shape = weibull_shape
+                channel_weibull_scale = weibull_scale
+                channel_adstock_decay = adstock_decay
+
+            if media_response.get("adstockType") == "weibull":
                 lag_count = min(53, raw_spend.size)
                 lags = np.arange(lag_count, dtype=float) + 0.5
-                ratio = lags / weibull_scale
+                ratio = lags / channel_weibull_scale
                 weights = (
-                    (weibull_shape / weibull_scale)
-                    * ratio ** (weibull_shape - 1)
-                    * pt.exp(-(ratio**weibull_shape))
+                    (channel_weibull_shape / channel_weibull_scale)
+                    * ratio ** (channel_weibull_shape - 1)
+                    * pt.exp(-(ratio**channel_weibull_shape))
                 )
                 weights = weights / pt.maximum(pt.max(weights), 1e-12)
             else:
                 lag_count = raw_spend.size
-                weights = adstock_decay ** np.arange(lag_count, dtype=float)
+                weights = channel_adstock_decay ** np.arange(lag_count, dtype=float)
             carried = pt.dot(lag_matrix(raw_spend, lag_count), weights)
+            if media_response.get("kernelNormalization") == "sum":
+                carried = carried * raw_spend.sum() / pt.maximum(pt.sum(carried), 1e-12)
             half_saturation = max(safe_number(media.get("halfSaturation"), 1.0), 1e-9)
             powered_carried = pt.exp(
-                hill_shape * pt.log(pt.maximum(carried, 1e-9))
+                channel_hill_shape * pt.log(pt.maximum(carried, 1e-9))
             )
-            powered_half = pt.exp(hill_shape * math.log(half_saturation))
+            powered_half = pt.exp(channel_hill_shape * math.log(half_saturation))
             transformed = powered_carried / pt.maximum(
                 powered_carried + powered_half,
                 1e-12,
@@ -710,6 +773,17 @@ def sampling_summary(
         "hill_shape": "Hill shape",
         "kernel_bandwidth": "Kernel bandwidth",
     }
+    for media_index, media in enumerate(compiled.get("media", [])):
+        channel_label = str(media.get("channel", f"Channel {media_index + 1}"))
+        suffix = f"_{media_index:03d}"
+        response_parameter_labels.update(
+            {
+                f"adstock_decay{suffix}": f"{channel_label} · geometric decay",
+                f"weibull_shape{suffix}": f"{channel_label} · Weibull shape",
+                f"weibull_scale{suffix}": f"{channel_label} · Weibull scale",
+                f"hill_shape{suffix}": f"{channel_label} · Hill shape",
+            }
+        )
     for variable_name, label in response_parameter_labels.items():
         if variable_name not in idata.posterior:
             continue
@@ -1314,6 +1388,11 @@ def run_sampling(job: Job, payload: dict[str, Any]) -> None:
             "planning_factor",
         ):
             if variable_name in idata.posterior:
+                artifact_payload[variable_name] = np.asarray(idata.posterior[variable_name].values)
+        for variable_name in idata.posterior.data_vars:
+            if variable_name.startswith(
+                ("adstock_decay_", "weibull_shape_", "weibull_scale_", "hill_shape_")
+            ):
                 artifact_payload[variable_name] = np.asarray(idata.posterior[variable_name].values)
         for media_index in range(len(compiled.get("media", []))):
             variable_name = f"media_contribution_{media_index:03d}"

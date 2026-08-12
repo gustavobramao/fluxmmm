@@ -4,6 +4,7 @@ import { parseCsv } from "../lib/mmm/csv";
 import { DEFAULT_CONFIG, runModel } from "../lib/mmm/models";
 import { createDataset, validateDataset } from "../lib/mmm/schema";
 import { evaluateCandidateTruth } from "../research/score_v2/evaluate";
+import { roiEvidence } from "../research/score_v2/evidence";
 import { PILOT_SCENARIOS } from "../research/score_v2/scenarios";
 import {
   generateSyntheticBusiness,
@@ -18,11 +19,25 @@ for (const scenario of PILOT_SCENARIOS) {
     verifyInjectedTruth(first);
 
     assert.equal(first.observedCsv, second.observedCsv);
-    assert.deepEqual(first.truth.allocation, second.truth.allocation);
+    assert.deepEqual(first.truth, second.truth);
     assert.equal(first.observedCsv.includes("latentDemand"), false);
     assert.equal(first.observedCsv.includes("planningIntensity"), false);
     first.truth.channels.forEach((channel) => {
       assert.ok(Math.abs(channel.realizedRoi - channel.targetRoi) < 1e-10);
+      assert.ok(Number.isFinite(channel.marginalRoiAtObserved));
+      assert.equal(channel.deliveryUnits.length, scenario.periods);
+      const declaredOverride = scenario.channels.find(
+        (configured) => configured.channel === channel.channel,
+      )?.targetRoi;
+      if (declaredOverride === undefined) {
+        const evidence = roiEvidence(channel.evidenceId);
+        assert.ok(channel.targetRoi >= evidence.low);
+        assert.ok(channel.targetRoi <= evidence.high);
+      }
+    });
+    assert.ok(first.truth.experiments.length > 0);
+    first.truth.experiments.forEach((experiment) => {
+      assert.notEqual(experiment.observedRoi, experiment.trueRoi);
     });
 
     const parsed = parseCsv(first.observedCsv);
@@ -36,27 +51,32 @@ for (const scenario of PILOT_SCENARIOS) {
   });
 }
 
-test("the hidden optimum conserves budget and dominates equal allocation", () => {
+test("the hidden profit oracle conserves its chosen spend and can choose zero", () => {
   const business = generateSyntheticBusiness(PILOT_SCENARIOS[1]);
-  const channelCount = business.truth.channels.length;
-  const equalAllocation = Object.fromEntries(
-    business.truth.channels.map((channel) => [
-      channel.channel,
-      business.truth.allocation.extraBudget / channelCount,
-    ]),
-  );
-  const equalOutcome = trueContributionForAllocation(
-    business,
-    equalAllocation,
-  );
   const optimizedBudget = Object.values(
     business.truth.allocation.optimalAdditionalBudget,
   ).reduce((total, value) => total + value, 0);
 
   assert.ok(
-    Math.abs(optimizedBudget - business.truth.allocation.extraBudget) < 1e-6,
+    Math.abs(optimizedBudget - business.truth.allocation.optimalSpend) < 1e-6,
   );
-  assert.ok(business.truth.allocation.optimalContribution >= equalOutcome - 1e-6);
+  assert.ok(business.truth.allocation.optimalSpend >= 0);
+  assert.ok(business.truth.allocation.optimalIncrementalProfit >= -1e-6);
+  assert.ok(
+    business.truth.allocation.optimalSpend <=
+      business.truth.allocation.maximumAdditionalBudget +
+        1e-6,
+  );
+  assert.ok(
+    business.truth.allocation.optimalContribution >=
+      trueContributionForAllocation(
+        business,
+        Object.fromEntries(
+          business.truth.channels.map((channel) => [channel.channel, 0]),
+        ),
+      ) -
+        1e-6,
+  );
 });
 
 test("a V1 model can fit observed data without receiving the hidden answer key", async () => {
@@ -87,5 +107,7 @@ test("a V1 model can fit observed data without receiving the hidden answer key",
   assert.ok(Number.isFinite(evaluation.weightedLogBenchmarkAgreement));
   assert.ok(Number.isFinite(evaluation.contributionError));
   assert.ok(Number.isFinite(evaluation.budgetRegret));
+  assert.ok(Number.isFinite(evaluation.profitRegret));
+  assert.ok(Number.isFinite(evaluation.revenueRegret));
   assert.ok(evaluation.budgetRegret >= 0);
 });

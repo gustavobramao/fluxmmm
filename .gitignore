@@ -44,6 +44,9 @@ next-env.d.ts
 /work/
 /.venv/
 /.flux-artifacts/
-/research/score_v2/artifacts/
+# Score Lab imports the small deterministic pilot fixtures at build time. Keep
+# them versioned so a clean clone contains the same audited demo answer keys.
+/research/score_v2/artifacts/*/observed.csv
+/research/score_v2/artifacts/*/truth.json
 __pycache__/
 *.pyc

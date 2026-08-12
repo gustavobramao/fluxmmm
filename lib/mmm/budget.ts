@@ -1,8 +1,13 @@
 import { passesAgenticEligibility, type AgenticCandidateRun } from "./agentic";
 import { sha256, toNumber } from "./csv";
-import { adstock, mean, weibullAdstock } from "./math";
+import { mean } from "./math";
+import {
+  carryoverForResponse,
+  positiveQuantile,
+  responseForChannel,
+} from "./response";
 import type { SamplingResult } from "./sampling";
-import type { Dataset, ModelConfig } from "./types";
+import type { Dataset, MediaResponseConfig } from "./types";
 
 export const BUDGET_OPTIMIZER_VERSION =
   "flux-budget-frontier-v1.1.0-cadence-aware";
@@ -164,20 +169,9 @@ function quantile(values: number[], probability: number): number {
   return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
-function positiveMedian(values: number[]): number {
-  const positive = values.filter((value) => value > 0);
-  return Math.max(quantile(positive, 0.5), 1e-9);
-}
-
 function fixedHill(value: number, shape: number, half: number): number {
   const powered = Math.max(value, 0) ** shape;
   return powered / Math.max(powered + half ** shape, 1e-12);
-}
-
-function mediaCarryover(values: number[], config: ModelConfig): number[] {
-  return config.adstockType === "weibull"
-    ? weibullAdstock(values, config.weibullShape, config.weibullScale)
-    : adstock(values, config.adstock);
 }
 
 function deterministicNormal(index: number, seed: number): number {
@@ -306,14 +300,14 @@ function flightingPattern(values: number[], periods: number): number[] {
 function futureTransformedResponse(
   history: number[],
   future: number[],
-  config: ModelConfig,
+  response: MediaResponseConfig,
   half: number,
 ): number {
   const historyLength = history.length;
-  const planned = mediaCarryover([...history, ...future], config);
-  const counterfactual = mediaCarryover(
+  const planned = carryoverForResponse([...history, ...future], response);
+  const counterfactual = carryoverForResponse(
     [...history, ...Array(future.length).fill(0)],
-    config,
+    response,
   );
   return planned
     .slice(historyLength)
@@ -322,10 +316,10 @@ function futureTransformedResponse(
         total +
         Math.max(
           0,
-          fixedHill(value, config.saturation, half) -
+          fixedHill(value, response.saturation, half) -
             fixedHill(
               counterfactual[historyLength + index],
-              config.saturation,
+              response.saturation,
               half,
             ),
         ),
@@ -350,10 +344,14 @@ function prepareBudgetModel(
     const values = dataset.rows.map((row) => Math.max(toNumber(row[channel]), 0));
     const historicalSpend = sum(values);
     const referenceBudget = sum(values.slice(-reference.periods));
-    const carried = mediaCarryover(values, run.spec.config);
-    const half = positiveMedian(carried);
+    const response = responseForChannel(run.spec.config, channel);
+    const carried = carryoverForResponse(values, response);
+    const half = positiveQuantile(
+      carried,
+      response.halfSaturationQuantile,
+    );
     const trainingResponse = sum(
-      carried.map((value) => fixedHill(value, run.spec.config.saturation, half)),
+      carried.map((value) => fixedHill(value, response.saturation, half)),
     );
     const pattern = flightingPattern(values, reference.periods);
     const maximumBudget = Math.max(referenceBudget * 4, reference.currentBudget * 0.05, 1);
@@ -367,7 +365,7 @@ function prepareBudgetModel(
       const transformed = futureTransformedResponse(
         values,
         future,
-        run.spec.config,
+        response,
         half,
       );
       return (

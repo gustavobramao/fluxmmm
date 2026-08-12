@@ -112,6 +112,16 @@ export interface Experiment {
   source: string;
 }
 
+export interface MediaResponseConfig {
+  adstockType: "geometric" | "weibull";
+  adstock: number;
+  weibullShape: number;
+  weibullScale: number;
+  saturation: number;
+  halfSaturationQuantile: number;
+  kernelNormalization: "peak" | "sum";
+}
+
 export interface ModelConfig {
   adstockType: "geometric" | "weibull";
   adstock: number;
@@ -121,6 +131,11 @@ export interface ModelConfig {
   ridge: number;
   fourierOrder: number;
   cyclePeriod: number;
+  /**
+   * Optional channel-level response contracts. Missing channels inherit the
+   * global settings above, so existing saved specifications remain valid.
+   */
+  channelResponses?: Record<string, Partial<MediaResponseConfig>>;
 }
 
 export interface AdvancedModelConfig {

@@ -1,62 +1,16 @@
-import { adstock, weibullAdstock } from "../../lib/mmm/math";
+import {
+  responseForChannel,
+  responseTransform,
+} from "../../lib/mmm/response";
 import type { ModelConfig, ModelResult } from "../../lib/mmm/types";
-import { fixedHill, trueContributionForAllocation } from "./simulator";
+import {
+  trueContributionForAllocation,
+  trueIncrementalProfitForAllocation,
+} from "./simulator";
 import type { SyntheticBusiness } from "./types";
 
 function sum(values: number[]): number {
   return values.reduce((total, value) => total + value, 0);
-}
-
-function quantile(values: number[], probability: number): number {
-  const ordered = values
-    .filter((value) => value > 0)
-    .sort((left, right) => left - right);
-  if (!ordered.length) return 1;
-  return ordered[
-    Math.min(
-      ordered.length - 1,
-      Math.max(0, Math.round((ordered.length - 1) * probability)),
-    )
-  ];
-}
-
-function modelContributionForAllocation(
-  business: SyntheticBusiness,
-  model: ModelResult,
-  config: ModelConfig,
-  additionalBudget: Record<string, number>,
-): number {
-  return business.truth.channels.reduce((total, truth) => {
-    const estimate = model.channels.find(
-      (channel) => channel.channel === truth.spendColumn,
-    );
-    if (!estimate) return total;
-    const scale =
-      (truth.totalSpend + (additionalBudget[truth.channel] ?? 0)) /
-      Math.max(truth.totalSpend, 1);
-    const baselineCarry =
-      config.adstockType === "weibull"
-        ? weibullAdstock(truth.spend, config.weibullShape, config.weibullScale)
-        : adstock(truth.spend, config.adstock);
-    const counterfactualCarry =
-      config.adstockType === "weibull"
-        ? weibullAdstock(
-            truth.spend.map((value) => value * scale),
-            config.weibullShape,
-            config.weibullScale,
-          )
-        : adstock(
-            truth.spend.map((value) => value * scale),
-            config.adstock,
-          );
-    const halfSaturation = quantile(baselineCarry, 0.5);
-    const transformed = fixedHill(
-      counterfactualCarry,
-      config.saturation,
-      halfSaturation,
-    );
-    return total + estimate.coefficient * sum(transformed);
-  }, 0);
 }
 
 function allocations(
@@ -64,6 +18,7 @@ function allocations(
   total: number,
   units: number,
 ): Record<string, number>[] {
+  if (total <= 0) return [Object.fromEntries(channels.map((channel) => [channel, 0]))];
   const output: Record<string, number>[] = [];
   const visit = (index: number, remaining: number, values: number[]) => {
     if (index === channels.length - 1) {
@@ -86,31 +41,79 @@ function allocations(
   return output;
 }
 
+function modelContributionForAllocation(
+  business: SyntheticBusiness,
+  model: ModelResult,
+  config: ModelConfig,
+  additionalBudget: Record<string, number>,
+): number {
+  return business.truth.channels.reduce((total, truth) => {
+    const estimate = model.channels.find(
+      (channel) => channel.channel === truth.spendColumn,
+    );
+    if (!estimate) return total;
+    const scale =
+      (truth.totalSpend + (additionalBudget[truth.channel] ?? 0)) /
+      Math.max(truth.totalSpend, 1);
+    const response = responseForChannel(config, truth.spendColumn);
+    const baseline = responseTransform(truth.spend, response);
+    const counterfactual = responseTransform(
+      truth.spend.map((value) => value * scale),
+      response,
+      baseline.halfSaturation,
+    );
+    return total + estimate.coefficient * sum(counterfactual.transformed);
+  }, 0);
+}
+
 export function recommendCandidateAllocation(
   business: SyntheticBusiness,
   model: ModelResult,
   config: ModelConfig,
-): Record<string, number> {
-  let bestValue = Number.NEGATIVE_INFINITY;
-  let best: Record<string, number> = {};
-  const truth = business.truth.allocation;
-  for (const allocation of allocations(
-    business.truth.channels.map((channel) => channel.channel),
-    truth.extraBudget,
-    truth.gridUnits,
-  )) {
-    const value = modelContributionForAllocation(
-      business,
-      model,
-      config,
-      allocation,
-    );
-    if (value > bestValue) {
-      bestValue = value;
-      best = allocation;
+): { allocation: Record<string, number>; spend: number; predictedProfit: number } {
+  const channels = business.truth.channels.map((channel) => channel.channel);
+  const currentModelContribution = modelContributionForAllocation(
+    business,
+    model,
+    config,
+    Object.fromEntries(channels.map((channel) => [channel, 0])),
+  );
+  const totalSpend = sum(
+    business.truth.channels.map((channel) => channel.totalSpend),
+  );
+  const margin = business.truth.allocation.effectiveRevenueMargin;
+  let best = Object.fromEntries(channels.map((channel) => [channel, 0]));
+  let bestSpend = 0;
+  let bestValue = 0;
+  for (const budgetShare of business.scenario.decisionBudgetShares) {
+    const increment = totalSpend * budgetShare;
+    for (const allocation of allocations(
+      channels,
+      increment,
+      business.truth.allocation.gridUnits,
+    )) {
+      const respectsBounds = business.scenario.channels.every(
+        (channel) =>
+          (allocation[channel.channel] ?? 0) <=
+          increment * channel.allocation.maximumShareOfIncrement + 1e-6,
+      );
+      if (!respectsBounds) continue;
+      const modelContribution = modelContributionForAllocation(
+        business,
+        model,
+        config,
+        allocation,
+      );
+      const predictedProfit =
+        (modelContribution - currentModelContribution) * margin - increment;
+      if (predictedProfit > bestValue) {
+        bestValue = predictedProfit;
+        best = allocation;
+        bestSpend = increment;
+      }
     }
   }
-  return best;
+  return { allocation: best, spend: bestSpend, predictedProfit: bestValue };
 }
 
 export function evaluateCandidateTruth(
@@ -122,8 +125,12 @@ export function evaluateCandidateTruth(
   weightedLogBenchmarkAgreement: number;
   contributionError: number;
   budgetRegret: number;
+  profitRegret: number;
+  revenueRegret: number;
   recommendedAdditionalBudget: Record<string, number>;
+  recommendedSpend: number;
   trueOutcomeUnderRecommendation: number;
+  trueProfitUnderRecommendation: number;
 } {
   const totalSpend = sum(
     business.truth.channels.map((channel) => channel.totalSpend),
@@ -170,32 +177,59 @@ export function evaluateCandidateTruth(
       );
       return total + Math.abs((estimate?.contribution ?? 0) - truth.totalContribution);
     }, 0) / Math.max(totalTrueContribution, 1);
-  const recommendedAdditionalBudget = recommendCandidateAllocation(
-    business,
-    model,
-    config,
-  );
+  const recommendation = recommendCandidateAllocation(business, model, config);
   const trueOutcomeUnderRecommendation = trueContributionForAllocation(
     business,
-    recommendedAdditionalBudget,
+    recommendation.allocation,
   );
-  const opportunity = Math.max(
-    business.truth.allocation.optimalContribution -
-      business.truth.allocation.currentContribution,
-    1,
+  const trueProfitUnderRecommendation = trueIncrementalProfitForAllocation(
+    business,
+    recommendation.allocation,
   );
-  const budgetRegret = Math.max(
+  const profitGap = Math.max(
     0,
-    (business.truth.allocation.optimalContribution -
-      trueOutcomeUnderRecommendation) /
-      opportunity,
+    business.truth.allocation.optimalIncrementalProfit -
+      trueProfitUnderRecommendation,
+  );
+  const revenueGap = Math.max(
+    0,
+    business.truth.allocation.optimalContribution -
+      trueOutcomeUnderRecommendation,
+  );
+  // A recommendation can destroy value when the oracle would spend nothing.
+  // Normalize by the larger decision magnitude and cap at 100%, so regret is
+  // interpretable rather than exploding when the positive opportunity is zero.
+  const profitRegret = Math.min(
+    1,
+    profitGap /
+      Math.max(
+        business.truth.allocation.optimalIncrementalProfit,
+        Math.abs(trueProfitUnderRecommendation),
+        1,
+      ),
+  );
+  const revenueRegret = Math.min(
+    1,
+    revenueGap /
+      Math.max(
+        business.truth.allocation.optimalIncrementalOutcome,
+        Math.abs(
+          trueOutcomeUnderRecommendation -
+            business.truth.allocation.currentContribution,
+        ),
+        1,
+      ),
   );
   return {
     weightedLogRoiError,
     weightedLogBenchmarkAgreement,
     contributionError,
-    budgetRegret,
-    recommendedAdditionalBudget,
+    budgetRegret: profitRegret,
+    profitRegret,
+    revenueRegret,
+    recommendedAdditionalBudget: recommendation.allocation,
+    recommendedSpend: recommendation.spend,
     trueOutcomeUnderRecommendation,
+    trueProfitUnderRecommendation,
   };
 }

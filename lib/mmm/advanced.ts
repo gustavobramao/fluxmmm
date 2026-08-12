@@ -1,9 +1,7 @@
 import { sha256, toNumber } from "./csv";
 import {
-  adstock,
   diagonalPenalty,
   diagnoseDesignMatrix,
-  hill,
   mape,
   matrixVector,
   mean,
@@ -14,8 +12,8 @@ import {
   solveLeastSquares,
   std,
   transpose,
-  weibullAdstock,
 } from "./math";
+import { responseForChannel, responseTransform } from "./response";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
@@ -34,7 +32,7 @@ import type {
 } from "./types";
 
 const ADVANCED_MODEL_VERSION =
-  "flux-mmm-advanced-v1.4.0-comparable-calibration";
+  "flux-mmm-advanced-v2.0-channel-response-contracts";
 
 interface AdvancedDesign {
   matrix: number[][];
@@ -169,13 +167,12 @@ function transformedMedia(
   const spendVectors = dataset.mediaColumns.map((column) =>
     dataset.rows.map((row) => Math.max(0, toNumber(row[column]))),
   );
-  const mediaVectors = spendVectors.map((values) => {
-    const carried =
-      config.adstockType === "weibull"
-        ? weibullAdstock(values, config.weibullShape, config.weibullScale)
-        : adstock(values, config.adstock);
-    return hill(carried, config.saturation);
-  });
+  const mediaVectors = spendVectors.map((values, index) =>
+    responseTransform(
+      values,
+      responseForChannel(config, dataset.mediaColumns[index]),
+    ).transformed,
+  );
   return { mediaVectors, spendVectors };
 }
 

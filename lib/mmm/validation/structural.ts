@@ -1,12 +1,6 @@
 import { toNumber } from "../csv";
-import {
-  adstock,
-  hill,
-  mean,
-  normalise,
-  std,
-  weibullAdstock,
-} from "../math";
+import { mean, normalise, std } from "../math";
+import { responseForChannel, responseTransform } from "../response";
 import type { Dataset, ModelResult } from "../types";
 import type { ValidationModelSpec } from "./adapter";
 import {
@@ -169,17 +163,14 @@ function transformedColumns(
     const values = dataset.rows.map((row) =>
       Math.max(0, toNumber(row[column])),
     );
-    const carried =
-      spec.config.adstockType === "weibull"
-        ? weibullAdstock(
-            values,
-            spec.config.weibullShape,
-            spec.config.weibullScale,
-          )
-        : adstock(values, spec.config.adstock);
     return {
       label: column,
-      values: normalise(hill(carried, spec.config.saturation)),
+      values: normalise(
+        responseTransform(
+          values,
+          responseForChannel(spec.config, column),
+        ).transformed,
+      ),
     };
   });
   const controls = dataset.controlColumns.slice(0, 4).map((column) => ({

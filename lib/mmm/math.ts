@@ -476,9 +476,16 @@ export function weibullAdstock(
   );
 }
 
-export function hill(values: number[], shape: number): number[] {
+export function hill(
+  values: number[],
+  shape: number,
+  fixedHalfSaturation?: number,
+): number[] {
   const positive = values.filter((value) => value > 0).sort((a, b) => a - b);
-  const half = positive[Math.floor(positive.length / 2)] || 1;
+  const half =
+    fixedHalfSaturation ??
+    positive[Math.floor(positive.length / 2)] ??
+    1;
   return values.map((value) => {
     const powered = Math.max(value, 0) ** shape;
     return powered / (powered + half ** shape || 1);

@@ -1,0 +1,70 @@
+{
+  "artifactId": "score-v2-pilot-matrix-v1",
+  "scenarioCount": 6,
+  "candidateCount": 84,
+  "correlation": {
+    "fluxScoreWithNegativeBudgetRegret": -0.29850567501697106,
+    "fluxScoreWithNegativeRoiError": 0.39390989683710637
+  },
+  "selection": {
+    "meanCurrentWinnerRegret": 0.7976832867497125,
+    "meanLowestAvailableRegret": 0.13101662223440083,
+    "lowestRegretSelectionRate": 0.3333333333333333
+  },
+  "scenarios": [
+    {
+      "scenario": "clean-identification",
+      "fluxWinner": "channel-specific-long · benchmark-gap-fill",
+      "fluxWinnerScore": 82.2466099595241,
+      "fluxWinnerRegret": 1,
+      "lowestRegretCandidate": "short-memory · experiments-only",
+      "lowestAvailableRegret": 0,
+      "selectedLowestRegret": false
+    },
+    {
+      "scenario": "demand-confounded-search",
+      "fluxWinner": "channel-specific-long · benchmark-gap-fill",
+      "fluxWinnerScore": 86.20084226442205,
+      "fluxWinnerRegret": 0.7590572477689004,
+      "lowestRegretCandidate": "short-memory · experiments-only",
+      "lowestAvailableRegret": 0.7590572477689004,
+      "selectedLowestRegret": true
+    },
+    {
+      "scenario": "saturated-paid-social",
+      "fluxWinner": "short-memory · benchmark-gap-fill",
+      "fluxWinnerScore": 76.91081355121612,
+      "fluxWinnerRegret": 1,
+      "lowestRegretCandidate": "weibull · experiments-only",
+      "lowestAvailableRegret": 2.5816261768341063e-9,
+      "selectedLowestRegret": false
+    },
+    {
+      "scenario": "delayed-tv",
+      "fluxWinner": "strong-saturation · benchmark-gap-fill",
+      "fluxWinnerScore": 71.66017807734214,
+      "fluxWinnerRegret": 1,
+      "lowestRegretCandidate": "short-memory · experiments-only",
+      "lowestAvailableRegret": 0,
+      "selectedLowestRegret": false
+    },
+    {
+      "scenario": "correlated-media",
+      "fluxWinner": "weibull · benchmark-gap-fill",
+      "fluxWinnerScore": 66.14898956507086,
+      "fluxWinnerRegret": 0.0270424727293737,
+      "lowestRegretCandidate": "weibull · experiments-only",
+      "lowestAvailableRegret": 0.0270424727293737,
+      "selectedLowestRegret": true
+    },
+    {
+      "scenario": "wrong-industry-benchmark",
+      "fluxWinner": "channel-specific-long · benchmark-gap-fill",
+      "fluxWinnerScore": 85.22370459176469,
+      "fluxWinnerRegret": 1,
+      "lowestRegretCandidate": "weibull · experiments-only",
+      "lowestAvailableRegret": 1.0326504707336425e-8,
+      "selectedLowestRegret": false
+    }
+  ]
+}

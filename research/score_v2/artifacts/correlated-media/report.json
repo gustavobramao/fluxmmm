@@ -1,0 +1,758 @@
+{
+  "artifactId": "score-v2-correlated-media-20260817",
+  "scenario": {
+    "id": "correlated-media",
+    "label": "Correlated media",
+    "seed": 20260817,
+    "description": "Channels share an unobserved commercial planning process and become difficult to separate."
+  },
+  "truth": {
+    "channels": [
+      {
+        "channel": "paid_social",
+        "targetRoi": 5.6,
+        "realizedRoi": 5.599999999999999,
+        "totalSpend": 5129990.283047216,
+        "totalContribution": 28727945.585064404,
+        "marginalRoiAtObserved": 2.7788882354362627,
+        "evidenceId": "dtc-meta-acquisition",
+        "response": {
+          "family": "geometric",
+          "decay": 0.22,
+          "hillShape": 1.5,
+          "halfSaturationQuantile": 0.55,
+          "kernelNormalization": "sum"
+        },
+        "delivery": {
+          "kind": "reach",
+          "priceLabel": "CPM",
+          "averageUnitPrice": 14,
+          "priceVolatility": 0.2,
+          "frequencyInflation": 0.32
+        }
+      },
+      {
+        "channel": "search",
+        "targetRoi": 1.1417487890756517,
+        "realizedRoi": 1.1417487890756521,
+        "totalSpend": 4645530.015999955,
+        "totalContribution": 5304028.270382544,
+        "marginalRoiAtObserved": 0.6022231374810978,
+        "evidenceId": "dtc-search-nonbrand",
+        "response": {
+          "family": "geometric",
+          "decay": 0.08,
+          "hillShape": 1.15,
+          "halfSaturationQuantile": 0.68,
+          "kernelNormalization": "sum"
+        },
+        "delivery": {
+          "kind": "auction",
+          "priceLabel": "CPC",
+          "averageUnitPrice": 1.9,
+          "priceVolatility": 0.16,
+          "inventoryDemandCoupling": 0.3
+        }
+      },
+      {
+        "channel": "tv",
+        "targetRoi": 4.86237145072073,
+        "realizedRoi": 4.862371450720733,
+        "totalSpend": 2146049.611499281,
+        "totalContribution": 10434890.362784425,
+        "marginalRoiAtObserved": 2.211197621458795,
+        "evidenceId": "dtc-ctv",
+        "response": {
+          "family": "weibull",
+          "shape": 2,
+          "scale": 6.5,
+          "hillShape": 1.05,
+          "halfSaturationQuantile": 0.52,
+          "kernelNormalization": "sum"
+        },
+        "delivery": {
+          "kind": "flighted-grp",
+          "priceLabel": "CPP",
+          "averageUnitPrice": 650,
+          "priceVolatility": 0.13,
+          "flightStartProbability": 0.2,
+          "flightContinuationProbability": 0.72
+        }
+      }
+    ],
+    "experiments": [
+      {
+        "channel": "paid_social",
+        "design": "geo",
+        "trueRoi": 5.6,
+        "observedRoi": 5.947814625678262,
+        "standardError": 0.8959999999999999
+      },
+      {
+        "channel": "tv",
+        "design": "geo",
+        "trueRoi": 4.86237145072073,
+        "observedRoi": 5.945261095747162,
+        "standardError": 1.0697217191585606
+      }
+    ],
+    "industryBenchmarks": {
+      "paid_social": 2.3,
+      "search": 1.8,
+      "tv": 2.5
+    },
+    "weightedLogBenchmarkTruthError": 0.6800574672203772,
+    "allocation": {
+      "maximumAdditionalBudget": 4172549.4686912587,
+      "currentContribution": 44466864.21823137,
+      "optimalContribution": 52662395.60258933,
+      "optimalIncrementalOutcome": 8195531.384357959,
+      "optimalIncrementalProfit": 1506953.7806688063,
+      "optimalAdditionalBudget": {
+        "paid_social": 3129412.101518444,
+        "search": 0,
+        "tv": 1043137.3671728147
+      },
+      "optimalSpend": 4172549.4686912587,
+      "effectiveRevenueMargin": 0.693,
+      "evaluatedBudgetShares": [
+        0,
+        0.05,
+        0.1,
+        0.2,
+        0.35
+      ],
+      "gridUnits": 20
+    }
+  },
+  "candidates": [
+    {
+      "id": "short-memory · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.12,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 0.9,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 49.00971503680738,
+      "layers": {
+        "generalization": 66.01381792967827,
+        "structure": 70.4350190063616,
+        "causal": 63.15149832632424,
+        "decision": 31.4577380993321
+      },
+      "roi": {
+        "paid_social": 4.569997722873272,
+        "search": 7.097786851075251,
+        "tv": 1.1892381082220551
+      },
+      "weightedLogRoiError": 1.0529821717920378,
+      "weightedLogBenchmarkAgreement": 0.9638317309253123,
+      "contributionError": 0.9183373365139732,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "balanced · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 49.3440987870243,
+      "layers": {
+        "generalization": 67.06970390207346,
+        "structure": 70.61731060855062,
+        "causal": 64.86100486911357,
+        "decision": 31.188419965227112
+      },
+      "roi": {
+        "paid_social": 3.5939053865612522,
+        "search": 6.128008830642539,
+        "tv": 1.1841945264238554
+      },
+      "weightedLogRoiError": 1.0998913248132798,
+      "weightedLogBenchmarkAgreement": 0.8039561372652162,
+      "contributionError": 0.9298748056752545,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "long-memory · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.72,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 52.26273117073995,
+      "layers": {
+        "generalization": 74.13612088291096,
+        "structure": 68.00917092183059,
+        "causal": 62.9063782173643,
+        "decision": 35.40530528729495
+      },
+      "roi": {
+        "paid_social": 4.396009884477598,
+        "search": 5.574832088406164,
+        "tv": 2.5469411362264682
+      },
+      "weightedLogRoiError": 0.8384753171626935,
+      "weightedLogBenchmarkAgreement": 0.722616789252448,
+      "contributionError": 0.7137788555338349,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "strong-saturation · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.3,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 2.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 42.229143622138416,
+      "layers": {
+        "generalization": 67.5697830472262,
+        "structure": 72.36401578069645,
+        "causal": 61.27751605500229,
+        "decision": 21.615744878688247
+      },
+      "roi": {
+        "paid_social": 2.374563035493769,
+        "search": 4.233934660146802,
+        "tv": 0.868425041891247
+      },
+      "weightedLogRoiError": 1.1899751740615194,
+      "weightedLogBenchmarkAgreement": 0.5373753008818507,
+      "contributionError": 0.887908567396701,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "weibull · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "weibull",
+        "adstock": 0.35,
+        "weibullShape": 2.2,
+        "weibullScale": 6,
+        "saturation": 1.1,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 40.82693322035882,
+      "layers": {
+        "generalization": 62.81304580328525,
+        "structure": 57.93696201704626,
+        "causal": 37.537781905096026,
+        "decision": 30.422205518414177
+      },
+      "roi": {
+        "paid_social": 5.426034130438663,
+        "search": 0.9847874851055449,
+        "tv": 5.6891881330889955
+      },
+      "weightedLogRoiError": 0.09947859028607917,
+      "weightedLogBenchmarkAgreement": 0.7523764277772358,
+      "contributionError": 0.07637150379429497,
+      "budgetRegret": 0.0270424727293737,
+      "profitRegret": 0.0270424727293737,
+      "revenueRegret": 0.007175232538647546,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 2712157.154649318,
+        "search": 0,
+        "tv": 1460392.3140419405
+      }
+    },
+    {
+      "id": "channel-specific · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26,
+        "channelResponses": {
+          "meta_acquisition_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.24,
+            "saturation": 1.45,
+            "halfSaturationQuantile": 0.55,
+            "kernelNormalization": "sum"
+          },
+          "google_search_nonbrand_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.08,
+            "saturation": 1.1,
+            "halfSaturationQuantile": 0.67,
+            "kernelNormalization": "sum"
+          },
+          "ctv_spend": {
+            "adstockType": "weibull",
+            "weibullShape": 2.1,
+            "weibullScale": 6.5,
+            "saturation": 1.05,
+            "halfSaturationQuantile": 0.53,
+            "kernelNormalization": "sum"
+          }
+        }
+      },
+      "fluxScore": 55.15890472544271,
+      "layers": {
+        "generalization": 84.1079040245561,
+        "structure": 82.02543617491186,
+        "causal": 81.30027828001087,
+        "decision": 30.205251337742542
+      },
+      "roi": {
+        "paid_social": 2.776046843552814,
+        "search": 4.745607781189584,
+        "tv": 5.724345907404841
+      },
+      "weightedLogRoiError": 0.8864978088534339,
+      "weightedLogBenchmarkAgreement": 0.6078431896337648,
+      "contributionError": 0.7438916123971482,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.5409777617775606,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 0,
+        "search": 2712157.154649318,
+        "tv": 1460392.3140419405
+      }
+    },
+    {
+      "id": "channel-specific-long · experiments-only",
+      "evidenceArm": "experiments-only",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26,
+        "channelResponses": {
+          "meta_acquisition_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.42,
+            "saturation": 1.85,
+            "halfSaturationQuantile": 0.55,
+            "kernelNormalization": "sum"
+          },
+          "google_search_nonbrand_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.08,
+            "saturation": 1.1,
+            "halfSaturationQuantile": 0.67,
+            "kernelNormalization": "sum"
+          },
+          "ctv_spend": {
+            "adstockType": "weibull",
+            "weibullShape": 2.1,
+            "weibullScale": 10,
+            "saturation": 1.05,
+            "halfSaturationQuantile": 0.53,
+            "kernelNormalization": "sum"
+          }
+        }
+      },
+      "fluxScore": 54.79363860998026,
+      "layers": {
+        "generalization": 80.11754656929016,
+        "structure": 75.6952181911425,
+        "causal": 84.09372041938326,
+        "decision": 30.713805924402433
+      },
+      "roi": {
+        "paid_social": 2.3268466446901406,
+        "search": 4.9384659402367515,
+        "tv": 5.622082372884537
+      },
+      "weightedLogRoiError": 0.9747316160885853,
+      "weightedLogBenchmarkAgreement": 0.544164993574699,
+      "contributionError": 0.8109271107591299,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.5409777617775606,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 0,
+        "search": 2712157.154649318,
+        "tv": 1460392.3140419405
+      }
+    },
+    {
+      "id": "short-memory · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.12,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 0.9,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 42.61200444058858,
+      "layers": {
+        "generalization": 65.39097261245617,
+        "structure": 68.68649697646457,
+        "causal": 61.23224094588196,
+        "decision": 22.92881717502454
+      },
+      "roi": {
+        "paid_social": 5.067426680465837,
+        "search": 6.321290867366691,
+        "tv": 1.1932479157206612
+      },
+      "weightedLogRoiError": 0.9627687415589234,
+      "weightedLogBenchmarkAgreement": 0.9625382626249,
+      "contributionError": 0.7796352608710395,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "balanced · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 50.60313129132414,
+      "layers": {
+        "generalization": 64.34999997968289,
+        "structure": 70.33894922485429,
+        "causal": 64.55804915744152,
+        "decision": 34.060557396984535
+      },
+      "roi": {
+        "paid_social": 3.994836364917339,
+        "search": 5.532990091649416,
+        "tv": 1.20246181356898
+      },
+      "weightedLogRoiError": 1.0118226040492493,
+      "weightedLogBenchmarkAgreement": 0.8069096502385888,
+      "contributionError": 0.820576521995027,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "long-memory · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.72,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 51.58268151044681,
+      "layers": {
+        "generalization": 70.79832624214744,
+        "structure": 68.27745073411683,
+        "causal": 59.60064907368946,
+        "decision": 36.212827627252395
+      },
+      "roi": {
+        "paid_social": 4.90418981948336,
+        "search": 4.657690469599032,
+        "tv": 2.6696716597846026
+      },
+      "weightedLogRoiError": 0.7128894728020111,
+      "weightedLogBenchmarkAgreement": 0.7081205649358473,
+      "contributionError": 0.553413312213452,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.3394354841147577,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1877647.2609110666,
+        "search": 2294902.2077801926,
+        "tv": 0
+      }
+    },
+    {
+      "id": "strong-saturation · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.3,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 2.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 43.33801618701605,
+      "layers": {
+        "generalization": 67.14277583352336,
+        "structure": 72.29890748217265,
+        "causal": 61.91832229138419,
+        "decision": 22.99384155357354
+      },
+      "roi": {
+        "paid_social": 2.502839611144291,
+        "search": 4.059063062002583,
+        "tv": 0.8725537534475095
+      },
+      "weightedLogRoiError": 1.1500453054718447,
+      "weightedLogBenchmarkAgreement": 0.542724971233235,
+      "contributionError": 0.8546413404268457,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.41706427333886764,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 1460392.3140419405,
+        "search": 2712157.154649318,
+        "tv": 0
+      }
+    },
+    {
+      "id": "weibull · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "weibull",
+        "adstock": 0.35,
+        "weibullShape": 2.2,
+        "weibullScale": 6,
+        "saturation": 1.1,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26
+      },
+      "fluxScore": 66.14898956507086,
+      "layers": {
+        "generalization": 65.36075865424938,
+        "structure": 57.66785582405302,
+        "causal": 55.827499888165924,
+        "decision": 77.89672620861705
+      },
+      "roi": {
+        "paid_social": 5.299281528142144,
+        "search": 1.3053908136009913,
+        "tv": 5.636336157245654
+      },
+      "weightedLogRoiError": 0.10253421497879835,
+      "weightedLogBenchmarkAgreement": 0.6307022586430789,
+      "contributionError": 0.08914173515100443,
+      "budgetRegret": 0.0270424727293737,
+      "profitRegret": 0.0270424727293737,
+      "revenueRegret": 0.007175232538647546,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 2712157.154649318,
+        "search": 0,
+        "tv": 1460392.3140419405
+      }
+    },
+    {
+      "id": "channel-specific · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26,
+        "channelResponses": {
+          "meta_acquisition_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.24,
+            "saturation": 1.45,
+            "halfSaturationQuantile": 0.55,
+            "kernelNormalization": "sum"
+          },
+          "google_search_nonbrand_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.08,
+            "saturation": 1.1,
+            "halfSaturationQuantile": 0.67,
+            "kernelNormalization": "sum"
+          },
+          "ctv_spend": {
+            "adstockType": "weibull",
+            "weibullShape": 2.1,
+            "weibullScale": 6.5,
+            "saturation": 1.05,
+            "halfSaturationQuantile": 0.53,
+            "kernelNormalization": "sum"
+          }
+        }
+      },
+      "fluxScore": 56.48706038542601,
+      "layers": {
+        "generalization": 83.95625295511775,
+        "structure": 81.58795823632359,
+        "causal": 80.11459389094414,
+        "decision": 32.446388639371555
+      },
+      "roi": {
+        "paid_social": 2.891456683566911,
+        "search": 4.557070862870426,
+        "tv": 5.771348422358119
+      },
+      "weightedLogRoiError": 0.8546450126785076,
+      "weightedLogBenchmarkAgreement": 0.6110457318844672,
+      "contributionError": 0.7131488207455516,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.4816173185817996,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 208627.47343456294,
+        "search": 2503529.681214755,
+        "tv": 1460392.3140419405
+      }
+    },
+    {
+      "id": "channel-specific-long · benchmark-gap-fill",
+      "evidenceArm": "benchmark-gap-fill",
+      "config": {
+        "adstockType": "geometric",
+        "adstock": 0.35,
+        "weibullShape": 2.5,
+        "weibullScale": 4,
+        "saturation": 1.2,
+        "ridge": 0.1,
+        "fourierOrder": 2,
+        "cyclePeriod": 26,
+        "channelResponses": {
+          "meta_acquisition_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.42,
+            "saturation": 1.85,
+            "halfSaturationQuantile": 0.55,
+            "kernelNormalization": "sum"
+          },
+          "google_search_nonbrand_spend": {
+            "adstockType": "geometric",
+            "adstock": 0.08,
+            "saturation": 1.1,
+            "halfSaturationQuantile": 0.67,
+            "kernelNormalization": "sum"
+          },
+          "ctv_spend": {
+            "adstockType": "weibull",
+            "weibullShape": 2.1,
+            "weibullScale": 10,
+            "saturation": 1.05,
+            "halfSaturationQuantile": 0.53,
+            "kernelNormalization": "sum"
+          }
+        }
+      },
+      "fluxScore": 56.268689410165045,
+      "layers": {
+        "generalization": 79.9555090395209,
+        "structure": 75.22818889391694,
+        "causal": 83.48771035638359,
+        "decision": 33.08156005275022
+      },
+      "roi": {
+        "paid_social": 2.447918071695856,
+        "search": 4.7063101100707,
+        "tv": 5.692033669240531
+      },
+      "weightedLogRoiError": 0.9363674441773289,
+      "weightedLogBenchmarkAgreement": 0.5494550054143262,
+      "contributionError": 0.7760817670095341,
+      "budgetRegret": 1,
+      "profitRegret": 1,
+      "revenueRegret": 0.5409777617775606,
+      "recommendedSpend": 4172549.4686912587,
+      "recommendedAdditionalBudget": {
+        "paid_social": 0,
+        "search": 2712157.154649318,
+        "tv": 1460392.3140419405
+      }
+    }
+  ]
+}

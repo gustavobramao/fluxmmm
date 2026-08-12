@@ -1,9 +1,7 @@
 import { sha256, toNumber } from "./csv";
 import {
-  adstock,
   diagonalPenalty,
   diagnoseDesignMatrix,
-  hill,
   mape,
   matrixVector,
   normalise,
@@ -12,8 +10,8 @@ import {
   solveLeastSquares,
   std,
   transpose,
-  weibullAdstock,
 } from "./math";
+import { responseForChannel, responseTransform } from "./response";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
@@ -29,7 +27,7 @@ import type {
   NumericalStabilityDiagnostics,
 } from "./types";
 
-const MODEL_VERSION = "flux-mmm-v1.3.1-identification-transparency";
+const MODEL_VERSION = "flux-mmm-v2.0-channel-response-contracts";
 
 interface Design {
   matrix: number[][];
@@ -90,17 +88,12 @@ function buildDesign(dataset: Dataset, config: ModelConfig): Design {
   const spendVectors = dataset.mediaColumns.map((column) =>
     dataset.rows.map((row) => Math.max(0, toNumber(row[column]))),
   );
-  const mediaVectors = spendVectors.map((values) => {
-    const carryover =
-      config.adstockType === "weibull"
-        ? weibullAdstock(
-            values,
-            config.weibullShape,
-            config.weibullScale,
-          )
-        : adstock(values, config.adstock);
-    return hill(carryover, config.saturation);
-  });
+  const mediaVectors = spendVectors.map((values, index) =>
+    responseTransform(
+      values,
+      responseForChannel(config, dataset.mediaColumns[index]),
+    ).transformed,
+  );
   mediaVectors.forEach((values, index) => {
     columns.push(values);
     names.push(dataset.mediaColumns[index]);

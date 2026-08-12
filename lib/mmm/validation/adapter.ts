@@ -1,14 +1,17 @@
 import { toNumber } from "../csv";
 import { activeIndustryPrior } from "../benchmarks";
 import {
-  adstock,
   diagonalPenalty,
   matrixVector,
   mean,
   solveLeastSquares,
   std,
-  weibullAdstock,
 } from "../math";
+import {
+  carryoverForResponse,
+  positiveQuantile,
+  responseForChannel,
+} from "../response";
 import type { LeastSquaresPenalty } from "../math";
 import type {
   AdvancedModelConfig,
@@ -47,12 +50,14 @@ function hillFromTraining(
   values: number[],
   shape: number,
   trainIndexes: number[],
+  fixedHalf?: number,
 ): number[] {
-  const positive = trainIndexes
-    .map((index) => values[index])
-    .filter((value) => value > 0)
-    .sort((a, b) => a - b);
-  const half = positive[Math.floor(positive.length / 2)] || 1;
+  const half =
+    fixedHalf ??
+    positiveQuantile(
+      trainIndexes.map((index) => values[index]),
+      0.5,
+    );
   return values.map((value) => {
     const powered = Math.max(value, 0) ** shape;
     return powered / Math.max(powered + half ** shape, 1e-9);
@@ -130,12 +135,22 @@ function buildValidationDesign(
   const spendVectors = dataset.mediaColumns.map((column) =>
     dataset.rows.map((row) => Math.max(0, toNumber(row[column]))),
   );
-  const mediaVectors = spendVectors.map((values) => {
-    const carried =
-      config.adstockType === "weibull"
-        ? weibullAdstock(values, config.weibullShape, config.weibullScale)
-        : adstock(values, config.adstock);
-    return hillFromTraining(carried, config.saturation, trainIndexes);
+  const mediaVectors = spendVectors.map((values, index) => {
+    const response = responseForChannel(
+      config,
+      dataset.mediaColumns[index],
+    );
+    const carried = carryoverForResponse(values, response);
+    const half = positiveQuantile(
+      trainIndexes.map((rowIndex) => carried[rowIndex]),
+      response.halfSaturationQuantile,
+    );
+    return hillFromTraining(
+      carried,
+      response.saturation,
+      trainIndexes,
+      half,
+    );
   });
   if (spec.kind === "advanced" && advancedConfig.planningIntensity) {
     const shared = dataset.rows.map((_, rowIndex) =>

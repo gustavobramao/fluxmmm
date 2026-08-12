@@ -1,7 +1,13 @@
 import { compileAdvancedSamplingDesign } from "./advanced";
 import { activeIndustryPrior, inferIndustryPrior } from "./benchmarks";
 import { sha256 } from "./csv";
-import { adstock, mean, std, weibullAdstock } from "./math";
+import { mean, std } from "./math";
+import {
+  carryoverForResponse,
+  hasChannelResponseContracts,
+  positiveQuantile,
+  responseForChannel,
+} from "./response";
 import { compileStaticSamplingDesign } from "./models";
 import {
   passesAgenticEligibility,
@@ -13,10 +19,11 @@ import type {
   Experiment,
   ModelConfig,
   ModelResult,
+  MediaResponseConfig,
 } from "./types";
 
 export const SAMPLING_ENGINE_VERSION =
-  "flux-pymc-nuts-v2.0.0-full-response-latent-planning-ppc-hdi";
+  "flux-pymc-nuts-v2.1.0-full-response-latent-planning-ppc-hdi-channel-contracts";
 
 export type SamplingPreset = "production" | "robust" | "diagnostic" | "custom";
 
@@ -97,6 +104,7 @@ export interface CompiledSamplingMedia {
   roiWeights: number[];
   rawSpend: number[];
   halfSaturation: number;
+  response: MediaResponseConfig;
   screeningRoi: number;
   screeningLow: number;
   screeningHigh: number;
@@ -116,6 +124,7 @@ export interface CompiledSamplingResponseContract {
   planningIntensity: boolean;
   planningParameterIndex: number | null;
   planningInitial: number[];
+  channelSpecific: boolean;
 }
 
 export interface CompiledSamplingModel {
@@ -449,11 +458,6 @@ function mediaPrior(
   };
 }
 
-function positiveMedian(values: number[]): number {
-  const positive = values.filter((value) => value > 0).sort((a, b) => a - b);
-  return Math.max(positive[Math.floor(positive.length / 2)] ?? 1, 1e-9);
-}
-
 function plausibleUpperRoi(channel: string): number {
   const benchmark = inferIndustryPrior(channel);
   const logMedian = Math.log(Math.max(benchmark.median, 1e-6));
@@ -620,21 +624,21 @@ export function compileSamplingModel(
         0,
       ) / Math.max(spend, 1),
     );
+    const channelResponse = responseForChannel(run.spec.config, channel);
     return {
       channel,
       indexes,
       spend,
       roiWeights,
       rawSpend: spendVectors[mediaIndex],
-      halfSaturation: positiveMedian(
-        run.spec.config.adstockType === "weibull"
-          ? weibullAdstock(
-              spendVectors[mediaIndex],
-              run.spec.config.weibullShape,
-              run.spec.config.weibullScale,
-            )
-          : adstock(spendVectors[mediaIndex], run.spec.config.adstock),
+      halfSaturation: positiveQuantile(
+        carryoverForResponse(
+          spendVectors[mediaIndex],
+          channelResponse,
+        ),
+        channelResponse.halfSaturationQuantile,
       ),
+      response: channelResponse,
       screeningRoi: estimate?.roi ?? 0,
       screeningLow: estimate?.roiLow ?? 0,
       screeningHigh: estimate?.roiHigh ?? 0,
@@ -698,6 +702,7 @@ export function compileSamplingModel(
       planningParameterIndex:
         planningParameterIndex >= 0 ? planningParameterIndex : null,
       planningInitial,
+      channelSpecific: hasChannelResponseContracts(run.spec.config),
     },
     screeningPredicted: model.predicted,
     ridge: run.spec.config.ridge,

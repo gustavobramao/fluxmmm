@@ -14,7 +14,10 @@ Each simulated business produces two logically separate objects:
   true aggregate ROI, and the true counterfactual allocation frontier. This is
   used only after fitting to evaluate the candidate.
 
-The generator injects a target aggregate ROI `rho[j]` by setting
+The generator draws business-level ROI from a versioned evidence registry,
+bounded by each entry's declared interval. The explicit wrong-benchmark stress
+test is the only family allowed to override that envelope. It then injects a
+target aggregate ROI `rho[j]` by setting
 
 ```text
 beta[j] = rho[j] * sum(spend[j]) / sum(response[j])
@@ -36,11 +39,11 @@ recover; it never changes the answer key.
 
 The last family deliberately declares benchmark evidence that disagrees with
 the injected truth. The pilot records both benchmark-to-truth error and fitted
-candidate-to-benchmark agreement. The benchmark does not enter the answer key,
-and this baseline arm does not calibrate the V1 fit to it; a later experiment
-can compare calibrated and uncalibrated arms without mislabeling a benchmark as
-experimental ground truth. This prevents future score learning from becoming a
-circular benchmark-agreement test.
+candidate-to-benchmark agreement. Every scenario fits a matched
+experiments-only arm and a benchmark-gap-fill arm; the benchmark fills only a
+channel lacking simulated experimental evidence. Neither arm can see the
+answer key. This prevents future score learning from becoming a circular
+benchmark-agreement test.
 
 ## Run the pilot
 
@@ -54,13 +57,17 @@ The default command fits a small, predeclared candidate set to one
 demand-confounded synthetic business. `--all` repeats it for all six scenario
 families and writes an aggregate score-versus-regret selection report. Reports
 and observed/truth artifacts are written beneath
-`research/score_v2/artifacts/`, which is intentionally ignored by Git.
+`research/score_v2/artifacts/`. Compact reports and summaries are versioned
+because the Score Lab imports them and a clean clone should be able to audit
+the answer keys shown in the UI. Full observed CSV and latent truth arrays are
+deterministically regenerated and ignored to keep the repository lean.
 
 ## What the pilot measures
 
 - Spend-weighted absolute log ROI error.
 - Channel contribution recovery error.
-- Lost incremental budget opportunity (decision regret).
+- Lost incremental profit opportunity (profit regret), evaluated over a
+  predeclared set of candidate budgets with concentration constraints.
 - Existing Generalization, Structure, Causal, Decision, and final Flux scores.
 
 This pilot tests whether the current evidence is directionally informative. It

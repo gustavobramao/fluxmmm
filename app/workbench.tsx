@@ -92,6 +92,7 @@ import {
 import { formatCompact, formatFull, parseCsv, toNumber } from "../lib/mmm/csv";
 import { runEda } from "../lib/mmm/eda";
 import { mean } from "../lib/mmm/math";
+import { responseForChannel } from "../lib/mmm/response";
 import {
   defaultExperimentsForDataset,
   DEFAULT_CONFIG,
@@ -210,6 +211,18 @@ function defaultConfigForDataset(dataset: Dataset): ModelConfig {
     ...DEFAULT_CONFIG,
     cyclePeriod: dataset.modelCadence === "monthly" ? 6 : DEFAULT_CONFIG.cyclePeriod,
   };
+}
+
+function responseProfileForDataset(dataset: Dataset, config: ModelConfig) {
+  return dataset.mediaColumns.map((channel) => ({
+    channel,
+    response: responseForChannel(config, channel),
+    explicit: Boolean(
+      Object.keys(config.channelResponses ?? {}).find(
+        (key) => key.toLowerCase() === channel.toLowerCase(),
+      ),
+    ),
+  }));
 }
 
 function delay(milliseconds: number) {
@@ -2920,6 +2933,7 @@ function AdvancedAssumptionsGuide({
 function AdvancedModelerView({
   dataset,
   config,
+  setConfig,
   advancedConfig,
   setAdvancedConfig,
   result,
@@ -2931,6 +2945,7 @@ function AdvancedModelerView({
 }: {
   dataset: Dataset;
   config: ModelConfig;
+  setConfig: (config: ModelConfig) => void;
   advancedConfig: AdvancedModelConfig;
   setAdvancedConfig: (config: AdvancedModelConfig) => void;
   result?: ModelResult;
@@ -2991,6 +3006,31 @@ function AdvancedModelerView({
       };
     }) ?? [];
   const activeDistributionPreset = distributionPreset(advancedConfig);
+  const responseProfiles = responseProfileForDataset(dataset, config);
+  const channelResponseEnabled = responseProfiles.some(
+    (profile) => profile.explicit,
+  );
+  const toggleChannelResponses = (enabled: boolean) => {
+    setConfig({
+      ...config,
+      channelResponses: enabled
+        ? Object.fromEntries(
+            dataset.mediaColumns.map((channel) => [
+              channel,
+              {
+                adstockType: config.adstockType,
+                adstock: config.adstock,
+                weibullShape: config.weibullShape,
+                weibullScale: config.weibullScale,
+                saturation: config.saturation,
+                halfSaturationQuantile: 0.5,
+                kernelNormalization: "sum" as const,
+              },
+            ]),
+          )
+        : undefined,
+    });
+  };
 
   return (
     <div className="view advanced-modeler-view">
@@ -3030,6 +3070,38 @@ function AdvancedModelerView({
           alternative experiment calibration and probability assumptions.
         </p>
       </section>
+
+      <details className="card channel-response-editor" open={channelResponseEnabled}>
+        <summary>
+          <span><span className="eyebrow">Media response contract</span><b>Fit carryover and saturation by channel</b><small>Recommended when channel mechanics differ materially</small></span>
+          <AdvancedToggle
+            checked={channelResponseEnabled}
+            onChange={toggleChannelResponses}
+            label="Use channel-specific response curves"
+          />
+        </summary>
+        {channelResponseEnabled ? (
+          <div className="channel-response-table">
+            <div className="head"><span>Channel</span><span>Carryover</span><span>Memory</span><span>Hill shape</span><span>Half-saturation</span></div>
+            {responseProfiles.map(({ channel, response }) => (
+              <div key={channel}>
+                <strong>{cleanChannel(channel)}</strong>
+                <select value={response.adstockType} onChange={(event) => setConfig({ ...config, channelResponses: { ...config.channelResponses, [channel]: { ...config.channelResponses?.[channel], adstockType: event.target.value as ModelConfig["adstockType"] } } })}><option value="geometric">Geometric</option><option value="weibull">Weibull</option></select>
+                {response.adstockType === "geometric" ? (
+                  <label><b>θ {response.adstock.toFixed(2)}</b><input type="range" min="0.05" max="0.9" step="0.05" value={response.adstock} onChange={(event) => setConfig({ ...config, channelResponses: { ...config.channelResponses, [channel]: { ...config.channelResponses?.[channel], adstock: Number(event.target.value) } } })} /></label>
+                ) : (
+                  <label><b>k {response.weibullShape.toFixed(1)} · λ {response.weibullScale.toFixed(1)}</b><input type="range" min="1" max="12" step="0.5" value={response.weibullScale} onChange={(event) => setConfig({ ...config, channelResponses: { ...config.channelResponses, [channel]: { ...config.channelResponses?.[channel], weibullScale: Number(event.target.value) } } })} /></label>
+                )}
+                <label><b>{response.saturation.toFixed(1)}</b><input type="range" min="0.5" max="3" step="0.1" value={response.saturation} onChange={(event) => setConfig({ ...config, channelResponses: { ...config.channelResponses, [channel]: { ...config.channelResponses?.[channel], saturation: Number(event.target.value) } } })} /></label>
+                <label><b>Q{Math.round(response.halfSaturationQuantile * 100)}</b><input type="range" min="0.2" max="0.8" step="0.05" value={response.halfSaturationQuantile} onChange={(event) => setConfig({ ...config, channelResponses: { ...config.channelResponses, [channel]: { ...config.channelResponses?.[channel], halfSaturationQuantile: Number(event.target.value) } } })} /></label>
+              </div>
+            ))}
+            <p>Each candidate and every downstream validation refit, MCMC compile, and budget curve uses these same channel-level settings. Sum-normalized kernels keep total carryover scale comparable.</p>
+          </div>
+        ) : (
+          <p className="channel-response-empty">All channels currently inherit the shared Model Studio curve. Enable this only when there is enough variation to identify the additional response parameters.</p>
+        )}
+      </details>
 
       <section className="advanced-module-grid">
         <article className={`advanced-module ${advancedConfig.timeVarying ? "enabled" : ""}`}>
@@ -8966,6 +9038,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
         <AdvancedModelerView
           dataset={dataset}
           config={config}
+          setConfig={handleModelConfigChange}
           advancedConfig={advancedConfig}
           setAdvancedConfig={handleAdvancedConfigChange}
           result={advancedResult}
