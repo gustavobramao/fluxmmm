@@ -3,67 +3,67 @@
   "scenarioCount": 6,
   "candidateCount": 84,
   "correlation": {
-    "fluxScoreWithNegativeBudgetRegret": -0.29850567501697106,
+    "fluxScoreWithNegativeBudgetRegret": -0.09194231324280992,
     "fluxScoreWithNegativeRoiError": 0.39390989683710637
   },
   "selection": {
-    "meanCurrentWinnerRegret": 0.7976832867497125,
-    "meanLowestAvailableRegret": 0.13101662223440083,
-    "lowestRegretSelectionRate": 0.3333333333333333
+    "meanCurrentWinnerRegret": 0.6725160752222998,
+    "meanLowestAvailableRegret": 0.3024173390937819,
+    "lowestRegretSelectionRate": 0.16666666666666666
   },
   "scenarios": [
     {
       "scenario": "clean-identification",
       "fluxWinner": "channel-specific-long · benchmark-gap-fill",
       "fluxWinnerScore": 82.2466099595241,
-      "fluxWinnerRegret": 1,
-      "lowestRegretCandidate": "short-memory · experiments-only",
-      "lowestAvailableRegret": 0,
+      "fluxWinnerRegret": 0.895535390770852,
+      "lowestRegretCandidate": "weibull · experiments-only",
+      "lowestAvailableRegret": 0.28890233335147997,
       "selectedLowestRegret": false
     },
     {
       "scenario": "demand-confounded-search",
       "fluxWinner": "channel-specific-long · benchmark-gap-fill",
       "fluxWinnerScore": 86.20084226442205,
-      "fluxWinnerRegret": 0.7590572477689004,
-      "lowestRegretCandidate": "short-memory · experiments-only",
-      "lowestAvailableRegret": 0.7590572477689004,
-      "selectedLowestRegret": true
+      "fluxWinnerRegret": 0.5060878315995526,
+      "lowestRegretCandidate": "channel-specific · experiments-only",
+      "lowestAvailableRegret": 0.5005538879755351,
+      "selectedLowestRegret": false
     },
     {
       "scenario": "saturated-paid-social",
       "fluxWinner": "short-memory · benchmark-gap-fill",
       "fluxWinnerScore": 76.91081355121612,
-      "fluxWinnerRegret": 1,
+      "fluxWinnerRegret": 0.999999999999998,
       "lowestRegretCandidate": "weibull · experiments-only",
-      "lowestAvailableRegret": 2.5816261768341063e-9,
+      "lowestAvailableRegret": 0.25,
       "selectedLowestRegret": false
     },
     {
       "scenario": "delayed-tv",
       "fluxWinner": "strong-saturation · benchmark-gap-fill",
       "fluxWinnerScore": 71.66017807734214,
-      "fluxWinnerRegret": 1,
-      "lowestRegretCandidate": "short-memory · experiments-only",
-      "lowestAvailableRegret": 0,
+      "fluxWinnerRegret": 0.9982150895289321,
+      "lowestRegretCandidate": "weibull · benchmark-gap-fill",
+      "lowestAvailableRegret": 0.4615911892329092,
       "selectedLowestRegret": false
     },
     {
       "scenario": "correlated-media",
       "fluxWinner": "weibull · benchmark-gap-fill",
       "fluxWinnerScore": 66.14898956507086,
-      "fluxWinnerRegret": 0.0270424727293737,
-      "lowestRegretCandidate": "weibull · experiments-only",
-      "lowestAvailableRegret": 0.0270424727293737,
+      "fluxWinnerRegret": 0.010231959012817027,
+      "lowestRegretCandidate": "weibull · benchmark-gap-fill",
+      "lowestAvailableRegret": 0.010231959012817027,
       "selectedLowestRegret": true
     },
     {
       "scenario": "wrong-industry-benchmark",
       "fluxWinner": "channel-specific-long · benchmark-gap-fill",
       "fluxWinnerScore": 85.22370459176469,
-      "fluxWinnerRegret": 1,
-      "lowestRegretCandidate": "weibull · experiments-only",
-      "lowestAvailableRegret": 1.0326504707336425e-8,
+      "fluxWinnerRegret": 0.6250261804216477,
+      "lowestRegretCandidate": "short-memory · benchmark-gap-fill",
+      "lowestAvailableRegret": 0.30322466498995004,
       "selectedLowestRegret": false
     }
   ]

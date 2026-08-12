@@ -154,9 +154,21 @@
       "weightedLogRoiError": 0.837033573303072,
       "weightedLogBenchmarkAgreement": 0.6169011438201724,
       "contributionError": 1.048723799803203,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999987,
+      "profitRegret": 0.9999999999999987,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999947,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2590454.519933817,
+        "fixed-budget-mix": 0,
+        "budget-growth": 925162.3285477915,
+        "economic-ceiling": -2898841.9627830805
+      },
       "recommendedSpend": 1233549.7713970558,
       "recommendedAdditionalBudget": {
         "paid_social": 431742.4199889695,
@@ -192,9 +204,21 @@
       "weightedLogRoiError": 0.738627629814825,
       "weightedLogBenchmarkAgreement": 0.5202022902455886,
       "contributionError": 0.8334595668667726,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999993,
+      "profitRegret": 0.9999999999999993,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999974,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 1850324.657095583,
+        "economic-ceiling": -2898841.9627830805
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -230,9 +254,21 @@
       "weightedLogRoiError": 0.7675695940558184,
       "weightedLogBenchmarkAgreement": 0.5493442155149982,
       "contributionError": 0.9173733180925531,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999996,
+      "profitRegret": 0.9999999999999996,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999981,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 2467099.542794111,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -268,9 +304,21 @@
       "weightedLogRoiError": 0.6420945219200799,
       "weightedLogBenchmarkAgreement": 0.42386914337925974,
       "contributionError": 0.5896506869437933,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999993,
+      "profitRegret": 0.9999999999999993,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999974,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 1850324.657095583,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -306,9 +354,21 @@
       "weightedLogRoiError": 5.819651871142755,
       "weightedLogBenchmarkAgreement": 6.092229417578315,
       "contributionError": 0.3366709055439134,
-      "budgetRegret": 2.5816261768341063e-9,
-      "profitRegret": 2.5816261768341063e-9,
+      "budgetRegret": 0.25,
+      "profitRegret": 0.25,
       "revenueRegret": 3.725290298461914e-9,
+      "scenarioProfitRegret": {
+        "budget-reduction": 0,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0,
+        "economic-ceiling": 0
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -4317424.199889694,
+        "fixed-budget-mix": 0,
+        "budget-growth": 0,
+        "economic-ceiling": -4317424.199889694
+      },
       "recommendedSpend": 0,
       "recommendedAdditionalBudget": {
         "paid_social": 0,
@@ -368,9 +428,21 @@
       "weightedLogRoiError": 0.5996797040233007,
       "weightedLogBenchmarkAgreement": 0.3814543254824806,
       "contributionError": 0.6810479258464613,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999994,
+      "profitRegret": 0.9999999999999994,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999979,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2158712.099944847,
+        "fixed-budget-mix": 0,
+        "budget-growth": 2158712.099944847,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -430,9 +502,21 @@
       "weightedLogRoiError": 0.6318509058849615,
       "weightedLogBenchmarkAgreement": 0.4136255273441414,
       "contributionError": 0.7367203661074114,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999996,
+      "profitRegret": 0.9999999999999996,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999983,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -1726969.679955878,
+        "fixed-budget-mix": 0,
+        "budget-growth": 2775486.9856433747,
+        "economic-ceiling": 2775486.9856433747
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -468,9 +552,21 @@
       "weightedLogRoiError": 0.8329095150643561,
       "weightedLogBenchmarkAgreement": 0.6127770855814565,
       "contributionError": 1.036967441262339,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.999999999999998,
+      "profitRegret": 0.999999999999998,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.999999999999992,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2590454.519933817,
+        "fixed-budget-mix": 0,
+        "budget-growth": 616774.8856985278,
+        "economic-ceiling": -2898841.9627830805
+      },
       "recommendedSpend": 1233549.7713970558,
       "recommendedAdditionalBudget": {
         "paid_social": 431742.4199889695,
@@ -506,9 +602,21 @@
       "weightedLogRoiError": 0.7354849985310736,
       "weightedLogBenchmarkAgreement": 0.515352569048174,
       "contributionError": 0.8258978880400577,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999993,
+      "profitRegret": 0.9999999999999993,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999974,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 1850324.657095583,
+        "economic-ceiling": -2898841.9627830805
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -544,9 +652,21 @@
       "weightedLogRoiError": 0.739997280144671,
       "weightedLogBenchmarkAgreement": 0.5217719016038508,
       "contributionError": 0.8647915366282255,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999994,
+      "profitRegret": 0.9999999999999994,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999979,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 2158712.099944847,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -582,9 +702,21 @@
       "weightedLogRoiError": 0.6422682849345712,
       "weightedLogBenchmarkAgreement": 0.42404290639375103,
       "contributionError": 0.5898537452051418,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999993,
+      "profitRegret": 0.9999999999999993,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999974,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2374583.309939332,
+        "fixed-budget-mix": 0,
+        "budget-growth": 1850324.657095583,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -620,9 +752,21 @@
       "weightedLogRoiError": 5.838931931774822,
       "weightedLogBenchmarkAgreement": 6.111509478210382,
       "contributionError": 0.35719138469654216,
-      "budgetRegret": 2.5816261768341063e-9,
-      "profitRegret": 2.5816261768341063e-9,
+      "budgetRegret": 0.25,
+      "profitRegret": 0.25,
       "revenueRegret": 3.725290298461914e-9,
+      "scenarioProfitRegret": {
+        "budget-reduction": 0,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0,
+        "economic-ceiling": 0
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -4317424.199889694,
+        "fixed-budget-mix": 0,
+        "budget-growth": 0,
+        "economic-ceiling": -4317424.199889694
+      },
       "recommendedSpend": 0,
       "recommendedAdditionalBudget": {
         "paid_social": 0,
@@ -682,9 +826,21 @@
       "weightedLogRoiError": 0.5975927067942682,
       "weightedLogBenchmarkAgreement": 0.37936732825344816,
       "contributionError": 0.677153890116069,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999993,
+      "profitRegret": 0.9999999999999993,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999974,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -2158712.099944847,
+        "fixed-budget-mix": 0,
+        "budget-growth": 1850324.657095583,
+        "economic-ceiling": -2189550.8442297736
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,
@@ -744,9 +900,21 @@
       "weightedLogRoiError": 0.6294870112414062,
       "weightedLogBenchmarkAgreement": 0.411261632700586,
       "contributionError": 0.7320343372604801,
-      "budgetRegret": 1,
-      "profitRegret": 1,
+      "budgetRegret": 0.9999999999999996,
+      "profitRegret": 0.9999999999999996,
       "revenueRegret": 0,
+      "scenarioProfitRegret": {
+        "budget-reduction": 1,
+        "fixed-budget-mix": 1,
+        "budget-growth": 0.9999999999999983,
+        "economic-ceiling": 1
+      },
+      "scenarioRecommendedSpend": {
+        "budget-reduction": -1726969.679955878,
+        "fixed-budget-mix": 0,
+        "budget-growth": 2775486.9856433747,
+        "economic-ceiling": 2775486.9856433747
+      },
       "recommendedSpend": 2467099.5427941117,
       "recommendedAdditionalBudget": {
         "paid_social": 863484.839977939,

@@ -60,6 +60,15 @@ test("the hidden profit oracle conserves its chosen spend and can choose zero", 
   assert.ok(
     Math.abs(optimizedBudget - business.truth.allocation.optimalSpend) < 1e-6,
   );
+  assert.equal(business.truth.decisionScenarios.length, 4);
+  business.truth.decisionScenarios.forEach((decision) => {
+    const allocated = Object.values(decision.optimalAdditionalBudget).reduce(
+      (total, value) => total + value,
+      0,
+    );
+    assert.ok(Math.abs(allocated - decision.optimalSpend) < 1e-5);
+    assert.ok(decision.evaluations > 1);
+  });
   assert.ok(business.truth.allocation.optimalSpend >= 0);
   assert.ok(business.truth.allocation.optimalIncrementalProfit >= -1e-6);
   assert.ok(
@@ -110,4 +119,16 @@ test("a V1 model can fit observed data without receiving the hidden answer key",
   assert.ok(Number.isFinite(evaluation.profitRegret));
   assert.ok(Number.isFinite(evaluation.revenueRegret));
   assert.ok(evaluation.budgetRegret >= 0);
+  assert.deepEqual(
+    Object.keys(evaluation.scenarioProfitRegret).sort(),
+    [
+      "budget-growth",
+      "budget-reduction",
+      "economic-ceiling",
+      "fixed-budget-mix",
+    ],
+  );
+  Object.values(evaluation.scenarioProfitRegret).forEach((regret) => {
+    assert.ok(regret >= 0 && regret <= 1);
+  });
 });

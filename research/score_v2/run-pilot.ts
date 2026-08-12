@@ -279,6 +279,8 @@ function compactReport(
       budgetRegret: candidate.budgetRegret,
       profitRegret: candidate.profitRegret,
       revenueRegret: candidate.revenueRegret,
+      scenarioProfitRegret: candidate.scenarioProfitRegret,
+      scenarioRecommendedSpend: candidate.scenarioRecommendedSpend,
       recommendedSpend: candidate.recommendedSpend,
       recommendedAdditionalBudget: candidate.recommendedAdditionalBudget,
     })),
@@ -299,7 +301,7 @@ function markdownReport(report: ReturnType<typeof compactReport>): string {
         `| ${candidate.id} | ${candidate.fluxScore?.toFixed(1) ?? "—"} | ${(candidate.weightedLogRoiError * 100).toFixed(1)}% | ${(candidate.weightedLogBenchmarkAgreement * 100).toFixed(1)}% | ${(candidate.contributionError * 100).toFixed(1)}% | ${(candidate.profitRegret * 100).toFixed(1)}% |`,
     )
     .join("\n");
-  return `# Score V2 pilot: ${report.scenario.label}\n\n${report.scenario.description}\n\nSeed: \`${report.scenario.seed}\`. Truth was held out of model fitting. The declared benchmark has ${(report.truth.weightedLogBenchmarkTruthError * 100).toFixed(1)}% spend-weighted log error versus causal truth and is recorded as fallible evidence, not an answer key.\n\n## Injected truth\n\n| Channel | Target ROI | Realized ROI |\n|---|---:|---:|\n${truthRows}\n\n## Candidate results\n\n| Candidate | Current Flux score | ROI truth error | Benchmark agreement error | Contribution error | Profit regret |\n|---|---:|---:|---:|---:|---:|\n${candidateRows}\n\nProfit regret is the share of the simulator-known incremental profit opportunity lost by following the candidate instead of the hidden profit-optimal spend and mix. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.\n`;
+  return `# Score V2 pilot: ${report.scenario.label}\n\n${report.scenario.description}\n\nSeed: \`${report.scenario.seed}\`. Truth was held out of model fitting. The declared benchmark has ${(report.truth.weightedLogBenchmarkTruthError * 100).toFixed(1)}% spend-weighted log error versus causal truth and is recorded as fallible evidence, not an answer key.\n\n## Injected truth\n\n| Channel | Target ROI | Realized ROI |\n|---|---:|---:|\n${truthRows}\n\n## Candidate results\n\n| Candidate | Current Flux score | ROI truth error | Benchmark agreement error | Contribution error | Profit regret |\n|---|---:|---:|---:|---:|---:|\n${candidateRows}\n\nProfit regret is the mean normalized opportunity loss across four hidden decision contracts: reduce budget, reallocate the current budget, grow budget, and find the economic ceiling. Component regrets remain in the JSON artifact. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.\n`;
 }
 
 function average(values: number[]): number {

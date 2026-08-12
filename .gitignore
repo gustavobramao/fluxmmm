@@ -48,5 +48,6 @@ next-env.d.ts
 # them versioned so a clean clone contains the same audited demo answer keys.
 /research/score_v2/artifacts/*/observed.csv
 /research/score_v2/artifacts/*/truth.json
+/research/score_v3/artifacts/simulator-audit-v3.json
 __pycache__/
 *.pyc

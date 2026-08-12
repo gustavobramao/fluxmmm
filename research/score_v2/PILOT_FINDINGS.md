@@ -6,19 +6,20 @@ The simulator and evaluation method work end to end, and the small pilot finds
 a ranking problem worth investigating. Across 84 candidate fits on six
 deterministic synthetic businesses:
 
-- The current Flux score selected a lowest-profit-regret candidate in 2 of 6
+- The current Flux score selected a lowest-profit-regret candidate in 1 of 6
   cases.
-- Its selected candidates had 79.8% mean simulator-known profit regret.
-- The best evaluated candidate averaged 13.1% profit regret.
+- Its selected candidates had 67.3% mean simulator-known profit regret.
+- The best evaluated candidate averaged 30.2% profit regret.
 - The correlation between current Flux score and lower profit regret was
-  -0.299.
+  -0.092.
 - The correlation between current Flux score and lower ROI error was 0.394.
 
 The results are intentionally uncomfortable: a high validation score can still
-recommend an economically poor next-dollar decision. In delayed TV, a Weibull
-candidate reached 0% profit regret while the heuristic selected a globally
-geometric strong-saturation candidate at 100% regret. In correlated media, the
-Weibull family recovered the decision far better than most other candidates.
+recommend economically poor decisions. In delayed TV, the best evaluated
+Weibull candidate averaged 46.2% regret across four decision contracts while
+the heuristic selected a globally geometric strong-saturation candidate at
+99.8% regret. In correlated media, the Weibull family recovered the decision
+far better than most other candidates.
 These are simulator-conditional diagnostics, not claims about real advertisers.
 
 The pilot therefore establishes that known-truth simulation can distinguish
@@ -34,9 +35,9 @@ not yet establish what a learned score or its weights should be.
   unless an explicit stress scenario overrides them.
 - Simulation and committed answer keys are reproducible from deterministic
   seeds and artifact identifiers.
-- The profit oracle tests several incremental budget levels, can choose zero,
-  enforces channel concentration constraints, and evaluates candidate decisions
-  against the hidden nonlinear response curves.
+- The profit oracle evaluates budget reduction, fixed-budget reallocation,
+  budget growth, and an economic ceiling against hidden nonlinear response
+  curves, with concentration constraints and a no-change option.
 - Misleading benchmarks remain fallible evidence and never define truth.
 - Paid social, search, and TV use separate delivery, carryover, saturation, and
   experiment contracts.
@@ -49,9 +50,9 @@ This is a feasibility pilot, not statistical evidence for production weights:
 
 1. It uses six businesses, one seed per family, three channels, seven response
    specifications, and two evidence arms—not enough to learn score weights.
-2. The profit oracle evaluates a small predeclared budget grid. Several models
-   make the same corner decision, so regret can fail to distinguish otherwise
-   different ROI errors.
+2. The profit oracle uses a dense deterministic budget and allocation surface,
+   not a continuous mathematical optimizer. Extremely narrow optima may still
+   be approximated rather than located exactly.
 3. Counterfactual allocation scales each channel's observed weekly delivery
    pattern. It does not yet optimize timing, flights, minimum commitments, or
    channel interactions.
@@ -68,9 +69,8 @@ This is a feasibility pilot, not statistical evidence for production weights:
 
 ## Decision
 
-Proceed to a larger research pilot, but do not replace the V1 Flux score yet.
-The next stage should create hundreds of independently seeded businesses,
-broaden the candidate space, add richer constraints and budget levels, and
-predeclare train/validation/test splits at the business-generator level. Only
-then should constrained geometric weights and a monotonic model be trained and
-compared on held-out generator families.
+Proceed to the predeclared V3 simulator audit, but do not replace the V1 Flux
+score yet. V3 creates hundreds of independently seeded businesses, broadens the
+decision label, and freezes train/validation/audit splits at the generator-family
+level. A replacement score is only justified after a sentinel model cohort is
+fit and constrained alternatives outperform the heuristic on held-out families.

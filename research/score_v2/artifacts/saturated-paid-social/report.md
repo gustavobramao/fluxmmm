@@ -28,7 +28,7 @@ Seed: `20260815`. Truth was held out of model fitting. The declared benchmark ha
 | strong-saturation · experiments-only | 52.6 | 64.2% | 42.4% | 59.0% | 100.0% |
 | long-memory · benchmark-gap-fill | 44.1 | 74.0% | 52.2% | 86.5% | 100.0% |
 | long-memory · experiments-only | 43.1 | 76.8% | 54.9% | 91.7% | 100.0% |
-| weibull · experiments-only | 34.4 | 582.0% | 609.2% | 33.7% | 0.0% |
-| weibull · benchmark-gap-fill | 33.1 | 583.9% | 611.2% | 35.7% | 0.0% |
+| weibull · experiments-only | 34.4 | 582.0% | 609.2% | 33.7% | 25.0% |
+| weibull · benchmark-gap-fill | 33.1 | 583.9% | 611.2% | 35.7% | 25.0% |
 
-Profit regret is the share of the simulator-known incremental profit opportunity lost by following the candidate instead of the hidden profit-optimal spend and mix. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.
+Profit regret is the mean normalized opportunity loss across four hidden decision contracts: reduce budget, reallocate the current budget, grow budget, and find the economic ceiling. Component regrets remain in the JSON artifact. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.

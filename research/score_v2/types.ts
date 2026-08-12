@@ -132,6 +132,31 @@ export interface AllocationTruth {
   gridUnits: number;
 }
 
+export type DecisionScenarioId =
+  | "budget-reduction"
+  | "fixed-budget-mix"
+  | "budget-growth"
+  | "economic-ceiling";
+
+export interface DecisionScenarioContract {
+  id: DecisionScenarioId;
+  label: string;
+  minimumBudgetShare: number;
+  maximumBudgetShare: number;
+  fixedBudgetShare?: number;
+}
+
+export interface DecisionScenarioTruth {
+  id: DecisionScenarioId;
+  label: string;
+  minimumSpend: number;
+  maximumSpend: number;
+  optimalSpend: number;
+  optimalIncrementalProfit: number;
+  optimalAdditionalBudget: Record<string, number>;
+  evaluations: number;
+}
+
 export interface SyntheticTruth {
   simulatorVersion: string;
   evidenceRegistryVersion: string;
@@ -145,6 +170,7 @@ export interface SyntheticTruth {
   channels: ChannelTruth[];
   experiments: SimulatedExperimentTruth[];
   allocation: AllocationTruth;
+  decisionScenarios: DecisionScenarioTruth[];
   industryBenchmarks: Record<string, number>;
 }
 
@@ -167,6 +193,8 @@ export interface CandidateEvaluation {
   budgetRegret: number;
   profitRegret: number;
   revenueRegret: number;
+  scenarioProfitRegret: Record<DecisionScenarioId, number>;
+  scenarioRecommendedSpend: Record<DecisionScenarioId, number>;
   recommendedAdditionalBudget: Record<string, number>;
   recommendedSpend: number;
   trueOutcomeUnderRecommendation: number;

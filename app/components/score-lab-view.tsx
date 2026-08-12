@@ -6,6 +6,8 @@ import {
   type ScoreLabCandidate,
   type ScoreLabLayer,
 } from "../score-lab-data";
+import { SIMULATOR_AUDIT_V3 } from "../score-audit-v3-data";
+import type { DistributionSummary } from "../../research/score_v3/types";
 
 const layerCopy: Record<ScoreLabLayer, { label: string; weight: number }> = {
   generalization: { label: "Prediction", weight: 20 },
@@ -22,6 +24,145 @@ const channelLabels = {
 
 function percentage(value: number) {
   return `${(value * 100).toFixed(value < 0.1 ? 1 : 0)}%`;
+}
+
+function compactMoney(value: number) {
+  const magnitude = Math.abs(value);
+  if (magnitude >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (magnitude >= 1_000) return `$${Math.round(value / 1_000)}K`;
+  return `$${Math.round(value)}`;
+}
+
+function rangeLabel(
+  summary: DistributionSummary,
+  format: (value: number) => string,
+) {
+  return `${format(summary.p10)}–${format(summary.p90)}`;
+}
+
+function SimulatorAuditV3Panel() {
+  const audit = SIMULATOR_AUDIT_V3;
+  const channelOrder = ["paid_social", "search", "tv"] as const;
+  const decisionOrder = [
+    "budget-reduction",
+    "fixed-budget-mix",
+    "budget-growth",
+    "economic-ceiling",
+  ] as const;
+  return (
+    <>
+      <section className="card audit-v3-hero">
+        <div>
+          <span className="eyebrow">Simulator Audit V3</span>
+          <h2>Is the answer-key factory credible enough to train a score?</h2>
+          <p>
+            Five hundred deterministic businesses audit population coverage and
+            decision labels before any replacement Flux score is learned.
+          </p>
+        </div>
+        <div className="audit-v3-count">
+          <strong>{audit.businessCount}</strong>
+          <span>audited businesses</span>
+          <small>{audit.artifactId}</small>
+        </div>
+      </section>
+
+      <section className="audit-v3-splits" aria-label="Predeclared simulator splits">
+        <article className="card train">
+          <span>Train</span><strong>{audit.splits.train}</strong>
+          <p>Three generator families may inform score fitting.</p>
+        </article>
+        <article className="card validation">
+          <span>Validation</span><strong>{audit.splits.validation}</strong>
+          <p>Two unseen parameter families select and calibrate the score.</p>
+        </article>
+        <article className="card audit">
+          <span>Untouched audit</span><strong>{audit.splits.audit}</strong>
+          <p>Wrong evidence and swapped mechanics stay sealed until final evaluation.</p>
+        </article>
+      </section>
+
+      <section className="card audit-v3-families">
+        <div className="card-heading">
+          <div><span className="eyebrow">Family-level holdout</span><h2>Split generators—not random rows</h2></div>
+          <span className="score-lab-inspect">Predeclared before score learning</span>
+        </div>
+        <div className="audit-v3-family-grid">
+          {audit.families.map((family) => (
+            <article key={family.id} className={family.split}>
+              <span>{family.split}</span>
+              <strong>{family.label}</strong>
+              <b>{family.businessCount} businesses</b>
+              <p>{family.description}</p>
+              {family.heldOutReason && <small>{family.heldOutReason}</small>}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="card audit-v3-coverage">
+        <div className="card-heading">
+          <div><span className="eyebrow">Population coverage</span><h2>Truth varies by channel and business</h2></div>
+          <span className="score-lab-inspect">P10–P90 · median shown</span>
+        </div>
+        <div className="audit-v3-channel-table">
+          <div className="head"><span>Channel</span><span>Average iROAS</span><span>Marginal iROAS</span><span>Memory</span><span>Weibull share</span></div>
+          {channelOrder.map((channel) => {
+            const coverage = audit.coverage.channel[channel];
+            return (
+              <div key={channel}>
+                <strong>{channelLabels[channel]}</strong>
+                <span>{coverage.roi.median.toFixed(2)}×<small>{rangeLabel(coverage.roi, (value) => `${value.toFixed(2)}×`)}</small></span>
+                <span>{coverage.marginalRoi.median.toFixed(2)}×<small>{rangeLabel(coverage.marginalRoi, (value) => `${value.toFixed(2)}×`)}</small></span>
+                <span>{coverage.memory.median.toFixed(2)}<small>{rangeLabel(coverage.memory, (value) => value.toFixed(2))}</small></span>
+                <span>{percentage(coverage.weibullShare)}<small>family varies independently</small></span>
+              </div>
+            );
+          })}
+        </div>
+        <div className="audit-v3-coverage-foot">
+          <span><b>{audit.coverage.historyWeeks.median}</b> median weeks <small>{audit.coverage.historyWeeks.minimum}–{audit.coverage.historyWeeks.maximum}</small></span>
+          <span><b>{percentage(audit.coverage.noiseShare.median)}</b> median outcome noise <small>P90 {percentage(audit.coverage.noiseShare.p90)}</small></span>
+          <span><b>{percentage(audit.coverage.experimentCoverage)}</b> with ≥1 experiment <small>availability still varies by channel</small></span>
+          <span><b>{percentage(audit.coverage.benchmarkLogError.median)}</b> median benchmark log error <small>benchmarks remain fallible</small></span>
+        </div>
+      </section>
+
+      <section className="card audit-v3-decisions">
+        <div className="card-heading">
+          <div><span className="eyebrow">Continuous decision label</span><h2>Four decisions replace one coarse allocation grid</h2></div>
+          <span className="score-lab-inspect">Dense deterministic search</span>
+        </div>
+        <div className="audit-v3-decision-grid">
+          {decisionOrder.map((id) => {
+            const decision = audit.decisions[id];
+            return (
+              <article key={id}>
+                <span>{decision.label}</span>
+                <strong>{compactMoney(decision.profitOpportunity.median)}</strong>
+                <small>median hidden profit opportunity</small>
+                <div>
+                  <i style={{ width: `${decision.decreaseShare * 100}%` }} />
+                  <i style={{ width: `${decision.unchangedShare * 100}%` }} />
+                  <i style={{ width: `${decision.increaseShare * 100}%` }} />
+                </div>
+                <p>{id === "fixed-budget-mix" ? `${percentage(decision.mixShiftShare.median)} median budget moved between channels` : `${percentage(decision.decreaseShare)} decrease · ${percentage(decision.unchangedShare)} hold · ${percentage(decision.increaseShare)} increase`}</p>
+              </article>
+            );
+          })}
+        </div>
+        <p className="audit-v3-label-note">
+          Candidate label = mean profit regret across all four decisions. Each
+          component remains visible, so failures cannot be hidden by averaging.
+        </p>
+      </section>
+
+      <section className="audit-v3-gate">
+        <i>◇</i>
+        <div><b>No learned score yet</b><p>V3 has upgraded the population and the target. Score training starts only after a fitted sentinel cohort passes coverage, reproducibility, and untouched-family audits.</p></div>
+      </section>
+    </>
+  );
 }
 
 function CandidateBars({
@@ -60,6 +201,7 @@ function CandidateBars({
 }
 
 export function ScoreLabView() {
+  const [labMode, setLabMode] = useState<"pilot" | "audit">("audit");
   const [scenarioId, setScenarioId] = useState("demand-confounded-search");
   const scenario = SCORE_LAB_SCENARIOS.find((item) => item.id === scenarioId) ?? SCORE_LAB_SCENARIOS[0];
   const heuristicRanked = useMemo(
@@ -92,15 +234,26 @@ export function ScoreLabView() {
     <div className="view score-lab-view">
       <section className="page-heading compact-heading score-lab-heading">
         <div>
-          <span className="kicker">Simulation-calibrated validation · research V2</span>
+          <span className="kicker">Simulation-calibrated validation · research V3</span>
           <h1>Score Lab</h1>
           <p>
             Give Flux a dataset without its answer key, fit competing models,
             then reveal the synthetic causal truth and measure the decision each model would make.
           </p>
         </div>
-        <span className="score-lab-status"><i /> Pilot · not production scoring</span>
+        <span className="score-lab-status"><i /> Audit · not production scoring</span>
       </section>
+
+      <section className="score-lab-mode-tabs" aria-label="Score research views">
+        <button className={labMode === "audit" ? "active" : ""} onClick={() => setLabMode("audit")}>
+          <span>V3</span><b>Simulator audit</b><small>500-business coverage and labels</small>
+        </button>
+        <button className={labMode === "pilot" ? "active" : ""} onClick={() => setLabMode("pilot")}>
+          <span>V2</span><b>Candidate pilot</b><small>Six fitted answer-key examples</small>
+        </button>
+      </section>
+
+      {labMode === "audit" ? <SimulatorAuditV3Panel /> : <>
 
       <section className="score-lab-scenario-card card">
         <div className="score-lab-scenario-intro">
@@ -176,15 +329,15 @@ export function ScoreLabView() {
         </div>
         <article>
           <span className="eyebrow">What synthetic truth reveals</span>
-          <div className="score-lab-big-number truth">{percentage(truthWinner.profitRegret)}<small>profit regret</small></div>
+          <div className="score-lab-big-number truth">{percentage(truthWinner.profitRegret)}<small>mean decision regret</small></div>
           <h2>{truthWinner.label}</h2>
-          <p>Loses the least simulator-known incremental profit versus the hidden optimal spend and mix.</p>
+          <p>Loses the least hidden profit across cut, reallocation, growth, and ceiling decisions.</p>
         </article>
       </section>
 
       <section className="score-lab-metric-grid">
-        <article><span>Heuristic winner regret</span><strong className={heuristicWinner.profitRegret > 0.1 ? "warning" : "good"}>{percentage(heuristicWinner.profitRegret)}</strong><small>Simulator-known profit lost</small></article>
-        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.profitRegret)}</strong><small>Within fourteen fitted arms</small></article>
+        <article><span>Heuristic winner regret</span><strong className={heuristicWinner.profitRegret > 0.1 ? "warning" : "good"}>{percentage(heuristicWinner.profitRegret)}</strong><small>Mean across four decisions</small></article>
+        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.profitRegret)}</strong><small>Four-decision mean · fourteen fitted arms</small></article>
         <article><span>Winner ROI error</span><strong>{percentage(heuristicWinner.roiError)}</strong><small>Spend-weighted log error</small></article>
         <article><span>Benchmark vs truth</span><strong>{percentage(scenario.benchmarkError)}</strong><small>Benchmarks remain fallible</small></article>
       </section>
@@ -272,6 +425,7 @@ export function ScoreLabView() {
       <section className="score-lab-pilot-note">
         <i>◇</i><div><b>What this pilot establishes</b><p>This small audited matrix now separates model assumptions, evidence arms, channel delivery, and profit decisions. Its percentages are conditional on the declared simulator—not claims about your real business. Scale-up and held-out simulator families are still required before learning a replacement score.</p></div>
       </section>
+      </>}
     </div>
   );
 }

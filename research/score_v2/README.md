@@ -66,8 +66,10 @@ deterministically regenerated and ignored to keep the repository lean.
 
 - Spend-weighted absolute log ROI error.
 - Channel contribution recovery error.
-- Lost incremental profit opportunity (profit regret), evaluated over a
-  predeclared set of candidate budgets with concentration constraints.
+- Lost incremental profit opportunity (profit regret), averaged across four
+  predeclared decisions: budget reduction, fixed-budget reallocation, budget
+  growth, and the economic ceiling. A dense deterministic budget/allocation
+  surface enforces concentration constraints and always includes no change.
 - Existing Generalization, Structure, Causal, Decision, and final Flux scores.
 
 This pilot tests whether the current evidence is directionally informative. It

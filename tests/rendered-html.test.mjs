@@ -49,6 +49,8 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
     samplingServiceSource,
     workerSource,
     viteConfig,
+    scoreLabSource,
+    auditArtifact,
   ] =
     await Promise.all([
       readFile(new URL("../public/data/robyn_weekly.csv", import.meta.url), "utf8"),
@@ -64,6 +66,8 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
       readFile(new URL("../scripts/mcmc_server.py", import.meta.url), "utf8"),
       readFile(new URL("../worker/index.ts", import.meta.url), "utf8"),
       readFile(new URL("../vite.config.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/components/score-lab-view.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../research/score_v3/artifacts/simulator-audit-v3-summary.json", import.meta.url), "utf8"),
     ]);
 
   assert.match(sample, /"DATE","revenue","tv_S"/);
@@ -145,6 +149,11 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(viteConfig, /binding: "DB"/);
   assert.match(viteConfig, /binding: "DATASETS"/);
   assert.doesNotMatch(viteConfig, /hostingConfig|sites\(\)/);
+  assert.match(scoreLabSource, /Simulator Audit V3/);
+  assert.match(scoreLabSource, /Split generators—not random rows/);
+  assert.match(scoreLabSource, /No learned score yet/);
+  assert.match(auditArtifact, /"businessCount": 500/);
+  assert.match(auditArtifact, /"audit": 80/);
   await access(new URL("../public/og.png", import.meta.url));
   await assert.rejects(
     access(new URL("../app/chatgpt-auth.ts", import.meta.url)),

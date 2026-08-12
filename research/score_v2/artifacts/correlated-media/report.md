@@ -16,7 +16,7 @@ Seed: `20260817`. Truth was held out of model fitting. The declared benchmark ha
 
 | Candidate | Current Flux score | ROI truth error | Benchmark agreement error | Contribution error | Profit regret |
 |---|---:|---:|---:|---:|---:|
-| weibull · benchmark-gap-fill | 66.1 | 10.3% | 63.1% | 8.9% | 2.7% |
+| weibull · benchmark-gap-fill | 66.1 | 10.3% | 63.1% | 8.9% | 1.0% |
 | channel-specific · benchmark-gap-fill | 56.5 | 85.5% | 61.1% | 71.3% | 100.0% |
 | channel-specific-long · benchmark-gap-fill | 56.3 | 93.6% | 54.9% | 77.6% | 100.0% |
 | channel-specific · experiments-only | 55.2 | 88.6% | 60.8% | 74.4% | 100.0% |
@@ -29,6 +29,6 @@ Seed: `20260817`. Truth was held out of model fitting. The declared benchmark ha
 | strong-saturation · benchmark-gap-fill | 43.3 | 115.0% | 54.3% | 85.5% | 100.0% |
 | short-memory · benchmark-gap-fill | 42.6 | 96.3% | 96.3% | 78.0% | 100.0% |
 | strong-saturation · experiments-only | 42.2 | 119.0% | 53.7% | 88.8% | 100.0% |
-| weibull · experiments-only | 40.8 | 9.9% | 75.2% | 7.6% | 2.7% |
+| weibull · experiments-only | 40.8 | 9.9% | 75.2% | 7.6% | 2.1% |
 
-Profit regret is the share of the simulator-known incremental profit opportunity lost by following the candidate instead of the hidden profit-optimal spend and mix. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.
+Profit regret is the mean normalized opportunity loss across four hidden decision contracts: reduce budget, reallocate the current budget, grow budget, and find the economic ceiling. Component regrets remain in the JSON artifact. Benchmark agreement is reported separately from causal truth and is never treated as the answer key. This single scenario is diagnostic evidence, not a learned score or a production claim.
