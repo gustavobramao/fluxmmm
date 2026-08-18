@@ -95,7 +95,7 @@ function ScoreGovernancePanel() {
         <article className="card sampler">
           <span>Production inference</span>
           <strong>PyMC NUTS</strong>
-          <small>Shared sampler v2.1 · runs after promotion</small>
+          <small>Shared sampler v2.2 · runs after promotion</small>
         </article>
       </section>
 
@@ -176,7 +176,7 @@ function ScoreGovernancePanel() {
 
       <section className="learned-score-safety">
         <i>◆</i>
-        <div><b>The production sampler remains a separate shared stage</b><p>Agentic searches quickly with analytic MAP and the active V6 score. After promotion, PyMC NUTS v2.1 performs confirmatory inference without changing the winning specification.</p></div>
+        <div><b>The production sampler remains a separate shared stage</b><p>Agentic searches quickly with analytic MAP and the active V6 score. After promotion, PyMC NUTS v2.2 performs confirmatory inference without changing the winning specification.</p></div>
       </section>
 
       <details className="card learned-score-receipt">
