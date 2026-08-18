@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use FluxMMM in research or industry work, please cite the software and working paper."
-title: "FluxMMM: an open-source, evidence-gated Bayesian workflow for decision-ready marketing mix modeling"
+title: "FluxMMM: An Open-Source, Evidence-Gated Bayesian Workflow for Marketing Mix Modeling and Budget Decisions"
 type: software
 authors:
   - family-names: Bramao
