@@ -127,6 +127,69 @@ class McmcContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "raw spend history is missing"):
             MCMC.validate_compiled_model(contract)
 
+    def test_channel_specific_contract_builds_channel_response_parameters(self) -> None:
+        contract, _ = synthetic_contract()
+        contract["response"]["channelSpecific"] = True
+        contract["media"][0]["response"] = {
+            "adstockType": "geometric",
+            "adstock": 0.4,
+            "weibullShape": 2.5,
+            "weibullScale": 4.0,
+            "saturation": 1.25,
+            "halfSaturationQuantile": 0.5,
+            "kernelNormalization": "peak",
+        }
+        model, *_ = MCMC.build_model(contract)
+        self.assertIn("adstock_decay_000", model.named_vars)
+        self.assertIn("hill_shape_000", model.named_vars)
+        self.assertNotIn("adstock_decay", model.named_vars)
+        self.assertNotIn("hill_shape", model.named_vars)
+
+    def test_channel_specific_contract_rejects_missing_channel_response(self) -> None:
+        contract, _ = synthetic_contract()
+        contract["response"]["channelSpecific"] = True
+        with self.assertRaisesRegex(ValueError, "channel response contract"):
+            MCMC.validate_compiled_model(contract)
+
+    def test_experiment_calibration_uses_declared_spend_and_outcome_windows(self) -> None:
+        contract, _ = synthetic_contract()
+        spend_rows = list(range(10, 18))
+        outcome_rows = list(range(10, 26))
+        spend = float(
+            np.asarray(contract["media"][0]["rawSpend"], dtype=float)[
+                spend_rows
+            ].sum()
+        )
+        calibration = {
+            "label": "Paid search lift",
+            "channel": "paid_search",
+            "route": "prior",
+            "basis": "experiment-window",
+            "indexes": contract["media"][0]["indexes"],
+            "weights": [1.0],
+            "observedRoi": 1.4,
+            "standardError": 0.3,
+            "rows": outcome_rows,
+            "spendRows": spend_rows,
+            "outcomeRows": outcome_rows,
+            "spend": spend,
+        }
+        contract["calibrations"] = [calibration]
+        contract["media"][0]["priorEvidence"] = {
+            "mean": 1.4,
+            "standardDeviation": 0.3,
+            "source": "experiment",
+            "label": "Paid search lift",
+            "rows": outcome_rows,
+        }
+        prior_model, *_ = MCMC.build_model(contract)
+        self.assertIn("calibration_prior_000", prior_model.named_vars)
+        self.assertNotIn("roi_prior_000", prior_model.named_vars)
+
+        contract["calibrations"][0]["route"] = "likelihood"
+        likelihood_model, *_ = MCMC.build_model(contract)
+        self.assertIn("calibration_000", likelihood_model.named_vars)
+
     def test_hdi_is_shortest_interval_not_equal_tail_alias(self) -> None:
         values = np.random.default_rng(7).exponential(size=20_000)
         low, high = MCMC.hdi_bounds(values)

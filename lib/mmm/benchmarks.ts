@@ -20,6 +20,9 @@ export interface IndustryPriorRecommendation extends IndustryBenchmark {
 }
 
 export type IndustryPriorSelection = boolean | readonly string[];
+export type IndustryPriorOverrides = Readonly<
+  Record<string, IndustryBenchmark>
+>;
 
 export const INDUSTRY_BENCHMARK_VERSION = "dtc-us-owned-revenue-2026.2";
 
@@ -210,7 +213,20 @@ function recommendation(
 
 export function inferIndustryPrior(
   channel: string,
+  overrides?: IndustryPriorOverrides,
 ): IndustryPriorRecommendation {
+  const override = Object.entries(overrides ?? {}).find(
+    ([candidate]) => candidate.toLowerCase() === channel.toLowerCase(),
+  )?.[1];
+  if (override) {
+    return {
+      ...override,
+      channel,
+      matchQuality: "Exact tactic",
+      standardDeviation:
+        (override.high - override.low) / (2 * 1.281551565545),
+    };
+  }
   const value = compactChannel(channel);
   const joined = value.replace(/\s+/g, "");
   const isGoogle = hasAny(value, ["google", "adwords"]);
@@ -332,6 +348,7 @@ export function activeIndustryPrior(
   channel: string,
   experiments: Experiment[],
   selection: IndustryPriorSelection,
+  overrides?: IndustryPriorOverrides,
 ): IndustryPriorRecommendation | undefined {
   const selected =
     selection === true ||
@@ -343,7 +360,7 @@ export function activeIndustryPrior(
   if (!selected || channelExperiments(experiments, channel).length) {
     return undefined;
   }
-  return inferIndustryPrior(channel);
+  return inferIndustryPrior(channel, overrides);
 }
 
 function normalCdf(value: number): number {

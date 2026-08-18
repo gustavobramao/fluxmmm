@@ -48,6 +48,8 @@ export interface SyntheticChannelConfig {
         spend: number;
         standardErrorShare: number;
         biasShare: number;
+        /** Independent, non-overlapping studies available to the model. */
+        replicates?: number;
       }
     | { design: "none" };
   allocation: {
@@ -94,7 +96,11 @@ export interface SyntheticScenarioConfig {
 export interface SimulatedExperimentTruth {
   channel: SyntheticChannel;
   design: "geo" | "platform-holdout";
+  /** Causal ROI attributable to spend in the declared test window. */
   trueRoi: number;
+  fullHistoryRoi: number;
+  sourceWindowSpend: number;
+  trueIncrementalOutcome: number;
   observedRoi: number;
   standardError: number;
   biasShare: number;
@@ -192,8 +198,11 @@ export interface CandidateEvaluation {
   contributionError: number;
   budgetRegret: number;
   profitRegret: number;
+  /** Uncapped economic opportunity loss used by V6 research. */
+  decisionLoss: number;
   revenueRegret: number;
   scenarioProfitRegret: Record<DecisionScenarioId, number>;
+  scenarioDecisionLoss: Record<DecisionScenarioId, number>;
   scenarioRecommendedSpend: Record<DecisionScenarioId, number>;
   recommendedAdditionalBudget: Record<string, number>;
   recommendedSpend: number;

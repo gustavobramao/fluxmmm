@@ -1,5 +1,6 @@
 import { toNumber } from "../csv";
 import { activeIndustryPrior } from "../benchmarks";
+import { experimentResponseContrast } from "../experiment-window";
 import {
   diagonalPenalty,
   matrixVector,
@@ -196,28 +197,6 @@ function buildValidationDesign(
   };
 }
 
-function dateIndexesForExperiment(
-  dataset: Dataset,
-  experiment: Experiment,
-  allowed: Set<number>,
-): number[] {
-  const start = Date.parse(experiment.startDate);
-  const end = Date.parse(experiment.endDate);
-  return dataset.rows
-    .map((row, index) => ({
-      index,
-      date: Date.parse(String(row[dataset.dateColumn])),
-    }))
-    .filter(
-      ({ index, date }) =>
-        allowed.has(index) &&
-        Number.isFinite(date) &&
-        (!Number.isFinite(start) || date >= start) &&
-        (!Number.isFinite(end) || date <= end),
-    )
-    .map(({ index }) => index);
-}
-
 function applyExperimentEvidence(
   dataset: Dataset,
   spec: ValidationModelSpec,
@@ -242,28 +221,39 @@ function applyExperimentEvidence(
       channel,
       spec.experiments,
       spec.validationOptions.industryPriorChannels ?? [],
+      spec.validationOptions.industryPriorOverrides,
     );
     if (!evidence.length && !benchmark) return;
     const indexes = design.mediaIndexes[mediaIndex];
+    const usableEvidence = evidence.flatMap((experiment) => {
+      const contrast = experimentResponseContrast(
+        dataset,
+        spec.config,
+        channel,
+        experiment,
+      );
+      if (
+        !contrast ||
+        !contrast.spendRows.every((rowIndex) => allowed.has(rowIndex)) ||
+        !contrast.outcomeRows.every((rowIndex) => allowed.has(rowIndex))
+      ) {
+        return [];
+      }
+      return [{ experiment, contrast }];
+    });
     if (
-      evidence.length &&
+      usableEvidence.length &&
       spec.kind === "advanced" &&
       spec.advancedConfig.calibrationMode === "likelihood"
     ) {
-      evidence.forEach((experiment) => {
-        const rows = dateIndexesForExperiment(dataset, experiment, allowed);
-        if (!rows.length) return;
-        const spend = rows.reduce(
-          (total, rowIndex) =>
-            total + design.spendVectors[mediaIndex][rowIndex],
-          0,
-        );
+      usableEvidence.forEach(({ experiment, contrast }) => {
+        const spend = contrast.spend;
         if (spend <= 0) return;
         const h = indexes.map((_, knotIndex) =>
-          rows.reduce(
+          contrast.outcomeRows.reduce(
             (total, rowIndex) =>
               total +
-              design.mediaVectors[mediaIndex][rowIndex] *
+              (contrast.deltaTransformed[rowIndex] ?? 0) *
                 design.kernel[rowIndex][knotIndex] *
                 effectMultiplier,
             0,
@@ -283,23 +273,6 @@ function applyExperimentEvidence(
       return;
     }
 
-    const weights = evidence.map(
-      (experiment) => 1 / Math.max(experiment.standardError ** 2, 1e-6),
-    );
-    const totalWeight = weights.reduce((total, value) => total + value, 0);
-    const pooledRoi = evidence.length
-      ? evidence.reduce(
-          (total, experiment, index) =>
-            total +
-            (experiment.incrementalOutcome /
-              Math.max(experiment.incrementalSpend, 1)) *
-              weights[index],
-          0,
-        ) / totalWeight
-      : benchmark?.median ?? 0;
-    const pooledSe = evidence.length
-      ? Math.sqrt(1 / totalWeight)
-      : benchmark?.standardDeviation ?? pooledRoi * 2;
     const spend = trainIndexes.reduce(
       (total, rowIndex) =>
         total + design.spendVectors[mediaIndex][rowIndex],
@@ -310,12 +283,53 @@ function applyExperimentEvidence(
         total + design.mediaVectors[mediaIndex][rowIndex],
       0,
     );
-    const priorMean =
-      (pooledRoi * spend) /
-      Math.max(transformed * effectMultiplier, 1e-9);
-    const priorSd =
-      (Math.max(pooledSe, Math.abs(pooledRoi) * 0.12) * spend) /
-      Math.max(transformed * effectMultiplier, 1e-9);
+    let priorMean: number;
+    let priorSd: number;
+    if (usableEvidence.length) {
+      const mapped = usableEvidence.flatMap(({ experiment, contrast }) => {
+        const transformedContrast = contrast.outcomeRows.reduce(
+          (total, rowIndex) =>
+            total + (contrast.deltaTransformed[rowIndex] ?? 0),
+          0,
+        );
+        const roiScale =
+          (transformedContrast * effectMultiplier) /
+          Math.max(contrast.spend, 1);
+        if (roiScale <= 1e-12) return [];
+        const roi =
+          experiment.incrementalOutcome /
+          Math.max(experiment.incrementalSpend, 1);
+        return [{
+          mean: roi / roiScale,
+          standardDeviation:
+            Math.max(experiment.standardError, Math.abs(roi) * 0.12) /
+            roiScale,
+        }];
+      });
+      if (!mapped.length) return;
+      const mappedWeights = mapped.map(
+        (item) => 1 / Math.max(item.standardDeviation ** 2, 1e-9),
+      );
+      const mappedWeight = mappedWeights.reduce(
+        (total, value) => total + value,
+        0,
+      );
+      priorMean = mapped.reduce(
+        (total, item, index) => total + item.mean * mappedWeights[index],
+        0,
+      ) / mappedWeight;
+      priorSd = Math.sqrt(1 / mappedWeight);
+    } else {
+      if (evidence.length || !benchmark) return;
+      const pooledRoi = benchmark.median;
+      const pooledSe = benchmark.standardDeviation;
+      priorMean =
+        (pooledRoi * spend) /
+        Math.max(transformed * effectMultiplier, 1e-9);
+      priorSd =
+        (Math.max(pooledSe, Math.abs(pooledRoi) * 0.12) * spend) /
+        Math.max(transformed * effectMultiplier, 1e-9);
+    }
     const precision =
       variance / Math.max(priorSd ** 2 * indexes.length, 1e-9);
     indexes.forEach((coefficientIndex) => {

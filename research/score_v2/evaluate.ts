@@ -21,6 +21,28 @@ function sum(values: number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
 
+const TRUE_VALUE_CACHE = new WeakMap<
+  SyntheticBusiness,
+  (allocation: Record<string, number>) => number
+>();
+const MODEL_RESPONSE_CACHE = new WeakMap<
+  SyntheticBusiness,
+  Map<string, Map<string, number[]>>
+>();
+
+function cachedTrueValue(business: SyntheticBusiness) {
+  const existing = TRUE_VALUE_CACHE.get(business);
+  if (existing) return existing;
+  const value = trueDecisionValueSurface(
+    business.scenario,
+    business.truth.channels,
+    business.truth.allocation.currentContribution,
+    business.truth.allocation.effectiveRevenueMargin,
+  );
+  TRUE_VALUE_CACHE.set(business, value);
+  return value;
+}
+
 function allocations(
   channels: string[],
   total: number,
@@ -151,6 +173,7 @@ function modelContributionForAllocation(
   config: ModelConfig,
   additionalBudget: Record<string, number>,
 ): number {
+  const surfaces = modelResponseBasis(business, config);
   return business.truth.channels.reduce((total, truth) => {
     const estimate = model.channels.find(
       (channel) => channel.channel === truth.spendColumn,
@@ -159,15 +182,64 @@ function modelContributionForAllocation(
     const scale =
       (truth.totalSpend + (additionalBudget[truth.channel] ?? 0)) /
       Math.max(truth.totalSpend, 1);
-    const response = responseForChannel(config, truth.spendColumn);
-    const baseline = responseTransform(truth.spend, response);
-    const counterfactual = responseTransform(
-      truth.spend.map((value) => value * scale),
-      response,
-      baseline.halfSaturation,
+    return total + estimate.coefficient * interpolateSurface(
+      surfaces.get(truth.channel)!,
+      scale,
+      3,
     );
-    return total + estimate.coefficient * sum(counterfactual.transformed);
   }, 0);
+}
+
+function modelResponseBasis(
+  business: SyntheticBusiness,
+  config: ModelConfig,
+): Map<string, number[]> {
+  const signature = JSON.stringify({
+    adstockType: config.adstockType,
+    adstock: config.adstock,
+    weibullShape: config.weibullShape,
+    weibullScale: config.weibullScale,
+    saturation: config.saturation,
+    channelResponses: config.channelResponses,
+  });
+  const businessCache = MODEL_RESPONSE_CACHE.get(business) ?? new Map();
+  MODEL_RESPONSE_CACHE.set(business, businessCache);
+  const existing = businessCache.get(signature);
+  if (existing) return existing;
+  const points = 401;
+  const maximumScale = 3;
+  const surfaces = new Map(
+    business.truth.channels.map((truth) => {
+      const response = responseForChannel(config, truth.spendColumn);
+      const baseline = responseTransform(truth.spend, response);
+      const values = Array.from({ length: points }, (_, index) => {
+        const scale = index / (points - 1) * maximumScale;
+        return sum(
+          responseTransform(
+            truth.spend.map((value) => value * scale),
+            response,
+            baseline.halfSaturation,
+          ).transformed,
+        );
+      });
+      return [truth.channel, values] as const;
+    }),
+  );
+  businessCache.set(signature, surfaces);
+  return surfaces;
+}
+
+function interpolateSurface(
+  values: number[],
+  scale: number,
+  maximumScale: number,
+): number {
+  const bounded = Math.min(maximumScale, Math.max(0, scale));
+  const position = bounded / maximumScale * (values.length - 1);
+  const lower = Math.floor(position);
+  const upper = Math.min(values.length - 1, Math.ceil(position));
+  const weight = position - lower;
+  return values[lower] * (1 - weight) + values[upper] * weight;
 }
 
 function modelDecisionValueSurface(
@@ -175,34 +247,22 @@ function modelDecisionValueSurface(
   model: ModelResult,
   config: ModelConfig,
 ): (allocation: Record<string, number>) => number {
-  const points = 401;
   const maximumScale = 3;
+  const basis = modelResponseBasis(business, config);
   const surfaces = new Map(
     business.truth.channels.map((truth) => {
       const estimate = model.channels.find(
         (channel) => channel.channel === truth.spendColumn,
       );
-      const response = responseForChannel(config, truth.spendColumn);
-      const baseline = responseTransform(truth.spend, response);
-      const values = Array.from({ length: points }, (_, index) => {
-        const scale = index / (points - 1) * maximumScale;
-        const transformed = responseTransform(
-          truth.spend.map((value) => value * scale),
-          response,
-          baseline.halfSaturation,
-        );
-        return (estimate?.coefficient ?? 0) * sum(transformed.transformed);
-      });
+      const values = basis.get(truth.channel)!.map(
+        (value) => (estimate?.coefficient ?? 0) * value,
+      );
       return [truth.channel, values] as const;
     }),
   );
   const currentContribution = business.truth.channels.reduce((total, channel) => {
     const values = surfaces.get(channel.channel)!;
-    const position = (points - 1) / maximumScale;
-    const lower = Math.floor(position);
-    const upper = Math.ceil(position);
-    const weight = position - lower;
-    return total + values[lower] * (1 - weight) + values[upper] * weight;
+    return total + interpolateSurface(values, 1, maximumScale);
   }, 0);
   const margin = business.truth.allocation.effectiveRevenueMargin;
   return (allocation) => {
@@ -215,12 +275,8 @@ function modelDecisionValueSurface(
             Math.max(channel.totalSpend, 1),
         ),
       );
-      const position = scale / maximumScale * (points - 1);
-      const lower = Math.floor(position);
-      const upper = Math.min(points - 1, Math.ceil(position));
-      const weight = position - lower;
       const values = surfaces.get(channel.channel)!;
-      return total + values[lower] * (1 - weight) + values[upper] * weight;
+      return total + interpolateSurface(values, scale, maximumScale);
     }, 0);
     return (
       (contribution - currentContribution) * margin -
@@ -323,16 +379,16 @@ export function evaluateDecisionScenarioRegret(
   config: ModelConfig,
 ): {
   regret: Record<DecisionScenarioId, number>;
+  economicLoss: Record<DecisionScenarioId, number>;
   recommendedSpend: Record<DecisionScenarioId, number>;
 } {
-  const trueValue = trueDecisionValueSurface(
-    business.scenario,
-    business.truth.channels,
-    business.truth.allocation.currentContribution,
-    business.truth.allocation.effectiveRevenueMargin,
-  );
+  const trueValue = cachedTrueValue(business);
   const predictedValue = modelDecisionValueSurface(business, model, config);
+  const totalSpend = sum(
+    business.truth.channels.map((channel) => channel.totalSpend),
+  );
   const regret = {} as Record<DecisionScenarioId, number>;
+  const economicLoss = {} as Record<DecisionScenarioId, number>;
   const recommendedSpend = {} as Record<DecisionScenarioId, number>;
   DECISION_SCENARIO_CONTRACTS.forEach((contract) => {
     const recommendation = recommendForDecisionScenario(
@@ -345,6 +401,13 @@ export function evaluateDecisionScenarioRegret(
     )!;
     const realized = trueValue(recommendation.allocation);
     const gap = Math.max(0, truth.optimalIncrementalProfit - realized);
+    economicLoss[contract.id] =
+      gap /
+      Math.max(
+        Math.abs(truth.optimalIncrementalProfit),
+        totalSpend * 0.02,
+        1,
+      );
     regret[contract.id] = Math.min(
       1,
       gap /
@@ -356,7 +419,7 @@ export function evaluateDecisionScenarioRegret(
     );
     recommendedSpend[contract.id] = recommendation.spend;
   });
-  return { regret, recommendedSpend };
+  return { regret, economicLoss, recommendedSpend };
 }
 
 export function evaluateCandidateTruth(
@@ -369,8 +432,10 @@ export function evaluateCandidateTruth(
   contributionError: number;
   budgetRegret: number;
   profitRegret: number;
+  decisionLoss: number;
   revenueRegret: number;
   scenarioProfitRegret: Record<DecisionScenarioId, number>;
+  scenarioDecisionLoss: Record<DecisionScenarioId, number>;
   scenarioRecommendedSpend: Record<DecisionScenarioId, number>;
   recommendedAdditionalBudget: Record<string, number>;
   recommendedSpend: number;
@@ -448,6 +513,11 @@ export function evaluateCandidateTruth(
     (total, value) => total + value,
     0,
   ) / Math.max(scenarioRegrets.length, 1);
+  const scenarioLosses = Object.values(decisionEvaluation.economicLoss);
+  const meanLoss = scenarioLosses.reduce((total, value) => total + value, 0) /
+    Math.max(scenarioLosses.length, 1);
+  const decisionLoss =
+    0.7 * meanLoss + 0.3 * Math.max(...scenarioLosses, 0);
   const revenueRegret = Math.min(
     1,
     revenueGap /
@@ -466,8 +536,10 @@ export function evaluateCandidateTruth(
     contributionError,
     budgetRegret: profitRegret,
     profitRegret,
+    decisionLoss,
     revenueRegret,
     scenarioProfitRegret: decisionEvaluation.regret,
+    scenarioDecisionLoss: decisionEvaluation.economicLoss,
     scenarioRecommendedSpend: decisionEvaluation.recommendedSpend,
     recommendedAdditionalBudget: recommendation.allocation,
     recommendedSpend: recommendation.spend,

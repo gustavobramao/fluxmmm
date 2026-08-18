@@ -1,6 +1,6 @@
 import type { SeededRandom } from "./random";
 
-export const EVIDENCE_REGISTRY_VERSION = "flux-score-v2-evidence-2026.08.2";
+export const EVIDENCE_REGISTRY_VERSION = "flux-score-v6-evidence-2026.08.1";
 
 export interface RoiEvidenceEntry {
   id: string;
@@ -83,26 +83,27 @@ export function roiEvidence(id: string): RoiEvidenceEntry {
   return entry;
 }
 
-function logNormalSigma(entry: RoiEvidenceEntry): number {
-  return Math.max(
-    (Math.log(entry.high) - Math.log(entry.low)) / (2 * 1.281551565545),
-    0.18,
-  );
-}
+const LATENT_TRUTH_POPULATION: Record<
+  string,
+  { median: number; low: number; high: number; logSigma: number }
+> = {
+  "dtc-meta-acquisition": { median: 2.45, low: 0.45, high: 8.2, logSigma: 0.62 },
+  "dtc-search-nonbrand": { median: 1.25, low: 0.18, high: 6.2, logSigma: 0.72 },
+  "dtc-ctv": { median: 2.05, low: 0.25, high: 9.5, logSigma: 0.78 },
+};
 
 export function sampleHierarchicalRoi(
   id: string,
   random: SeededRandom,
   brandLogEffect: number,
 ): number {
-  const entry = roiEvidence(id);
-  const crossBusinessSigma = logNormalSigma(entry) * 0.7;
+  // The hidden population is versioned separately from model-visible evidence.
+  // This avoids making benchmark agreement a disguised answer key.
+  const entry = LATENT_TRUTH_POPULATION[id];
+  if (!entry) throw new Error(`Unknown latent ROI population: ${id}.`);
   const logRoi =
     Math.log(entry.median) +
     brandLogEffect +
-    crossBusinessSigma * random.normal();
-  // For the realism pilot, the declared evidence interval is the admissible
-  // population envelope—not merely a plotting annotation. Dedicated stress
-  // scenarios can still override truth explicitly when we want tail behavior.
+    entry.logSigma * random.normal();
   return Math.min(entry.high, Math.max(entry.low, Math.exp(logRoi)));
 }

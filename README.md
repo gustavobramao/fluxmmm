@@ -15,6 +15,7 @@ posterior-aware budget planning in one auditable workflow.
 
 [Explore the cached public demo](https://fluxmmm-demo.web.app/) ·
 [Read the methodology](https://fluxmmm-web.web.app/paper/) ·
+[Read the V2 release notes](RELEASE_NOTES.md) ·
 [Visit FluxMMM](https://fluxmmm-web.web.app/)
 
 ![FluxMMM — open measurement and grounded ROI](public/og.png)
@@ -33,16 +34,20 @@ Each candidate is challenged on:
 4. **ROI decision coherence** — business plausibility, refit stability,
    interval resolution, prior dependence, and economic consistency by channel.
 
-The resulting Flux Decision Score is a declared weighted geometric mean:
+The V2 Flux Decision Score is a monotonic weighted geometric mean learned
+offline from synthetic businesses with hidden causal and budget-decision truth:
 
 ```text
-100 × Generalization^0.20 × Structure^0.15 × Causal^0.25 × Decision^0.40
+100 × exp(Σ diagnostic_weight × log(diagnostic_score / 100))
 ```
 
-Scores rank candidates only after applicability-aware gates are evaluated. A
-high score is not presented as proof of causal identification.
+Twenty granular diagnostics remain organized into the same four readable
+layers. Weights are non-negative and constrained by layer and feature caps.
+Scores rank candidates only inside the highest available immutable eligibility
+tier after applicability-aware gates are evaluated. A high score is not
+presented as proof of causal identification.
 
-## What ships in v1
+## What ships in v2
 
 - Daily, weekly, and monthly CSV ingestion with deterministic repairs,
   semantic column mapping, and visible data-contract receipts.
@@ -54,6 +59,9 @@ high score is not presented as proof of causal identification.
   MAP/Laplace screening estimator.
 - Experiment-informed prior or likelihood calibration, plus optional
   channel-level D2C ecommerce plausibility priors when experiments are absent.
+- Experiment evidence is compared with the MMM response attributable to spend
+  in the same declared test window. An optional outcome end date includes
+  measured carryover without adding post-test spend to the denominator.
 - Optional smooth KTR-style time-varying coefficients and a latent
   media-planning-intensity sensitivity factor.
 - Half-normal or log-normal coefficient priors and Gaussian, Student-t, or
@@ -68,6 +76,9 @@ high score is not presented as proof of causal identification.
 - Fixed-budget, outcome-target, and economic-ceiling allocation with channel
   constraints, posterior uncertainty, support warnings, and interactive guides.
 - Deterministic model fingerprints and local artifact caching.
+- A versioned simulator audit and learned validation ranker trained only on
+  hidden synthetic decision loss, with family-held-out validation and a sealed
+  adversarial audit.
 
 ## Public fixture, not a Robyn wrapper
 
@@ -140,6 +151,10 @@ Independent experiments are the preferred ROI anchor. Compatible experiments
 are pooled with uncertainty retained and can enter as an informative coefficient
 prior or a noisy ROI measurement. Likelihood calibration requires an explicit
 overlap review because reusing outcomes or controls can double-count evidence.
+Anchor recovery always compares like with like: spend in the experiment window
+is removed from the fitted response path, its incremental contribution is
+measured through the declared outcome window, and the resulting period-specific
+ROI is compared with the reported lift estimate.
 
 When a channel has no compatible experiment, a user may activate an optional
 channel-specific industry prior. These priors are pragmatic plausibility
@@ -169,6 +184,7 @@ worker/              Local Worker API for uploads and cached artifacts
 db/ + drizzle/       Local D1 schema and migrations
 public/data/         Versioned public demonstration fixtures
 tests/               Data, numerical, model, MCMC, and rendered-product contracts
+research/            Simulator audit, hidden decision labels, and learned-score artifacts
 ```
 
 The modeling modules do not depend on React or persistence. The sampler consumes
@@ -201,8 +217,9 @@ FluxMMM is an evidence and governance system, not an automatic truth machine.
   or variation absent from the data.
 - Time-varying effects and planning intensity add flexibility and can worsen
   identification as well as improve fit.
-- The v1 validation weights and industry-prior library require broader empirical
-  validation before they should be treated as universal standards.
+- The V2 diagnostic weights are learned from a declared synthetic population.
+  They reduce held-out simulator decision loss but are not universal empirical
+  weights for every advertiser, category, or measurement design.
 - Neither specification search nor nonlinear budget optimization guarantees a
   global optimum.
 - Budget outputs are scenario analysis, not financial advice.
@@ -225,10 +242,6 @@ time-varying coefficients, sequential optimization, sensitivity analysis, and
 Hamiltonian Monte Carlo. The working paper distinguishes established components
 from FluxMMM's software and governance contribution and links the primary
 literature.
-
-The bundled simulated fixture remains subject to the license and attribution of
-Meta's Robyn repository. Robyn is not the FluxMMM modeling engine, and Meta does
-not sponsor or endorse this project.
 
 ## License
 

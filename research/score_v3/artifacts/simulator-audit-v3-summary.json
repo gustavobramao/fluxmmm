@@ -1,7 +1,7 @@
 {
   "artifactId": "flux-score-simulator-audit-v3-2026.08.1",
-  "simulatorVersion": "flux-score-v3-dgp-2026.08.1",
-  "evidenceRegistryVersion": "flux-score-v2-evidence-2026.08.2",
+  "simulatorVersion": "flux-score-v7-dgp-2026.08.1-window-evidence",
+  "evidenceRegistryVersion": "flux-score-v6-evidence-2026.08.1",
   "businessCount": 500,
   "splits": {
     "train": 300,
@@ -70,42 +70,42 @@
       "maximum": 260
     },
     "noiseShare": {
-      "minimum": 0.018104499514680353,
-      "p10": 0.02656071083215065,
-      "median": 0.058474321518326176,
-      "p90": 0.09435368322837168,
-      "maximum": 0.13943010559631513
+      "minimum": 0.018061630733776837,
+      "p10": 0.027119282022863626,
+      "median": 0.06184183509834111,
+      "p90": 0.09474234900274316,
+      "maximum": 0.13831194745423273
     },
     "effectiveRevenueMargin": {
-      "minimum": 0.2554130048954661,
-      "p10": 0.42752094365305693,
-      "median": 0.7318927609130672,
+      "minimum": 0.26285426623861063,
+      "p10": 0.4205196443405921,
+      "median": 0.7569992152505625,
       "p90": 1,
       "maximum": 1
     },
     "benchmarkLogError": {
-      "minimum": 0.027347598133163016,
-      "p10": 0.21463337007873504,
-      "median": 0.5256970673685408,
-      "p90": 0.974114997955747,
-      "maximum": 1.8242183973599821
+      "minimum": 0.03891452275445833,
+      "p10": 0.28482560855326355,
+      "median": 0.6325690699282682,
+      "p90": 1.1549406546035357,
+      "maximum": 1.7474439497220973
     },
     "experimentCoverage": 0.908,
     "channel": {
       "paid_social": {
         "roi": {
-          "minimum": 1.05,
-          "p10": 1.633065897875177,
-          "median": 2.853107698679868,
-          "p90": 5.27047206482612,
-          "maximum": 5.6
+          "minimum": 0.45,
+          "p10": 1.088730143228901,
+          "median": 2.4560167647114834,
+          "p90": 5.47492463466838,
+          "maximum": 8.2
         },
         "marginalRoi": {
-          "minimum": 0.06513130065798065,
-          "p10": 0.5032273681421849,
-          "median": 1.3919114976699736,
-          "p90": 2.925447842377059,
-          "maximum": 5.741215664681473
+          "minimum": 0.026446981564937123,
+          "p10": 0.35705508159978744,
+          "median": 1.16826404467945,
+          "p90": 3.221236808912202,
+          "maximum": 10.782578255881555
         },
         "memory": {
           "minimum": 0.010878098737448454,
@@ -146,107 +146,107 @@
       },
       "search": {
         "roi": {
-          "minimum": 0.45,
-          "p10": 0.6621001102964308,
-          "median": 1.4559589845445928,
-          "p90": 3.117875866381284,
-          "maximum": 3.9
+          "minimum": 0.18,
+          "p10": 0.5029105253245552,
+          "median": 1.2246208889831913,
+          "p90": 3.2268129377497887,
+          "maximum": 6.2
         },
         "marginalRoi": {
-          "minimum": 0.14918205135202672,
-          "p10": 0.3468232718868678,
-          "median": 0.9117926859125312,
-          "p90": 2.040549468992953,
-          "maximum": 4.013736427237332
+          "minimum": 0.07849863724914363,
+          "p10": 0.282245916156567,
+          "median": 0.7464264340192137,
+          "p90": 2.0633216717316225,
+          "maximum": 5.302883258955433
         },
         "memory": {
-          "minimum": 0.010226267003454269,
-          "p10": 0.08250554034113886,
-          "median": 0.29482886105310174,
-          "p90": 2.3125892334966953,
-          "maximum": 7.980412213597447
+          "minimum": 0.011595004298724235,
+          "p10": 0.07048431116249412,
+          "median": 0.3136402538768016,
+          "p90": 2.2140058805234735,
+          "maximum": 7.8709200512385
         },
         "hillShape": {
-          "minimum": 0.7219153712270782,
-          "p10": 0.8860108089428396,
-          "median": 1.5427112615783698,
-          "p90": 2.193076604409376,
-          "maximum": 2.348836491827387
+          "minimum": 0.7206829911400564,
+          "p10": 0.9102712587122805,
+          "median": 1.5416332525853067,
+          "p90": 2.2027828774580267,
+          "maximum": 2.3449040908692407
         },
         "halfSaturationQuantile": {
-          "minimum": 0.3009242471680045,
-          "p10": 0.3612177445534617,
-          "median": 0.5648600013181567,
-          "p90": 0.7686764768315478,
-          "maximum": 0.8193128256034106
+          "minimum": 0.30265362923964856,
+          "p10": 0.34458331220038235,
+          "median": 0.542148918826133,
+          "p90": 0.7607547612348572,
+          "maximum": 0.8196288194786758
         },
         "demandCoupling": {
-          "minimum": 0.020710915168747308,
-          "p10": 0.1081371044740081,
-          "median": 0.3721186225116253,
-          "p90": 0.9240219365339726,
-          "maximum": 1.1458637648262082
+          "minimum": 0.020876942090690135,
+          "p10": 0.09518593549262733,
+          "median": 0.3880289610521868,
+          "p90": 0.9299020248092711,
+          "maximum": 1.1436323351226747
         },
         "planningCoupling": {
-          "minimum": 0.04187595838680863,
-          "p10": 0.10947515399381519,
-          "median": 0.4141556973103433,
-          "p90": 0.7682167202979326,
-          "maximum": 1.07687029408291
+          "minimum": 0.042610181430354714,
+          "p10": 0.10354473803844301,
+          "median": 0.4165707574691623,
+          "p90": 0.7977697914848105,
+          "maximum": 1.0782447333354503
         },
-        "weibullShare": 0.124
+        "weibullShare": 0.114
       },
       "tv": {
         "roi": {
-          "minimum": 0.8,
-          "p10": 1.3799816161582623,
-          "median": 3.2875863242561953,
-          "p90": 7.430516903305234,
-          "maximum": 7.5
+          "minimum": 0.25,
+          "p10": 0.7427360881396121,
+          "median": 2.133481447776079,
+          "p90": 5.655488415657153,
+          "maximum": 9.5
         },
         "marginalRoi": {
-          "minimum": 0.07311778769733061,
-          "p10": 0.500784231910231,
-          "median": 1.6687093251087282,
-          "p90": 4.288682575206144,
-          "maximum": 8.155027164083092
+          "minimum": 0.018194043173063286,
+          "p10": 0.29877197721886395,
+          "median": 1.1029489733188766,
+          "p90": 3.506162598865631,
+          "maximum": 8.999132164775162
         },
         "memory": {
-          "minimum": 0.024234606833197177,
-          "p10": 0.3294217300005257,
-          "median": 6.337935375282541,
-          "p90": 11.787098403112031,
-          "maximum": 12.999808901455253
+          "minimum": 0.01753773171454668,
+          "p10": 0.2698830603030511,
+          "median": 6.5342504738946445,
+          "p90": 11.793446233996656,
+          "maximum": 12.990282870363444
         },
         "hillShape": {
-          "minimum": 0.7315374976838939,
-          "p10": 0.9318391740545631,
-          "median": 1.5732816597190684,
-          "p90": 2.1895464921083767,
-          "maximum": 2.3433342530508527
+          "minimum": 0.7205541393230669,
+          "p10": 0.8762277908490504,
+          "median": 1.5414306532382034,
+          "p90": 2.1480245970932303,
+          "maximum": 2.349262604776304
         },
         "halfSaturationQuantile": {
-          "minimum": 0.3009230634476989,
-          "p10": 0.36461096880212424,
-          "median": 0.5716197567107155,
-          "p90": 0.7872483018841594,
-          "maximum": 0.8187643423769624
+          "minimum": 0.30302434290759267,
+          "p10": 0.35332872334308923,
+          "median": 0.5714765030657872,
+          "p90": 0.7758516288334505,
+          "maximum": 0.8199895398691297
         },
         "demandCoupling": {
-          "minimum": 0.02399389457888901,
-          "p10": 0.07914983632974328,
-          "median": 0.3187416039220989,
-          "p90": 0.5586095569282771,
-          "maximum": 0.6178598451707512
+          "minimum": 0.020872707832604646,
+          "p10": 0.08207323790527882,
+          "median": 0.30814221972133965,
+          "p90": 0.5517097581084818,
+          "maximum": 0.61714748817496
         },
         "planningCoupling": {
-          "minimum": 0.0413318326510489,
-          "p10": 0.11449169058259576,
-          "median": 0.43882676694542166,
-          "p90": 0.7716838916530833,
-          "maximum": 1.0770866913534702
+          "minimum": 0.04210351566784084,
+          "p10": 0.11347012084629388,
+          "median": 0.41217470527626565,
+          "p90": 0.791799823958427,
+          "maximum": 1.0796998112741858
         },
-        "weibullShare": 0.778
+        "weibullShare": 0.746
       }
     }
   },
@@ -256,26 +256,26 @@
       "optimalBudgetShare": {
         "minimum": -0.35000000000000003,
         "p10": -0.35,
-        "median": -0.14875,
+        "median": -0.27999999999999997,
         "p90": 0,
         "maximum": 0
       },
       "profitOpportunity": {
-        "minimum": -1.043081283569336e-7,
-        "p10": -7.450580596923828e-9,
-        "median": 262691.49194132676,
-        "p90": 3085514.377351137,
-        "maximum": 9360867.27259415
+        "minimum": -2.086162567138672e-7,
+        "p10": 0,
+        "median": 932825.9501818023,
+        "p90": 4142054.630690854,
+        "maximum": 9972108.488134628
       },
       "mixShiftShare": {
         "minimum": 0,
         "p10": 0,
-        "median": 0.074375,
+        "median": 0.13999999999999999,
         "p90": 0.175,
         "maximum": 0.17500000000000004
       },
-      "decreaseShare": 0.67,
-      "unchangedShare": 0.33,
+      "decreaseShare": 0.782,
+      "unchangedShare": 0.218,
       "increaseShare": 0
     },
     "fixed-budget-mix": {
@@ -288,18 +288,18 @@
         "maximum": 0
       },
       "profitOpportunity": {
-        "minimum": 1.1868823129157276e-8,
-        "p10": 93883.86407798655,
-        "median": 1186412.8720551706,
-        "p90": 5668865.947547667,
-        "maximum": 27870266.05091983
+        "minimum": -1.4901161193847656e-8,
+        "p10": 61070.257201768676,
+        "median": 1145471.9772847868,
+        "p90": 6457904.289020783,
+        "maximum": 29327147.872099657
       },
       "mixShiftShare": {
         "minimum": 0,
-        "p10": 0.037461019934858196,
-        "median": 0.1417138794710786,
-        "p90": 0.29339318729327335,
-        "maximum": 0.4414239853777295
+        "p10": 0.037417667832184955,
+        "median": 0.15270597533714647,
+        "p90": 0.2902554891869418,
+        "maximum": 0.41924311331794917
       },
       "decreaseShare": 0,
       "unchangedShare": 1,
@@ -310,54 +310,54 @@
       "optimalBudgetShare": {
         "minimum": 0,
         "p10": 0,
-        "median": 0.15,
+        "median": 0.075,
         "p90": 0.5,
         "maximum": 0.5
       },
       "profitOpportunity": {
-        "minimum": -4.8360743892895195e-8,
-        "p10": -1.1392508203822818e-9,
-        "median": 533557.9145264956,
-        "p90": 6769890.156090478,
-        "maximum": 23960993.029868074
+        "minimum": -1.1118163194893406e-7,
+        "p10": -3.5468272120574526e-9,
+        "median": 129315.52435018623,
+        "p90": 5884398.4808516605,
+        "maximum": 33902607.18119819
       },
       "mixShiftShare": {
         "minimum": 0,
         "p10": 0,
-        "median": 0.07500000000000001,
+        "median": 0.0375,
         "p90": 0.25,
         "maximum": 0.25000000000000006
       },
       "decreaseShare": 0,
-      "unchangedShare": 0.3,
-      "increaseShare": 0.7
+      "unchangedShare": 0.406,
+      "increaseShare": 0.594
     },
     "economic-ceiling": {
       "label": "Find economic ceiling",
       "optimalBudgetShare": {
         "minimum": -0.35000000000000003,
         "p10": -0.35,
-        "median": 0.10999999999999999,
-        "p90": 0.6849999999999998,
+        "median": -0.235,
+        "p90": 0.6275,
         "maximum": 0.8
       },
       "profitOpportunity": {
-        "minimum": -3.6069440522710846e-8,
-        "p10": 316733.7399692984,
-        "median": 2000471.1198743219,
-        "p90": 7503649.049062374,
-        "maximum": 26354556.38374711
+        "minimum": 0,
+        "p10": 384620.8876144838,
+        "median": 2179832.876420449,
+        "p90": 7342497.726406002,
+        "maximum": 42720194.172935754
       },
       "mixShiftShare": {
         "minimum": 0,
-        "p10": 0.08137500000000011,
-        "median": 0.17499999999999996,
-        "p90": 0.3424999999999999,
+        "p10": 0.060000000000000005,
+        "median": 0.175,
+        "p90": 0.31375,
         "maximum": 0.4
       },
-      "decreaseShare": 0.474,
-      "unchangedShare": 0.006,
-      "increaseShare": 0.52
+      "decreaseShare": 0.592,
+      "unchangedShare": 0.004,
+      "increaseShare": 0.404
     }
   },
   "sampleBusinesses": [
@@ -367,65 +367,65 @@
       "split": "train",
       "seed": 31000000,
       "periods": 104,
-      "noiseShare": 0.03261444842815399,
-      "effectiveRevenueMargin": 0.7056804100501055,
+      "noiseShare": 0.03548940935404971,
+      "effectiveRevenueMargin": 0.7027151992790281,
       "hiddenDemand": false,
-      "experimentCount": 3,
-      "benchmarkLogError": 1.2223363585671372,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.9032238179408227,
       "channels": {
         "paid_social": {
-          "roi": 5.6,
-          "marginalRoi": 4.2135294793484785,
+          "roi": 8.2,
+          "marginalRoi": 6.322578549424052,
           "family": "geometric",
           "memory": 0.07917618986219167,
           "hillShape": 1.9204076679423454,
           "halfSaturationQuantile": 0.6366825552098453,
           "demandCoupling": 0.03052194009535015,
           "planningCoupling": 0.6157251854706556,
-          "spendShare": 0.3569440399047159
+          "spendShare": 0.37178540296256735
         },
         "search": {
-          "roi": 3.5387814853966835,
-          "marginalRoi": 1.7462030937093693,
-          "family": "weibull",
-          "memory": 2.7511320404009894,
-          "hillShape": 1.1138484289706685,
-          "halfSaturationQuantile": 0.5029076805990189,
-          "demandCoupling": 0.3883725555893034,
-          "planningCoupling": 0.3678726269584149,
-          "spendShare": 0.43453364728259414
+          "roi": 3.423459622518842,
+          "marginalRoi": 2.169192917847815,
+          "family": "geometric",
+          "memory": 0.11394020027946682,
+          "hillShape": 1.6629349112883212,
+          "halfSaturationQuantile": 0.4256448975857347,
+          "demandCoupling": 0.30929937672801316,
+          "planningCoupling": 0.3132775703910738,
+          "spendShare": 0.43034203111466596
         },
         "tv": {
-          "roi": 7.5,
-          "marginalRoi": 4.085609058380319,
+          "roi": 9.5,
+          "marginalRoi": 3.0832230969025916,
           "family": "weibull",
-          "memory": 11.398449574946426,
-          "hillShape": 1.0825036147795617,
-          "halfSaturationQuantile": 0.4730237535666674,
-          "demandCoupling": 0.042251614369452004,
-          "planningCoupling": 0.26067526591010387,
-          "spendShare": 0.2085223128126899
+          "memory": 9.732182998210192,
+          "hillShape": 0.7205541393230669,
+          "halfSaturationQuantile": 0.415645324960351,
+          "demandCoupling": 0.2147134699206799,
+          "planningCoupling": 0.45617925322614605,
+          "spendShare": 0.1978725659227668
         }
       },
       "decisions": {
         "budget-reduction": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 0,
+          "optimalIncrementalProfit": -2.0942544915647153e-8,
           "mixShiftShare": 0
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 2090435.041298521,
-          "mixShiftShare": 0.16729545420379874
+          "optimalIncrementalProfit": 4159501.0704042427,
+          "mixShiftShare": 0.21086759524618628
         },
         "budget-growth": {
           "optimalBudgetShare": 0.5,
-          "optimalIncrementalProfit": 7297989.552892373,
-          "mixShiftShare": 0.25
+          "optimalIncrementalProfit": 10881034.812910069,
+          "mixShiftShare": 0.24999999999999997
         },
         "economic-ceiling": {
           "optimalBudgetShare": 0.7999999999999999,
-          "optimalIncrementalProfit": 8149841.232004423,
+          "optimalIncrementalProfit": 12728344.883318525,
           "mixShiftShare": 0.39999999999999997
         }
       }
@@ -436,66 +436,66 @@
       "split": "train",
       "seed": 31100000,
       "periods": 208,
-      "noiseShare": 0.09535763224912808,
-      "effectiveRevenueMargin": 0.41786860862321307,
+      "noiseShare": 0.035636309339199215,
+      "effectiveRevenueMargin": 0.5991106276040566,
       "hiddenDemand": true,
-      "experimentCount": 1,
-      "benchmarkLogError": 0.8349303171103409,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.37027296690753453,
       "channels": {
         "paid_social": {
-          "roi": 3.274593480269467,
-          "marginalRoi": 1.067681075201164,
+          "roi": 1.8077493449856603,
+          "marginalRoi": 0.5926134135968297,
           "family": "geometric",
           "memory": 0.3367043444141746,
           "hillShape": 0.9577842011582106,
           "halfSaturationQuantile": 0.4040723146684468,
           "demandCoupling": 0.04086648740805686,
           "planningCoupling": 0.23176142659038304,
-          "spendShare": 0.3548381672512233
+          "spendShare": 0.3248442211335081
         },
         "search": {
-          "roi": 3.9,
-          "marginalRoi": 1.5239150489679962,
+          "roi": 1.2033487179188649,
+          "marginalRoi": 0.3554857530208395,
           "family": "geometric",
-          "memory": 0.04049675421789289,
-          "hillShape": 1.1630748622468672,
-          "halfSaturationQuantile": 0.5279032972734421,
-          "demandCoupling": 0.9357897493056953,
-          "planningCoupling": 0.5124815176520496,
-          "spendShare": 0.5904283044790909
+          "memory": 0.013783356063067914,
+          "hillShape": 0.8120550173614174,
+          "halfSaturationQuantile": 0.44134903580881657,
+          "demandCoupling": 1.0279303045012056,
+          "planningCoupling": 0.6614566283393651,
+          "spendShare": 0.6143366887234052
         },
         "tv": {
-          "roi": 5.295705682297808,
-          "marginalRoi": 2.1569239053790286,
+          "roi": 2.605068470173369,
+          "marginalRoi": 2.0529863929663534,
           "family": "weibull",
-          "memory": 4.464127988670953,
-          "hillShape": 1.7158603691123426,
-          "halfSaturationQuantile": 0.543885053684935,
-          "demandCoupling": 0.3650397276785225,
-          "planningCoupling": 0.4825093424972146,
-          "spendShare": 0.05473352826968585
+          "memory": 12.710027458379045,
+          "hillShape": 1.7158057767897845,
+          "halfSaturationQuantile": 0.5299320326093584,
+          "demandCoupling": 0.09199849830940365,
+          "planningCoupling": 0.04750321259722114,
+          "spendShare": 0.06081909014308673
         }
       },
       "decisions": {
         "budget-reduction": {
           "optimalBudgetShare": -0.35,
-          "optimalIncrementalProfit": 2264532.554481011,
-          "mixShiftShare": 0.17499999999999996
+          "optimalIncrementalProfit": 7410136.596075792,
+          "mixShiftShare": 0.175
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 59035.21326111989,
-          "mixShiftShare": 0.012419335853792814
+          "optimalIncrementalProfit": 1432176.471968078,
+          "mixShiftShare": 0.10750892052659591
         },
         "budget-growth": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": -6.226727494943337e-9,
+          "optimalIncrementalProfit": 0,
           "mixShiftShare": 0
         },
         "economic-ceiling": {
           "optimalBudgetShare": -0.35,
-          "optimalIncrementalProfit": 2264532.554481011,
-          "mixShiftShare": 0.17499999999999996
+          "optimalIncrementalProfit": 7410136.596075792,
+          "mixShiftShare": 0.175
         }
       }
     },
@@ -505,66 +505,66 @@
       "split": "train",
       "seed": 31200000,
       "periods": 104,
-      "noiseShare": 0.09953802041476593,
-      "effectiveRevenueMargin": 0.7309420344631544,
+      "noiseShare": 0.06193148234300315,
+      "effectiveRevenueMargin": 0.4988971418124269,
       "hiddenDemand": true,
-      "experimentCount": 1,
-      "benchmarkLogError": 0.1957675957010231,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.6343329852933203,
       "channels": {
         "paid_social": {
-          "roi": 3.8635970703355413,
-          "marginalRoi": 1.5160247590612381,
+          "roi": 0.977052017206343,
+          "marginalRoi": 0.3835450928829013,
           "family": "weibull",
           "memory": 6.065299431793392,
           "hillShape": 2.082394660636783,
           "halfSaturationQuantile": 0.5158775915112346,
           "demandCoupling": 0.5352911641635001,
           "planningCoupling": 0.6186694384831934,
-          "spendShare": 0.6328144348675087
+          "spendShare": 0.6614007269422154
         },
         "search": {
-          "roi": 2.171325697902785,
-          "marginalRoi": 1.197683360625405,
+          "roi": 1.1985517073581708,
+          "marginalRoi": 1.1085358933276264,
           "family": "geometric",
-          "memory": 0.5200665145786479,
-          "hillShape": 1.3442607742501425,
-          "halfSaturationQuantile": 0.4438658862095326,
-          "demandCoupling": 0.3285253905970603,
-          "planningCoupling": 0.0952227870002389,
-          "spendShare": 0.292280416215868
+          "memory": 0.22787843599915505,
+          "hillShape": 2.2596452199318446,
+          "halfSaturationQuantile": 0.4991506764478981,
+          "demandCoupling": 0.06872598852962256,
+          "planningCoupling": 0.5143206096254289,
+          "spendShare": 0.21685542223563675
         },
         "tv": {
-          "roi": 2.5062496197004966,
-          "marginalRoi": 0.9325106099518636,
-          "family": "geometric",
-          "memory": 0.5816003335802816,
-          "hillShape": 2.096314432385843,
-          "halfSaturationQuantile": 0.4381854824535549,
-          "demandCoupling": 0.38717234402894973,
-          "planningCoupling": 0.6268242880888283,
-          "spendShare": 0.07490514891662335
+          "roi": 2.547573390320925,
+          "marginalRoi": 2.533592983574092,
+          "family": "weibull",
+          "memory": 11.27541110117454,
+          "hillShape": 1.9300110957608558,
+          "halfSaturationQuantile": 0.7390696348715573,
+          "demandCoupling": 0.5377861365489661,
+          "planningCoupling": 0.21652444069273769,
+          "spendShare": 0.12174385082214777
         }
       },
       "decisions": {
         "budget-reduction": {
-          "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": -5.4459425394472064e-9,
-          "mixShiftShare": 0
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 1645511.5305775343,
+          "mixShiftShare": 0.175
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 71959.73220160091,
-          "mixShiftShare": 0.020973441696654535
+          "optimalIncrementalProfit": 610172.7518265034,
+          "mixShiftShare": 0.13889415265786523
         },
         "budget-growth": {
-          "optimalBudgetShare": 0.025,
-          "optimalIncrementalProfit": 3701.255111285718,
-          "mixShiftShare": 0.0125
+          "optimalBudgetShare": 0,
+          "optimalIncrementalProfit": -9.292683411621058e-10,
+          "mixShiftShare": 0
         },
         "economic-ceiling": {
-          "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": -5.4459425394472064e-9,
-          "mixShiftShare": 0
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 1645511.5305775343,
+          "mixShiftShare": 0.175
         }
       }
     },
@@ -574,66 +574,66 @@
       "split": "validation",
       "seed": 31300000,
       "periods": 208,
-      "noiseShare": 0.09679230662016199,
-      "effectiveRevenueMargin": 0.7816085619876114,
+      "noiseShare": 0.06006125540286303,
+      "effectiveRevenueMargin": 0.7630360230710683,
       "hiddenDemand": false,
-      "experimentCount": 1,
-      "benchmarkLogError": 0.5291192483568562,
+      "experimentCount": 2,
+      "benchmarkLogError": 0.8110060756030768,
       "channels": {
         "paid_social": {
-          "roi": 5.6,
-          "marginalRoi": 3.2379884914436676,
+          "roi": 3.9045857440918397,
+          "marginalRoi": 2.2403288332953806,
           "family": "geometric",
           "memory": 0.38481531837023797,
           "hillShape": 2.8507422228809447,
           "halfSaturationQuantile": 0.6667588429059833,
           "demandCoupling": 0.14893861588090657,
           "planningCoupling": 0.464154804861173,
-          "spendShare": 0.505357136444626
+          "spendShare": 0.2720820364479436
         },
         "search": {
-          "roi": 1.1532884797437042,
-          "marginalRoi": 0.35789871010665725,
-          "family": "geometric",
-          "memory": 0.4614263522345573,
-          "hillShape": 0.7979933887207881,
-          "halfSaturationQuantile": 0.32030767455697057,
-          "demandCoupling": 0.41307724023237824,
-          "planningCoupling": 0.11597209404222666,
-          "spendShare": 0.22180649164629535
+          "roi": 0.6476402919749488,
+          "marginalRoi": 0.5417725862561381,
+          "family": "weibull",
+          "memory": 6.387277186033316,
+          "hillShape": 2.0826388039672747,
+          "halfSaturationQuantile": 0.3248813264630735,
+          "demandCoupling": 0.08703420062549412,
+          "planningCoupling": 0.12518136917613445,
+          "spendShare": 0.42987244737277425
         },
         "tv": {
-          "roi": 2.9078743363092587,
-          "marginalRoi": 2.044504186886121,
-          "family": "geometric",
-          "memory": 0.7145048979436979,
-          "hillShape": 1.6082176451478154,
-          "halfSaturationQuantile": 0.6649330379348248,
-          "demandCoupling": 0.05196366857737303,
-          "planningCoupling": 0.4794236995466053,
-          "spendShare": 0.2728363719090787
+          "roi": 1.6765590777091393,
+          "marginalRoi": 1.6236582481372628,
+          "family": "weibull",
+          "memory": 12.444575324538164,
+          "hillShape": 2.0790960685769098,
+          "halfSaturationQuantile": 0.7757695414684713,
+          "demandCoupling": 0.5334284367784857,
+          "planningCoupling": 0.34143160438165066,
+          "spendShare": 0.2980455161792822
         }
       },
       "decisions": {
         "budget-reduction": {
-          "optimalBudgetShare": -0.1225,
-          "optimalIncrementalProfit": 180194.86055405415,
-          "mixShiftShare": 0.061250000000000006
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 1153036.4935461525,
+          "mixShiftShare": 0.175
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 3382690.4228555057,
-          "mixShiftShare": 0.15526454415240673
+          "optimalIncrementalProfit": 3381708.721816441,
+          "mixShiftShare": 0.300910713160942
         },
         "budget-growth": {
-          "optimalBudgetShare": 0.5,
-          "optimalIncrementalProfit": 3624608.2092104377,
-          "mixShiftShare": 0.25
+          "optimalBudgetShare": 0.175,
+          "optimalIncrementalProfit": 1095841.28723633,
+          "mixShiftShare": 0.0875
         },
         "economic-ceiling": {
-          "optimalBudgetShare": 0.57,
-          "optimalIncrementalProfit": 3642626.6329806764,
-          "mixShiftShare": 0.285
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 1153036.4935461525,
+          "mixShiftShare": 0.175
         }
       }
     },
@@ -643,66 +643,66 @@
       "split": "validation",
       "seed": 31400000,
       "periods": 104,
-      "noiseShare": 0.045314837250858546,
-      "effectiveRevenueMargin": 0.5660220859010494,
+      "noiseShare": 0.023067338172812014,
+      "effectiveRevenueMargin": 0.3322081475554787,
       "hiddenDemand": true,
-      "experimentCount": 1,
-      "benchmarkLogError": 0.1310570443290639,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.4895060512740761,
       "channels": {
         "paid_social": {
-          "roi": 1.9057906631814365,
-          "marginalRoi": 1.1528220036381032,
+          "roi": 1.3013463458179377,
+          "marginalRoi": 0.8746525102588378,
           "family": "geometric",
           "memory": 0.24682299477979544,
           "hillShape": 2.5246379313059153,
           "halfSaturationQuantile": 0.48178930376656354,
           "demandCoupling": 0.5137920967582613,
           "planningCoupling": 0.7949609175883233,
-          "spendShare": 0.21042559921947698
+          "spendShare": 0.30449317237713586
         },
         "search": {
-          "roi": 1.5988080512040375,
-          "marginalRoi": 0.9719449069467182,
-          "family": "geometric",
-          "memory": 0.4897327942028642,
-          "hillShape": 1.9031502627884038,
-          "halfSaturationQuantile": 0.32469802294857797,
-          "demandCoupling": 0.0983558909315616,
-          "planningCoupling": 1.0580068681016566,
-          "spendShare": 0.6020480577957203
+          "roi": 1.3505604256251624,
+          "marginalRoi": 1.3128924177865422,
+          "family": "weibull",
+          "memory": 7.375365058542229,
+          "hillShape": 2.168082323241979,
+          "halfSaturationQuantile": 0.6774467096012086,
+          "demandCoupling": 0.5833447801694274,
+          "planningCoupling": 0.9895192825142294,
+          "spendShare": 0.4737539542347514
         },
         "tv": {
-          "roi": 2.627556375974187,
-          "marginalRoi": 1.0584196410567905,
-          "family": "weibull",
-          "memory": 4.592987064970657,
-          "hillShape": 1.004890789363999,
-          "halfSaturationQuantile": 0.5611429045349359,
-          "demandCoupling": 0.4106782328151167,
-          "planningCoupling": 0.7870717994961888,
-          "spendShare": 0.18752634298480267
+          "roi": 1.4698484293053504,
+          "marginalRoi": 0.8358825840460837,
+          "family": "geometric",
+          "memory": 0.10484745735768229,
+          "hillShape": 2.2617318320274356,
+          "halfSaturationQuantile": 0.8055090304091572,
+          "demandCoupling": 0.4974243736173958,
+          "planningCoupling": 0.734418008280918,
+          "spendShare": 0.2217528733881129
         }
       },
       "decisions": {
         "budget-reduction": {
           "optimalBudgetShare": -0.35,
-          "optimalIncrementalProfit": 724866.9505694695,
-          "mixShiftShare": 0.17500000000000002
+          "optimalIncrementalProfit": 1262032.0723338204,
+          "mixShiftShare": 0.175
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 8780.592449541256,
-          "mixShiftShare": 0.02107168202285021
+          "optimalIncrementalProfit": 38809.67117513527,
+          "mixShiftShare": 0.06985215511725557
         },
         "budget-growth": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": -2.1085965853223555e-9,
+          "optimalIncrementalProfit": -1.856357683737643e-9,
           "mixShiftShare": 0
         },
         "economic-ceiling": {
           "optimalBudgetShare": -0.35,
-          "optimalIncrementalProfit": 724866.9505694695,
-          "mixShiftShare": 0.17500000000000002
+          "optimalIncrementalProfit": 1262032.0723338204,
+          "mixShiftShare": 0.175
         }
       }
     },
@@ -712,66 +712,66 @@
       "split": "audit",
       "seed": 31500000,
       "periods": 130,
-      "noiseShare": 0.0633739350764081,
-      "effectiveRevenueMargin": 0.4140786044521876,
+      "noiseShare": 0.13535488990368322,
+      "effectiveRevenueMargin": 0.5262416369168483,
       "hiddenDemand": true,
-      "experimentCount": 2,
-      "benchmarkLogError": 0.3245285534974556,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.4613468980995848,
       "channels": {
         "paid_social": {
-          "roi": 4.857190988809928,
-          "marginalRoi": 1.5721005150480154,
+          "roi": 4.451901817335366,
+          "marginalRoi": 1.4331804380661621,
           "family": "geometric",
           "memory": 0.04026686874683946,
           "hillShape": 1.1166506680659951,
           "halfSaturationQuantile": 0.6834594940766692,
           "demandCoupling": 0.5990652390569449,
           "planningCoupling": 0.14839509367011486,
-          "spendShare": 0.41948207564715384
+          "spendShare": 0.40049509428680247
         },
         "search": {
-          "roi": 2.4057349372223555,
-          "marginalRoi": 2.0990396762959085,
+          "roi": 2.171159069748715,
+          "marginalRoi": 1.8965029421986186,
           "family": "geometric",
           "memory": 0.5232602105429397,
           "hillShape": 1.8004751099995338,
           "halfSaturationQuantile": 0.7191797268949449,
           "demandCoupling": 0.14955083958804605,
           "planningCoupling": 0.13816880896687506,
-          "spendShare": 0.4358701946185417
+          "spendShare": 0.41341140074821614
         },
         "tv": {
-          "roi": 4.3866836012358625,
-          "marginalRoi": 2.1911276525672716,
+          "roi": 2.7430929684798278,
+          "marginalRoi": 2.3472810798551556,
           "family": "weibull",
-          "memory": 7.614479891723022,
-          "hillShape": 1.3376814263081178,
-          "halfSaturationQuantile": 0.44144474402070044,
-          "demandCoupling": 0.0735123192705214,
-          "planningCoupling": 0.30987905048765235,
-          "spendShare": 0.14464772973430448
+          "memory": 10.999866734142415,
+          "hillShape": 1.9308475057943724,
+          "halfSaturationQuantile": 0.4970517433620989,
+          "demandCoupling": 0.2581285739596933,
+          "planningCoupling": 0.14011737797409296,
+          "spendShare": 0.1860935049649814
         }
       },
       "decisions": {
         "budget-reduction": {
-          "optimalBudgetShare": -0.08750000000000002,
-          "optimalIncrementalProfit": 72685.86787274037,
-          "mixShiftShare": 0.04375000000000001
+          "optimalBudgetShare": 0,
+          "optimalIncrementalProfit": 0,
+          "mixShiftShare": 0
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 1045.0905462299645,
-          "mixShiftShare": 0.007627728405824479
+          "optimalIncrementalProfit": 59341.444134553174,
+          "mixShiftShare": 0.028938798052375127
         },
         "budget-growth": {
-          "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 6.170252031865531e-9,
-          "mixShiftShare": 0
+          "optimalBudgetShare": 0.05,
+          "optimalIncrementalProfit": 26677.77017230622,
+          "mixShiftShare": 0.025
         },
         "economic-ceiling": {
-          "optimalBudgetShare": -0.0625,
-          "optimalIncrementalProfit": 68975.79444554378,
-          "mixShiftShare": 0.03125
+          "optimalBudgetShare": 0.05249999999999999,
+          "optimalIncrementalProfit": 25616.70300718362,
+          "mixShiftShare": 0.026249999999999992
         }
       }
     },
@@ -781,66 +781,66 @@
       "split": "audit",
       "seed": 31600000,
       "periods": 208,
-      "noiseShare": 0.09652887458261103,
-      "effectiveRevenueMargin": 0.6366342305174727,
+      "noiseShare": 0.13774456183845177,
+      "effectiveRevenueMargin": 1,
       "hiddenDemand": true,
-      "experimentCount": 2,
-      "benchmarkLogError": 0.3048846985276388,
+      "experimentCount": 4,
+      "benchmarkLogError": 0.6774335414713542,
       "channels": {
         "paid_social": {
-          "roi": 4.681308763033104,
-          "marginalRoi": 2.3198457391022553,
+          "roi": 1.093477962221427,
+          "marginalRoi": 0.5371960716798782,
           "family": "weibull",
           "memory": 7.008404685650021,
           "hillShape": 1.5116553890518845,
           "halfSaturationQuantile": 0.5603743201587349,
           "demandCoupling": 0.5548455635365098,
           "planningCoupling": 0.047206604471430186,
-          "spendShare": 0.4553712007159165
+          "spendShare": 0.5773676528854894
         },
         "search": {
-          "roi": 2.2617735568837594,
-          "marginalRoi": 1.3185906323948118,
-          "family": "weibull",
-          "memory": 1.5931161813205108,
-          "hillShape": 1.237163521889597,
-          "halfSaturationQuantile": 0.7056963606830686,
-          "demandCoupling": 0.16486428764648733,
-          "planningCoupling": 0.654672592068091,
-          "spendShare": 0.1638083641914496
+          "roi": 0.7578259688308724,
+          "marginalRoi": 0.6288843600305916,
+          "family": "geometric",
+          "memory": 0.0177358058327809,
+          "hillShape": 2.259993941257708,
+          "halfSaturationQuantile": 0.4649846818298101,
+          "demandCoupling": 0.562358169471845,
+          "planningCoupling": 0.24512783524580298,
+          "spendShare": 0.2797815651825719
         },
         "tv": {
-          "roi": 2.631077014321707,
-          "marginalRoi": 1.4291980470154122,
+          "roi": 0.8075928431386477,
+          "marginalRoi": 0.5818456772411951,
           "family": "geometric",
-          "memory": 0.3630072057945654,
-          "hillShape": 1.8933119742944837,
-          "halfSaturationQuantile": 0.667144810790196,
-          "demandCoupling": 0.5916594683006405,
-          "planningCoupling": 0.6673239891324192,
-          "spendShare": 0.3808204350926339
+          "memory": 0.5096594255836681,
+          "hillShape": 1.7855587878613732,
+          "halfSaturationQuantile": 0.6743081144988536,
+          "demandCoupling": 0.5735211668815464,
+          "planningCoupling": 0.3733683167118579,
+          "spendShare": 0.14285078193193873
         }
       },
       "decisions": {
         "budget-reduction": {
-          "optimalBudgetShare": -0.017500000000000016,
-          "optimalIncrementalProfit": 7505.215900896001,
-          "mixShiftShare": 0.00875000000000001
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 875538.8261917951,
+          "mixShiftShare": 0.175
         },
         "fixed-budget-mix": {
           "optimalBudgetShare": 0,
-          "optimalIncrementalProfit": 480776.3907105524,
-          "mixShiftShare": 0.0866366489835742
+          "optimalIncrementalProfit": 2903.0205133147538,
+          "mixShiftShare": 0.0074996660514267816
         },
         "budget-growth": {
-          "optimalBudgetShare": 0.15,
-          "optimalIncrementalProfit": 381186.90705591394,
-          "mixShiftShare": 0.075
+          "optimalBudgetShare": 0,
+          "optimalIncrementalProfit": -3.725290298461914e-9,
+          "mixShiftShare": 0
         },
         "economic-ceiling": {
-          "optimalBudgetShare": 0.16749999999999998,
-          "optimalIncrementalProfit": 382343.27055913955,
-          "mixShiftShare": 0.08375
+          "optimalBudgetShare": -0.35,
+          "optimalIncrementalProfit": 875538.8261917951,
+          "mixShiftShare": 0.175
         }
       }
     }

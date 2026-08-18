@@ -20,7 +20,7 @@ import type {
 } from "./types";
 
 const VALIDATION_VERSION =
-  "flux-validation-v1.6.0-learned-decision-score";
+  "flux-validation-v1.8.0-experiment-window-roi";
 export const DEFAULT_VALIDATION_OPTIONS: ValidationOptions = {
   anchorIndependenceConfirmed: false,
   industryPriorChannels: [],
@@ -74,7 +74,9 @@ export async function runModelValidation(
     detail: "Structural diagnostics complete; running temporal holdouts.",
     layers: { structure },
   });
-  await new Promise<void>((resolve) => setTimeout(resolve, 40));
+  if (onProgress) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 40));
+  }
 
   const generalization = runGeneralizationValidation(dataset, spec);
   onProgress?.({
@@ -82,7 +84,9 @@ export async function runModelValidation(
     detail: "Rolling and spend-regime holdouts complete; testing causal stability.",
     layers: { structure, generalization },
   });
-  await new Promise<void>((resolve) => setTimeout(resolve, 40));
+  if (onProgress) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 40));
+  }
 
   const causalRobustness = await runCausalValidation(dataset, spec, model);
   const causal: typeof causalRobustness = {
@@ -94,13 +98,16 @@ export async function runModelValidation(
     detail: "Causal stress tests complete; scoring material-channel ROI coherence.",
     layers: { structure, generalization, causal },
   });
-  await new Promise<void>((resolve) => setTimeout(resolve, 24));
+  if (onProgress) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 24));
+  }
 
   const assessedCoherence = assessEvidenceCoherence(
     dataset,
     model,
     experiments,
     validationOptions,
+    config,
   );
   const decision = runDecisionValidation(model, assessedCoherence, causal);
   const evidenceCoherence = {

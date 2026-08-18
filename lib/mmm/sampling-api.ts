@@ -43,7 +43,7 @@ export async function samplingServiceHealth(): Promise<{
   } catch {
     return {
       ready: false,
-      detail: `No V2 sampling service is listening on port ${SAMPLING_SERVICE_PORT}. Start Flux with pnpm dev after running pnpm mcmc:setup.`,
+      detail: `No local production sampling service is listening on port ${SAMPLING_SERVICE_PORT}. Start Flux with pnpm dev after running pnpm mcmc:setup.`,
     };
   }
 }

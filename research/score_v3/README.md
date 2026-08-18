@@ -33,9 +33,12 @@ Candidate profit regret is averaged across the four decisions, while the
 component regrets remain available for diagnosis. Allocations are explored on
 a dense deterministic low-discrepancy surface rather than the V2 5% mix grid.
 
-## Current boundary
+## Downstream score learning
 
-V3 audits the simulator population and upgrades the decision label. It does not
-yet train or display a replacement Flux score. The next gated step is to fit a
-predeclared sentinel model set on a subset of businesses and demonstrate
-calibration and lower selection regret on the untouched generator families.
+The audited population now supports the V6 diagnostic ranker documented in
+`research/LEARNED_SCORE_V6.md`. V6 uses a smaller predeclared cohort from these
+families, learns only from the training families, and must improve decision loss
+on family-held-out validation without regressing on the sealed adversarial
+audit. The simulator audit and learned-score activation remain separate
+artifacts so changing a score cannot silently redefine the data-generating
+process.

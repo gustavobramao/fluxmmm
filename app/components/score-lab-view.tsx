@@ -8,9 +8,9 @@ import {
 } from "../score-lab-data";
 import { SIMULATOR_AUDIT_V3 } from "../score-audit-v3-data";
 import type { DistributionSummary } from "../../research/score_v3/types";
+import scoreV6Artifact from "../../research/score_v6/artifacts/learned-score-v6-pilot.json";
 import {
   ACTIVE_SCORE_CONTRACT,
-  HEURISTIC_SCORE_WEIGHTS,
   LEARNED_SCORE_ARTIFACT,
   SCORE_LAYER_ORDER,
 } from "../../lib/mmm/score-contract";
@@ -53,104 +53,150 @@ const scoreLayerLabels = {
   decision: "ROI coherence",
 };
 
-function LearnedScoreV4Panel() {
-  const artifact = LEARNED_SCORE_ARTIFACT;
-  const active = ACTIVE_SCORE_CONTRACT.kind === "learned";
-  const validation = artifact.performance.validation;
-  const audit = artifact.performance.audit;
+function ScoreGovernancePanel() {
+  const challenger = scoreV6Artifact;
+  const validation = challenger.performance.validation;
+  const audit = challenger.performance.audit;
+  const gateEntries = Object.entries(challenger.gates);
+  const passedGates = gateEntries.filter(([, passed]) => passed).length;
+  const validationCoverage =
+    challenger.pipelineReadiness.decisionGradeBusinessShare;
+  const requiredCoverage = challenger.pipelineReadiness.requiredShare;
   return (
     <>
-      <section className={`card learned-score-hero ${active ? "active" : "fallback"}`}>
+      <section className="card learned-score-hero active">
         <div>
-          <span className="eyebrow">The outcome</span>
-          <h2>{active ? "Flux learned how to rank valid MMMs" : "The transparent fallback remains active"}</h2>
+          <span className="eyebrow">Active score contract</span>
+          <h2>V6 is now the validation ranker used by Agentic.</h2>
           <p>
-            Synthetic businesses provide the answer key that real MMM data cannot.
-            Flux learns which combination of four validation signals most often leads
-            to the lowest-regret budget decision—without exposing that answer key to fitting.
+            V6 learned which of twenty validation diagnostics best predict lower-regret
+            decisions. Immutable gates still decide whether a candidate is eligible;
+            V6 only ranks candidates inside the highest available eligibility tier.
           </p>
         </div>
         <div className="learned-score-activation">
-          <span>{active ? "Activated" : "Fallback"}</span>
-          <strong>{percentage(validation.relativeMeanRegretReduction)}</strong>
-          <small>lower held-out mean regret</small>
+          <span>Activated</span>
+          <strong>20</strong>
+          <small>learned diagnostic weights</small>
         </div>
+      </section>
+
+      <section className="score-version-strip" aria-label="Flux score and sampler versions">
+        <article className="card active">
+          <span>Active runtime score</span>
+          <strong>V6</strong>
+          <small>{ACTIVE_SCORE_CONTRACT.version} · used by Agentic</small>
+        </article>
+        <article className="card baseline">
+          <span>Previous runtime score</span>
+          <strong>V4</strong>
+          <small>Four aggregate layer weights · retained as reference</small>
+        </article>
+        <article className="card sampler">
+          <span>Production inference</span>
+          <strong>PyMC NUTS</strong>
+          <small>Shared sampler v2.1 · runs after promotion</small>
+        </article>
       </section>
 
       <section className="card learned-score-science">
         <div className="card-heading">
-          <div><span className="eyebrow">How the science works</span><h2>Learn from truth. Test without it.</h2></div>
-          <span className="score-lab-inspect">No real advertiser truth is assumed</span>
+          <div><span className="eyebrow">Nested validation</span><h2>Two holdouts answer two different questions</h2></div>
+          <span className="score-lab-inspect">No synthetic truth enters an MMM fit</span>
         </div>
-        <div className="learned-science-flow" aria-label="How Flux learns the validation score">
-          <article><i>1</i><span>Simulate truth</span><b>Generate realistic media, confounding, saturation, carryover, and known ROI.</b></article>
-          <em>→</em>
-          <article><i>2</i><span>Fit candidates</span><b>Fit competing MMMs using only the observational data and declared evidence.</b></article>
-          <em>→</em>
-          <article><i>3</i><span>Reveal regret</span><b>Replay each model’s budget decisions against the hidden causal response.</b></article>
-          <em>→</em>
-          <article><i>4</i><span>Learn and audit</span><b>Choose weights on training worlds; activate only if unseen worlds improve.</b></article>
+        <div className="score-nested-validation" aria-label="Nested validation used by V6">
+          <article>
+            <span>Inside every synthetic business</span>
+            <h3>Does this candidate MMM generalize?</h3>
+            <div><b>Past periods</b><i>→</i><b>Unseen future periods and spend regimes</b><i>→</i><b>20 diagnostics + immutable gates</b></div>
+            <p>This evaluates each MMM candidate. Causal truth stays hidden until fitting and diagnostics are complete.</p>
+          </article>
+          <article>
+            <span>Across synthetic businesses</span>
+            <h3>Do the learned V6 weights generalize?</h3>
+            <div><b>180 training businesses</b><i>→</i><b>60 unseen validation businesses</b><i>→</i><b>60 sealed audit businesses</b></div>
+            <p>This evaluates the ranker itself. The weights are frozen before validation and the adversarial audit.</p>
+          </article>
         </div>
       </section>
 
       <section className="card learned-score-weights">
         <div className="card-heading">
-          <div><span className="eyebrow">The learned validation score</span><h2>One score from four interpretable signals</h2></div>
-          <span className="score-lab-inspect">Higher is better · only after gates</span>
+          <div><span className="eyebrow">V6 learned group emphasis</span><h2>Twenty diagnostics, kept in four readable layers</h2></div>
+          <span className="score-lab-inspect">Previous V4 marker shown for comparison</span>
         </div>
         <div className="learned-weight-grid simple">
           {SCORE_LAYER_ORDER.map((layer) => {
-            const learned = artifact.model.weights[layer];
+            const learned = challenger.model.groupWeights[layer];
+            const previousWeight = LEARNED_SCORE_ARTIFACT.model.weights[layer];
             return (
               <article key={layer}>
                 <span>{scoreLayerLabels[layer]}</span>
                 <strong>{percentage(learned)}</strong>
-                <div><i style={{ width: `${learned * 100}%` }} /></div>
+                <div>
+                  <i style={{ width: `${learned * 100}%` }} />
+                  <em style={{ left: `${previousWeight * 100}%` }} />
+                </div>
+                <small>Previous V4: {percentage(previousWeight)}</small>
               </article>
             );
           })}
         </div>
         <p className="learned-score-plain-language">
-          <b>What “optimal” means here:</b> among the {artifact.model.candidatesConsidered.toLocaleString()} transparent weight combinations tested,
-          this one produced the lowest acceptable held-out decision regret under the predeclared risk limits. It is the best validated combination in this search—not proof of a universal global optimum.
+          <b>What changed:</b> V6 learns non-negative weights across twenty granular diagnostics;
+          the four percentages above are their readable group totals. Agentic now uses the
+          underlying twenty-weight formula rather than approximating it with four layer weights.
         </p>
       </section>
 
-      <section className="card learned-score-proof-simple">
+      <section className="card learned-score-proof-simple challenger">
         <div>
-          <span className="eyebrow">Did it generalize?</span>
-          <h2>Yes—modestly, without worse tail risk</h2>
-          <p>The learned score was frozen before the final adversarial audit. It improved average decisions while retaining the same held-out P90 regret.</p>
+          <span className="eyebrow">Did V6 improve decisions?</span>
+          <h2>Yes—across unseen families and the sealed audit</h2>
+          <p>V6 reduced mean economic decision loss on unseen and sealed businesses, while passing every tail and family safety check.</p>
         </div>
         <div className="learned-proof-metrics">
-          <article><span>Unseen families</span><strong>{percentage(validation.relativeMeanRegretReduction)}</strong><small>lower mean regret</small></article>
-          <article><span>Held-out P90</span><strong>Unchanged</strong><small>{percentage(validation.learned.p90Regret)}</small></article>
-          <article><span>Sealed audit</span><strong>{percentage(audit.relativeMeanRegretReduction)}</strong><small>lower mean regret</small></article>
+          <article><span>Unseen families</span><strong>{percentage(validation.relativeMeanLossReduction)}</strong><small>lower mean decision loss</small></article>
+          <article><span>Sealed audit</span><strong>{percentage(audit.relativeMeanLossReduction)}</strong><small>lower mean decision loss</small></article>
+          <article><span>Ranker activation gates</span><strong>{passedGates}/{gateEntries.length}</strong><small>all score-learning gates passed</small></article>
+        </div>
+      </section>
+
+      <section className="score-research-gate">
+        <div>
+          <span className="eyebrow">Separate Agentic readiness signal</span>
+          <b>{percentage(validationCoverage)} of validation businesses produced a decision-grade candidate.</b>
+          <p>This remains below the {percentage(requiredCoverage)} search-readiness target, but it no longer blocks V6. The score can rank valid candidates better; improving how often Agentic finds one is a separate optimization problem.</p>
+        </div>
+        <div className="score-research-gate-meter" aria-label={`${percentage(validationCoverage)} coverage against a ${percentage(requiredCoverage)} target`}>
+          <span><i style={{ width: `${validationCoverage * 100}%` }} /><em style={{ left: `${requiredCoverage * 100}%` }} /></span>
+          <small><b>{percentage(validationCoverage)}</b> observed <b>{percentage(requiredCoverage)}</b> target</small>
         </div>
       </section>
 
       <section className="learned-score-safety">
         <i>◆</i>
-        <div><b>The score cannot rescue a scientifically invalid model</b><p>Evidence, identification, placebo, and two-sided ROI plausibility checks run first. Only candidates passing those gates are ranked by the learned score.</p></div>
+        <div><b>The production sampler remains a separate shared stage</b><p>Agentic searches quickly with analytic MAP and the active V6 score. After promotion, PyMC NUTS v2.1 performs confirmatory inference without changing the winning specification.</p></div>
       </section>
 
       <details className="card learned-score-receipt">
-        <summary><span><b>Research details</b><small>Formula, cohort, family checks, and activation receipt</small></span><i>＋</i></summary>
+        <summary><span><b>V6 research receipt</b><small>Formula, cohort, gates, and activation decision</small></span><i>＋</i></summary>
         <div>
           <p className="learned-score-formula">
-            100 × G<sup>{artifact.model.weights.generalization.toFixed(3)}</sup>
-            {" × "}S<sup>{artifact.model.weights.structure.toFixed(3)}</sup>
-            {" × "}C<sup>{artifact.model.weights.causal.toFixed(3)}</sup>
-            {" × "}D<sup>{artifact.model.weights.decision.toFixed(3)}</sup>
+            {challenger.model.formula}
           </p>
-          <p>{artifact.activationReason}</p>
+          <p>{challenger.activationReason} {challenger.pipelineReadiness.detail}</p>
           <div className="learned-receipt-comparison">
-            <span>Validation <b>{percentage(validation.heuristic.meanRegret)} → {percentage(validation.learned.meanRegret)}</b></span>
-            <span>Audit <b>{percentage(audit.heuristic.meanRegret)} → {percentage(audit.learned.meanRegret)}</b></span>
-            <span>Previous heuristic <b>{SCORE_LAYER_ORDER.map((layer) => percentage(HEURISTIC_SCORE_WEIGHTS[layer])).join(" / ")}</b></span>
+            <span>Validation mean loss <b>{validation.heuristic.meanLoss.toFixed(2)} → {validation.learned.meanLoss.toFixed(2)}</b></span>
+            <span>Audit mean loss <b>{audit.heuristic.meanLoss.toFixed(2)} → {audit.learned.meanLoss.toFixed(2)}</b></span>
+            <span>Cohort <b>{challenger.cohort.businesses} businesses · {challenger.cohort.candidates.toLocaleString()} candidates</b></span>
           </div>
-          <ul>{artifact.guardrails.map((guardrail) => <li key={guardrail}>{guardrail}</li>)}</ul>
-          <small>{artifact.version} · {artifact.artifactId} · {artifact.cohort.businesses} businesses · {artifact.cohort.candidates.toLocaleString()} fitted candidates · train {artifact.cohort.splits.train} / validation {artifact.cohort.splits.validation} / untouched audit {artifact.cohort.splits.audit}</small>
+          <div className="score-research-gate-list">
+            {gateEntries.map(([gate, passed]) => (
+              <span key={gate} className={passed ? "pass" : "fail"}><i>{passed ? "✓" : "!"}</i>{gate.replace(/([A-Z])/g, " $1")}</span>
+            ))}
+          </div>
+          <small>{challenger.version} · {challenger.artifactId} · train {challenger.cohort.splits.train} / validation {challenger.cohort.splits.validation} / untouched audit {challenger.cohort.splits.audit}</small>
         </div>
       </details>
     </>
@@ -276,7 +322,7 @@ function SimulatorAuditV3Panel() {
 
       <section className="audit-v3-gate">
         <i>◇</i>
-        <div><b>Audit contract passed into V4</b><p>This population and target produced the versioned training cohort. The learned score remains conditional on this simulator and is activated only after family-held-out validation and a sealed audit.</p></div>
+        <div><b>The simulator is audited independently of the ranker</b><p>This population contract supports score learning across versions. V6 remains conditional on the declared simulator, family-held-out validation, and sealed adversarial audit.</p></div>
       </section>
     </>
   );
@@ -351,16 +397,16 @@ export function ScoreLabView() {
     <div className="view score-lab-view">
       <section className="page-heading compact-heading score-lab-heading">
         <div>
-          <span className="kicker">Simulation-calibrated validation · research V4</span>
-          <h1>Score Lab</h1>
-          <p>See how Flux learns the validation score from known synthetic truth, then proves that it generalizes before Agentic can use it.</p>
+          <span className="kicker">Validation score governance · active V6</span>
+          <h1>Score research</h1>
+          <p>See how V6 learns twenty validation weights from known synthetic decision outcomes while keeping candidate eligibility gates immutable.</p>
         </div>
-        <span className={`score-lab-status ${ACTIVE_SCORE_CONTRACT.kind === "learned" ? "active" : ""}`}><i /> {ACTIVE_SCORE_CONTRACT.kind === "learned" ? "Learned score active" : "Heuristic fallback"}</span>
+        <span className="score-lab-status active"><i /> Runtime · V6 active</span>
       </section>
 
       <section className="score-lab-mode-tabs compact" aria-label="Score research views">
         <button className={labMode === "learned" ? "active" : ""} onClick={() => setLabMode("learned")}>
-          <span>1</span><b>How the score works</b><small>The recommended explanation</small>
+          <span>1</span><b>Active V6 method</b><small>Weights, holdouts, and gates</small>
         </button>
         <button className={labMode === "audit" ? "active" : ""} onClick={() => setLabMode("audit")}>
           <span>2</span><b>Audit the simulator</b><small>Optional research detail</small>
@@ -370,7 +416,7 @@ export function ScoreLabView() {
         </button>
       </section>
 
-      {labMode === "learned" ? <LearnedScoreV4Panel /> : labMode === "audit" ? <SimulatorAuditV3Panel /> : <>
+      {labMode === "learned" ? <ScoreGovernancePanel /> : labMode === "audit" ? <SimulatorAuditV3Panel /> : <>
 
       <section className="score-lab-scenario-card card">
         <div className="score-lab-scenario-intro">

@@ -1,0 +1,167 @@
+{
+  "artifactId": "flux-learned-score-v6-pilot-2026.08.1",
+  "version": "flux-score-learner-v6.0.0-pilot",
+  "trainedAt": "2026-08-18T13:12:13.600Z",
+  "activation": "active",
+  "activationReason": "V6 cleared the predeclared held-out ranking, tail, family, and sealed-audit gates and is active for ranking candidates within their immutable eligibility tier.",
+  "runtimeContractChanged": true,
+  "simulatorVersion": "flux-score-v7-dgp-2026.08.1-window-evidence",
+  "cohort": {
+    "businesses": 300,
+    "candidates": 14400,
+    "pairs": 17957,
+    "splits": {
+      "train": 180,
+      "validation": 60,
+      "audit": 60
+    }
+  },
+  "model": {
+    "family": "monotonic-pairwise-logistic-ranker",
+    "target": "uncapped-economic-decision-loss",
+    "weights": {
+      "rolling-oos": 0.11861068105674424,
+      "predictive-coverage": 0.01334652524798881,
+      "fold-stability": 0.009173311995922808,
+      "spend-regimes": 0.1568540006507321,
+      "residual-independence": 0.16,
+      "variance-structure": 0.011079890556563854,
+      "likelihood-shape": 0.0055912073722024416,
+      "multicollinearity": 0,
+      "functional-form": 0,
+      "influence-stability": 0.0009664050309314794,
+      "non-negative-boundary": 0.0255615813843219,
+      "anchor-recovery": 0.11697231550405406,
+      "new-data-stability": 0,
+      "confounder-sensitivity": 0,
+      "future-media-placebo": 0.04035681459196612,
+      "roi-posterior-plausibility": 0.13076406334837143,
+      "roi-decision-stability": 0.014767296129396508,
+      "roi-resolution": 0,
+      "roi-identification": 0.15716128545693822,
+      "roi-economic-consistency": 0.038794621673865895
+    },
+    "groupWeights": {
+      "generalization": 0.297984518951388,
+      "structure": 0.2031990843440197,
+      "causal": 0.15732913009602018,
+      "decision": 0.34148726660857204
+    },
+    "regularization": 0.015,
+    "epochs": 180,
+    "formula": "100 × exp(Σ diagnostic_weight × log(diagnostic_score / 100))"
+  },
+  "performance": {
+    "train": {
+      "heuristic": {
+        "businesses": 180,
+        "decisionGradeBusinessShare": 0.4777777777777778,
+        "meanLoss": 3.5973773614957962,
+        "medianLoss": 1.6362495695354282,
+        "p90Loss": 8.946656926121177,
+        "meanExcessLoss": 2.339949780091758,
+        "lowestLossSelectionRate": 0.3055555555555556,
+        "familyMeanLoss": {
+          "balanced-dtc": 4.325116926727522,
+          "search-demand-harvesting": 3.0175736019834334,
+          "social-frequency-pressure": 3.449441555776433
+        }
+      },
+      "learned": {
+        "businesses": 180,
+        "decisionGradeBusinessShare": 0.4777777777777778,
+        "meanLoss": 2.8061097349134188,
+        "medianLoss": 1.4928693156583142,
+        "p90Loss": 5.549477294741712,
+        "meanExcessLoss": 1.54868215350938,
+        "lowestLossSelectionRate": 0.35555555555555557,
+        "familyMeanLoss": {
+          "balanced-dtc": 2.96793934876739,
+          "search-demand-harvesting": 2.322008680041957,
+          "social-frequency-pressure": 3.1283811759309046
+        }
+      },
+      "relativeMeanLossReduction": 0.21995680382370753
+    },
+    "validation": {
+      "heuristic": {
+        "businesses": 60,
+        "decisionGradeBusinessShare": 0.36666666666666664,
+        "meanLoss": 3.565983293482208,
+        "medianLoss": 1.6134396984786812,
+        "p90Loss": 9.92543030761318,
+        "meanExcessLoss": 2.2984104826521454,
+        "lowestLossSelectionRate": 0.16666666666666666,
+        "familyMeanLoss": {
+          "delayed-tv": 4.480727013529726,
+          "correlated-planning": 2.6512395734346907
+        }
+      },
+      "learned": {
+        "businesses": 60,
+        "decisionGradeBusinessShare": 0.36666666666666664,
+        "meanLoss": 2.9731839920475562,
+        "medianLoss": 1.2341460222581162,
+        "p90Loss": 7.077971944394717,
+        "meanExcessLoss": 1.7056111812174917,
+        "lowestLossSelectionRate": 0.3333333333333333,
+        "familyMeanLoss": {
+          "delayed-tv": 3.4229856992071155,
+          "correlated-planning": 2.5233822848879925
+        }
+      },
+      "relativeMeanLossReduction": 0.16623726266978078
+    },
+    "audit": {
+      "heuristic": {
+        "businesses": 60,
+        "decisionGradeBusinessShare": 0.31666666666666665,
+        "meanLoss": 3.0178288438190637,
+        "medianLoss": 1.5200721607799137,
+        "p90Loss": 8.973470489996846,
+        "meanExcessLoss": 1.6902473031599643,
+        "lowestLossSelectionRate": 0.31666666666666665,
+        "familyMeanLoss": {
+          "wrong-evidence": 3.250223380851211,
+          "swapped-channel-mechanics": 2.7854343067869194
+        }
+      },
+      "learned": {
+        "businesses": 60,
+        "decisionGradeBusinessShare": 0.31666666666666665,
+        "meanLoss": 2.8317149071346375,
+        "medianLoss": 1.2677335615914036,
+        "p90Loss": 9.118852778257464,
+        "meanExcessLoss": 1.5041333664755365,
+        "lowestLossSelectionRate": 0.38333333333333336,
+        "familyMeanLoss": {
+          "wrong-evidence": 3.2742077665892433,
+          "swapped-channel-mechanics": 2.38922204768003
+        }
+      },
+      "relativeMeanLossReduction": 0.061671468567746524
+    }
+  },
+  "gates": {
+    "validationImproves": true,
+    "validationTailSafe": true,
+    "auditMeanSafe": true,
+    "auditTailSafe": true,
+    "validationFamilySafe": true
+  },
+  "pipelineReadiness": {
+    "decisionGradeBusinessShare": 0.36666666666666664,
+    "requiredShare": 0.5,
+    "ready": false,
+    "detail": "Candidate generation produced a decision-grade model in fewer than half of validation businesses. This is reported separately because score weights cannot change eligibility."
+  },
+  "guardrails": [
+    "V6 ranks only within the highest available immutable eligibility tier and cannot promote a failed-gate candidate into decision-grade status.",
+    "All learned coefficients are non-negative; better diagnostics can never reduce the learned score.",
+    "Each validation group retains 10–40% total weight and no diagnostic receives more than 16% before final normalization.",
+    "Candidates are compared only within an immutable decision-grade or review eligibility tier.",
+    "Decision-grade candidate coverage is a separate search-readiness diagnostic and is not an activation gate for the ranker.",
+    "Scenario-specific benchmark evidence is injected into both fitting and validation; hidden ROI truth is never supplied to the estimator.",
+    "Generator families, not candidate rows, define train, validation, and untouched audit partitions."
+  ]
+}

@@ -9,6 +9,7 @@ import {
   responseForChannel,
 } from "./response";
 import { compileStaticSamplingDesign } from "./models";
+import { experimentResponseContrast } from "./experiment-window";
 import {
   passesAgenticEligibility,
   type AgenticCandidateRun,
@@ -23,7 +24,7 @@ import type {
 } from "./types";
 
 export const SAMPLING_ENGINE_VERSION =
-  "flux-pymc-nuts-v2.1.0-full-response-latent-planning-ppc-hdi-channel-contracts";
+  "flux-pymc-nuts-v2.2.0-full-response-same-window-experiment-roi";
 
 export type SamplingPreset = "production" | "robust" | "diagnostic" | "custom";
 
@@ -82,11 +83,16 @@ export interface CompiledSamplingPrior {
 export interface CompiledSamplingCalibration {
   label: string;
   channel: string;
+  route: "prior" | "likelihood";
+  basis: "experiment-window";
   indexes: number[];
   weights: number[];
   observedRoi: number;
   standardError: number;
   rows: number[];
+  spendRows: number[];
+  outcomeRows: number[];
+  spend: number;
 }
 
 export interface CompiledSamplingEvidence {
@@ -585,37 +591,49 @@ export function compileSamplingModel(
       );
     });
 
-    if (family === "advanced" && advancedConfig.calibrationMode === "likelihood") {
-      experimentEvidence.forEach((experiment, experimentIndex) => {
-        const rows = matchingExperimentRows(dataset, experiment);
-        const experimentSpend = rows.reduce(
-          (total, rowIndex) =>
-            total + spendVectors[mediaIndex][rowIndex],
-          0,
-        );
-        if (experimentSpend <= 0) return;
-        calibrations.push({
-          label: `${channel} · ${experiment.source || `experiment ${experimentIndex + 1}`}`,
-          channel,
-          indexes,
-          weights: indexes.map((_, knotIndex) =>
-            rows.reduce(
-              (total, rowIndex) =>
-                total +
-                mediaVectors[mediaIndex][rowIndex] *
-                  kernelWeights[rowIndex][knotIndex] *
-                  effectMultiplier,
-              0,
-            ) / experimentSpend,
-          ),
-          observedRoi:
-            experiment.incrementalOutcome /
-            Math.max(experiment.incrementalSpend, 1),
-          standardError: Math.max(experiment.standardError, 1e-4),
-          rows,
-        });
+    experimentEvidence.forEach((experiment, experimentIndex) => {
+      const contrast = experimentResponseContrast(
+        dataset,
+        run.spec.config,
+        channel,
+        experiment,
+      );
+      const fallbackRows = matchingExperimentRows(dataset, experiment);
+      const spendRows = contrast?.spendRows ?? fallbackRows;
+      const outcomeRows = contrast?.outcomeRows ?? fallbackRows;
+      const experimentSpend = contrast?.spend ?? spendRows.reduce(
+        (total, rowIndex) =>
+          total + spendVectors[mediaIndex][rowIndex],
+        0,
+      );
+      if (experimentSpend <= 0) return;
+      calibrations.push({
+        label: `${channel} · ${experiment.source || `experiment ${experimentIndex + 1}`}`,
+        channel,
+        route: useExperimentPrior ? "prior" : "likelihood",
+        basis: "experiment-window",
+        indexes,
+        weights: indexes.map((_, knotIndex) =>
+          outcomeRows.reduce(
+            (total, rowIndex) =>
+              total +
+              (contrast?.deltaTransformed[rowIndex] ??
+                mediaVectors[mediaIndex][rowIndex]) *
+                kernelWeights[rowIndex][knotIndex] *
+                effectMultiplier,
+            0,
+          ) / experimentSpend,
+        ),
+        observedRoi:
+          experiment.incrementalOutcome /
+          Math.max(experiment.incrementalSpend, 1),
+        standardError: Math.max(experiment.standardError, 1e-4),
+        rows: outcomeRows,
+        spendRows,
+        outcomeRows,
+        spend: experimentSpend,
       });
-    }
+    });
 
     const roiWeights = indexes.map((_, knotIndex) =>
       mediaVectors[mediaIndex].reduce(
@@ -653,9 +671,13 @@ export function compileSamplingModel(
               evidence.source === "experiment"
                 ? Array.from(
                     new Set(
-                      experimentEvidence.flatMap((experiment) =>
-                        matchingExperimentRows(dataset, experiment),
-                      ),
+                      calibrations
+                        .filter(
+                          (calibration) =>
+                            calibration.channel.toLowerCase() ===
+                              channel.toLowerCase(),
+                        )
+                        .flatMap((calibration) => calibration.outcomeRows),
                     ),
                   ).sort((a, b) => a - b)
                 : dates.map((_, rowIndex) => rowIndex),

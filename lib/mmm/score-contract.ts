@@ -1,5 +1,14 @@
 import learnedScoreArtifact from "../../research/score_v4/artifacts/learned-score-v4.json";
-import type { ValidationLayerId } from "./validation/types";
+import learnedScoreV6Artifact from "../../research/score_v6/artifacts/learned-score-v6-pilot.json";
+import {
+  validationDiagnosticValues,
+  type ValidationDiagnosticValues,
+  type ValidationDiagnosticWeights,
+} from "./score-diagnostics";
+import type {
+  ValidationLayerId,
+  ValidationLayerResult,
+} from "./validation/types";
 
 export type ValidationScoreWeights = Record<ValidationLayerId, number>;
 
@@ -40,11 +49,27 @@ interface LearnedScoreRuntimeArtifact {
   guardrails: string[];
 }
 
+interface LearnedDiagnosticScoreRuntimeArtifact {
+  artifactId: string;
+  version: string;
+  activation: "active" | "rejected";
+  activationReason: string;
+  model: {
+    family: string;
+    target: string;
+    weights: ValidationDiagnosticWeights;
+    groupWeights: ValidationScoreWeights;
+    formula: string;
+  };
+}
+
 export interface ValidationScoreContract {
   kind: "learned" | "heuristic";
+  resolution: "diagnostic" | "layer";
   version: string;
   artifactId: string;
   weights: ValidationScoreWeights;
+  diagnosticWeights?: ValidationDiagnosticWeights;
   target: string;
   activationReason: string;
 }
@@ -59,13 +84,28 @@ export const SCORE_LAYER_ORDER: ValidationLayerId[] = [
 export const LEARNED_SCORE_ARTIFACT =
   learnedScoreArtifact as LearnedScoreRuntimeArtifact;
 
+export const LEARNED_SCORE_V6_ARTIFACT =
+  learnedScoreV6Artifact as LearnedDiagnosticScoreRuntimeArtifact;
+
 export const HEURISTIC_SCORE_WEIGHTS: ValidationScoreWeights =
   LEARNED_SCORE_ARTIFACT.model.heuristicWeights;
 
 export const ACTIVE_SCORE_CONTRACT: ValidationScoreContract =
-  LEARNED_SCORE_ARTIFACT.activation === "active"
+  LEARNED_SCORE_V6_ARTIFACT.activation === "active"
     ? {
         kind: "learned",
+        resolution: "diagnostic",
+        version: LEARNED_SCORE_V6_ARTIFACT.version,
+        artifactId: LEARNED_SCORE_V6_ARTIFACT.artifactId,
+        weights: LEARNED_SCORE_V6_ARTIFACT.model.groupWeights,
+        diagnosticWeights: LEARNED_SCORE_V6_ARTIFACT.model.weights,
+        target: LEARNED_SCORE_V6_ARTIFACT.model.target,
+        activationReason: LEARNED_SCORE_V6_ARTIFACT.activationReason,
+      }
+    : LEARNED_SCORE_ARTIFACT.activation === "active"
+    ? {
+        kind: "learned",
+        resolution: "layer",
         version: LEARNED_SCORE_ARTIFACT.version,
         artifactId: LEARNED_SCORE_ARTIFACT.artifactId,
         weights: LEARNED_SCORE_ARTIFACT.model.weights,
@@ -74,6 +114,7 @@ export const ACTIVE_SCORE_CONTRACT: ValidationScoreContract =
       }
     : {
         kind: "heuristic",
+        resolution: "layer",
         version: "flux-score-heuristic-v1",
         artifactId: LEARNED_SCORE_ARTIFACT.artifactId,
         weights: HEURISTIC_SCORE_WEIGHTS,
@@ -97,11 +138,53 @@ export function scoreValidationLayers(
   return 100 * Math.exp(logScore);
 }
 
+export function scoreValidationDiagnostics(
+  diagnostics: ValidationDiagnosticValues,
+  weights: ValidationDiagnosticWeights = LEARNED_SCORE_V6_ARTIFACT.model.weights,
+): number {
+  const logScore = Object.entries(weights).reduce(
+    (total, [diagnostic, weight]) =>
+      total +
+      weight *
+        Math.log(
+          clamp(
+            (diagnostics[diagnostic as keyof ValidationDiagnosticValues] ?? 50) /
+              100,
+            0.01,
+            1,
+          ),
+        ),
+    0,
+  );
+  return 100 * Math.exp(logScore);
+}
+
+export function scoreValidationResult(
+  layers: Record<ValidationLayerId, ValidationLayerResult>,
+  contract: ValidationScoreContract = ACTIVE_SCORE_CONTRACT,
+): number {
+  if (contract.resolution === "diagnostic" && contract.diagnosticWeights) {
+    return scoreValidationDiagnostics(
+      validationDiagnosticValues(layers),
+      contract.diagnosticWeights,
+    );
+  }
+  return scoreValidationLayers(
+    Object.fromEntries(
+      SCORE_LAYER_ORDER.map((layer) => [layer, layers[layer].score]),
+    ) as Record<ValidationLayerId, number>,
+    contract.weights,
+  );
+}
+
 export function scoreWeightPercent(layer: ValidationLayerId): number {
   return Math.round(ACTIVE_SCORE_CONTRACT.weights[layer] * 1000) / 10;
 }
 
 export function activeScoreFormula(): string {
+  if (ACTIVE_SCORE_CONTRACT.resolution === "diagnostic") {
+    return "100 × exp(Σ wⱼ × log(diagnosticⱼ / 100))";
+  }
   const weights = ACTIVE_SCORE_CONTRACT.weights;
   return `100 × G^${weights.generalization.toFixed(3)} × S^${weights.structure.toFixed(3)} × C^${weights.causal.toFixed(3)} × D^${weights.decision.toFixed(3)}`;
 }

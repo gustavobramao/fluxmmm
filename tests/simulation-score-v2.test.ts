@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { parseCsv } from "../lib/mmm/csv";
+import { modelExperimentWindowRoi } from "../lib/mmm/experiment-window";
 import { DEFAULT_CONFIG, runModel } from "../lib/mmm/models";
 import { createDataset, validateDataset } from "../lib/mmm/schema";
 import { evaluateCandidateTruth } from "../research/score_v2/evaluate";
@@ -30,14 +31,36 @@ for (const scenario of PILOT_SCENARIOS) {
         (configured) => configured.channel === channel.channel,
       )?.targetRoi;
       if (declaredOverride === undefined) {
-        const evidence = roiEvidence(channel.evidenceId);
-        assert.ok(channel.targetRoi >= evidence.low);
-        assert.ok(channel.targetRoi <= evidence.high);
+        // V6 deliberately separates the hidden business population from the
+        // model-visible benchmark registry. Truth may disagree with evidence.
+        roiEvidence(channel.evidenceId);
+        assert.ok(channel.targetRoi >= 0.05);
+        assert.ok(channel.targetRoi <= 10);
       }
     });
     assert.ok(first.truth.experiments.length > 0);
     first.truth.experiments.forEach((experiment) => {
       assert.notEqual(experiment.observedRoi, experiment.trueRoi);
+      assert.ok(experiment.sourceWindowSpend > 0);
+      assert.ok(experiment.trueIncrementalOutcome > 0);
+      assert.ok(
+        Math.abs(
+          experiment.trueIncrementalOutcome /
+            experiment.sourceWindowSpend -
+            experiment.trueRoi,
+        ) < 1e-9,
+      );
+      assert.ok(
+        Math.abs(
+          experiment.experiment.incrementalOutcome /
+            experiment.experiment.incrementalSpend -
+            experiment.observedRoi,
+        ) < 1e-12,
+      );
+      assert.ok(
+        Date.parse(experiment.experiment.outcomeEndDate ?? "") >=
+          Date.parse(experiment.experiment.endDate),
+      );
     });
 
     const parsed = parseCsv(first.observedCsv);
@@ -88,7 +111,7 @@ test("the hidden profit oracle conserves its chosen spend and can choose zero", 
   );
 });
 
-test("a V1 model can fit observed data without receiving the hidden answer key", async () => {
+test("a V2 model can fit observed data without receiving the hidden answer key", async () => {
   const business = generateSyntheticBusiness(PILOT_SCENARIOS[1]);
   const parsed = parseCsv(business.observedCsv);
   const dataset = await createDataset(
@@ -104,6 +127,13 @@ test("a V1 model can fit observed data without receiving the hidden answer key",
     "frequentist",
     "score-v2-smoke",
   );
+  const experiment = business.truth.experiments[0].experiment;
+  const comparable = modelExperimentWindowRoi(
+    dataset,
+    model,
+    DEFAULT_CONFIG,
+    experiment,
+  );
   const evaluation = evaluateCandidateTruth(
     business,
     model,
@@ -112,6 +142,20 @@ test("a V1 model can fit observed data without receiving the hidden answer key",
 
   assert.equal(model.actual.length, business.observedRows.length);
   assert.ok(model.predicted.every(Number.isFinite));
+  assert.equal(comparable?.basis, "experiment-window");
+  assert.ok(Number.isFinite(comparable?.roi));
+  assert.ok((comparable?.spendRows ?? 0) > 0);
+  assert.ok((comparable?.outcomeRows ?? 0) >= (comparable?.spendRows ?? 0));
+  assert.equal(
+    modelExperimentWindowRoi(
+      dataset,
+      model,
+      DEFAULT_CONFIG,
+      { ...experiment, outcomeEndDate: "2099-01-01" },
+    ),
+    undefined,
+    "Flux must not silently shorten an experiment's declared outcome window.",
+  );
   assert.ok(Number.isFinite(evaluation.weightedLogRoiError));
   assert.ok(Number.isFinite(evaluation.weightedLogBenchmarkAgreement));
   assert.ok(Number.isFinite(evaluation.contributionError));

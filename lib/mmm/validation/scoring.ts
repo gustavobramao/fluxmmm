@@ -8,6 +8,7 @@ import {
   ACTIVE_SCORE_CONTRACT,
   HEURISTIC_SCORE_WEIGHTS,
   scoreValidationLayers,
+  scoreValidationResult,
 } from "../score-contract";
 
 export function scoreValidation(
@@ -108,7 +109,7 @@ export function scoreValidation(
     causal: layers.causal.score,
     decision: layers.decision.score,
   };
-  const rawScore = scoreValidationLayers(layerScores);
+  const rawScore = scoreValidationResult(layers);
   const rawHeuristicScore = scoreValidationLayers(
     layerScores,
     HEURISTIC_SCORE_WEIGHTS,

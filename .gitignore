@@ -49,5 +49,8 @@ next-env.d.ts
 /research/score_v2/artifacts/*/observed.csv
 /research/score_v2/artifacts/*/truth.json
 /research/score_v3/artifacts/simulator-audit-v3.json
+# The V6 runtime artifact is versioned; the full 14,400-candidate training
+# cohort is reproducible locally and intentionally excluded from the release.
+/research/score_v6/artifacts/cohort-v6.json
 __pycache__/
 *.pyc

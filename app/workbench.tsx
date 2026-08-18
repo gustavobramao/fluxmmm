@@ -56,6 +56,7 @@ import {
   agenticSearchStage,
   createAgenticForcePromotionAudit,
   DEFAULT_AGENTIC_SEARCH_CONTRACT,
+  findAgenticBenchmarkRescueRecommendations,
   findAgenticRoiGuardrailViolations,
   passesAgenticEligibility,
   rankAgenticCandidates,
@@ -94,6 +95,7 @@ import {
 } from "../lib/mmm/benchmarks";
 import { formatCompact, formatFull, parseCsv, toNumber } from "../lib/mmm/csv";
 import { runEda } from "../lib/mmm/eda";
+import { modelExperimentWindowRoi } from "../lib/mmm/experiment-window";
 import { mean } from "../lib/mmm/math";
 import {
   ACTIVE_SCORE_CONTRACT,
@@ -134,10 +136,15 @@ import {
 } from "../lib/mmm/sampling-api";
 import {
   assessExternalAnchorEligibility,
-  rescueIndustryPriorChannels,
   runModelValidation,
   validationFingerprint,
 } from "../lib/mmm/validation";
+import {
+  createWorkspaceCheckpoint,
+  persistWorkspaceCheckpoint,
+  readLatestWorkspaceCheckpoint,
+  type WorkspaceCheckpointEnvelope,
+} from "../lib/mmm/workspace-checkpoint";
 import type {
   AdvancedModelConfig,
   ColumnRole,
@@ -171,6 +178,86 @@ type View =
   | "budget";
 type JobStatus = "idle" | "queued" | "running" | "complete" | "cached";
 type BenchmarkGuardrailMode = "suggest" | "auto" | "off";
+type WorkspaceSaveStatus = "restoring" | "saving" | "saved" | "unavailable";
+
+const EMPTY_AGENTIC_CHECKPOINT_RUNS: AgenticCandidateRun[] = [];
+
+interface StoredBenchmarkPolicy {
+  mode: BenchmarkGuardrailMode;
+  channels: string[];
+}
+
+const BENCHMARK_POLICY_STORAGE_KEY = "fluxmmm-benchmark-policy-v1";
+
+function eligibleStoredBenchmarkChannels(
+  dataset: Dataset,
+  experiments: Experiment[],
+  channels: readonly string[],
+): string[] {
+  const mediaByName = new Map(
+    dataset.mediaColumns.map((channel) => [channel.toLowerCase(), channel]),
+  );
+  return Array.from(
+    new Set(
+      channels.flatMap((channel) => {
+        const canonical = mediaByName.get(channel.toLowerCase());
+        return canonical && !channelExperiments(experiments, canonical).length
+          ? [canonical]
+          : [];
+      }),
+    ),
+  );
+}
+
+function readStoredBenchmarkPolicy(
+  dataset: Dataset,
+  experiments: Experiment[],
+): StoredBenchmarkPolicy | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const stored = JSON.parse(
+      window.localStorage.getItem(BENCHMARK_POLICY_STORAGE_KEY) ?? "{}",
+    ) as Record<string, Partial<StoredBenchmarkPolicy>>;
+    const policy = stored[dataset.hash];
+    if (!policy) return undefined;
+    const mode =
+      policy.mode === "auto" || policy.mode === "off"
+        ? policy.mode
+        : "suggest";
+    return {
+      mode,
+      channels:
+        mode === "off"
+          ? []
+          : eligibleStoredBenchmarkChannels(
+              dataset,
+              experiments,
+              Array.isArray(policy.channels) ? policy.channels : [],
+            ),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function writeStoredBenchmarkPolicy(
+  dataset: Dataset,
+  policy: StoredBenchmarkPolicy,
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    const stored = JSON.parse(
+      window.localStorage.getItem(BENCHMARK_POLICY_STORAGE_KEY) ?? "{}",
+    ) as Record<string, StoredBenchmarkPolicy>;
+    stored[dataset.hash] = policy;
+    window.localStorage.setItem(
+      BENCHMARK_POLICY_STORAGE_KEY,
+      JSON.stringify(stored),
+    );
+  } catch {
+    // Storage can be disabled; the in-memory evidence contract still works.
+  }
+}
 
 const NAV_ITEMS: { id: View; label: string; glyph: string }[] = [
   { id: "overview", label: "Overview", glyph: "⌂" },
@@ -180,7 +267,7 @@ const NAV_ITEMS: { id: View; label: string; glyph: string }[] = [
   { id: "calibration", label: "Calibration", glyph: "◎" },
   { id: "advanced", label: "Advanced", glyph: "◇" },
   { id: "validation", label: "Validation", glyph: "✓" },
-  { id: "scorelab", label: "Score Lab", glyph: "◈" },
+  { id: "scorelab", label: "Score research", glyph: "◈" },
   { id: "agentic", label: "Agentic", glyph: "✦" },
   { id: "sampling", label: "Production", glyph: "◉" },
   { id: "budget", label: "Budget", glyph: "$" },
@@ -457,11 +544,23 @@ function Header({
   dataset,
   onUpload,
   demoMode,
+  saveStatus,
+  savedAt,
 }: {
   dataset: Dataset;
   onUpload: () => void;
   demoMode: boolean;
+  saveStatus: WorkspaceSaveStatus;
+  savedAt?: string;
 }) {
+  const savedLabel =
+    saveStatus === "restoring"
+      ? "Restoring"
+      : saveStatus === "saving"
+        ? "Saving…"
+        : saveStatus === "unavailable"
+          ? "Save unavailable"
+          : "Saved locally";
   return (
     <header className="topbar">
       <div className="breadcrumb">
@@ -470,8 +569,15 @@ function Header({
         <strong>{dataset.name.replace(/\.csv$/i, "")}</strong>
       </div>
       <div className="header-actions">
-        <span className="saved-state">
-          <i /> Saved
+        <span
+          className={`saved-state ${saveStatus}`}
+          title={
+            savedAt
+              ? `Local workspace checkpoint saved ${new Date(savedAt).toLocaleString()}`
+              : "Flux automatically checkpoints this workspace on this browser."
+          }
+        >
+          <i /> {savedLabel}
         </span>
         {demoMode ? (
           <span className="demo-mode-pill">◇ Public fixture · read only</span>
@@ -523,7 +629,7 @@ function Sidebar({
         <div className="open-badge">
           <i>◎</i>
           <span>
-            <b>Open source v1</b>
+            <b>Open source V2</b>
             <small>Transparent by design</small>
           </span>
         </div>
@@ -1606,6 +1712,38 @@ interface PromotedAgenticSpecification {
   override?: AgenticForcePromotionAudit;
 }
 
+interface WorkspaceCheckpointPayload {
+  demoMode: boolean;
+  view: View;
+  dataset: Dataset;
+  validation: ValidationResult;
+  eda: EdaResult | null;
+  experiments: Experiment[];
+  guardrailMode: BenchmarkGuardrailMode;
+  industryPriorChannels: string[];
+  benchmarkScreeningRois: Record<string, number>;
+  config: ModelConfig;
+  advancedConfig: AdvancedModelConfig;
+  models: Partial<Record<"frequentist" | "bayesian", ModelResult>>;
+  advancedResult?: ModelResult;
+  validationResults: Partial<
+    Record<ValidationModelKind, ModelValidationResult>
+  >;
+  anchorIndependenceConfirmed: boolean;
+  agenticContract: AgenticSearchContract;
+  agenticRuns: AgenticCandidateRun[];
+  agenticStatus: AgenticWorkspaceStatus;
+  agenticStopReason?: string;
+  promotedAgenticSpecification?: PromotedAgenticSpecification;
+  samplingContract: SamplingContract;
+  samplingResult?: SamplingResult;
+  samplingHistory: SamplingResult[];
+  samplingStatus: JobStatus;
+  budgetContract: BudgetOptimizationContract;
+  budgetResult?: BudgetOptimizationResult;
+  budgetStatus: JobStatus;
+}
+
 interface SpecificationParameter {
   label: string;
   value: string;
@@ -2300,7 +2438,7 @@ function ModelsView({
           <ModelCard kind="bayesian" dates={dates} result={results.bayesian} status={statuses.bayesian} onRun={() => onRun("bayesian")} />
         </div>
         <aside className="card config-panel">
-          <div className="card-heading"><div><span className="eyebrow">Shared pipeline</span><h2>Specification</h2></div><span className="version-tag">v1.1</span></div>
+          <div className="card-heading"><div><span className="eyebrow">Shared pipeline</span><h2>Specification</h2></div><span className="version-tag">V2</span></div>
           <div className="adstock-control">
             <div className="control-label">
               <span>Adstock family</span>
@@ -3081,7 +3219,7 @@ function AdvancedModelerView({
           </p>
         </div>
         <span className="advanced-stage-pill">
-          {promotion ? "Agentic receipt active" : "Experimental · v1"}
+          {promotion ? "Agentic receipt active" : "Experimental · V2"}
         </span>
       </section>
 
@@ -3466,6 +3604,19 @@ function AdvancedModelerView({
                     candidate.channel.toLowerCase() ===
                     channel.channel.toLowerCase(),
                 );
+                const experiment = experiments.find(
+                  (candidate) =>
+                    candidate.channel.toLowerCase() ===
+                    channel.channel.toLowerCase(),
+                );
+                const windowComparison = experiment
+                  ? modelExperimentWindowRoi(
+                      dataset,
+                      result,
+                      config,
+                      experiment,
+                    )
+                  : undefined;
                 return (
                 <div className="roi-row" key={channel.channel}>
                   <strong className="advanced-channel-evidence">
@@ -3495,7 +3646,7 @@ function AdvancedModelerView({
                     <b>{channel.roi.toFixed(2)}×</b>
                     <small>
                       {receipt?.source === "experiment"
-                        ? `Window ${receipt.modelRoi.toFixed(2)}× · evidence ${receipt.targetRoi.toFixed(2)}×`
+                        ? `Window ${(windowComparison?.roi ?? receipt.modelRoi).toFixed(2)}× · evidence ${receipt.targetRoi.toFixed(2)}×`
                         : receipt?.source === "industry"
                           ? `Prior median ${receipt.targetRoi.toFixed(2)}× · 80% ${receipt.targetLow.toFixed(2)}–${receipt.targetHigh.toFixed(2)}×`
                       : channel.priorRoi !== undefined
@@ -3626,7 +3777,7 @@ function ValidationGuide({
       kicker: "Winner methodology",
       title: "Decision regret ranks candidates only after gates",
       summary:
-        "Offline simulation learned the four ranking weights from known profit regret. Evidence, identification, and two-sided ROI plausibility gates remain immutable and cannot be traded for a higher score.",
+        "Offline simulation learned twenty diagnostic weights from known economic decision loss. Evidence, identification, and two-sided ROI plausibility gates remain immutable and cannot be traded for a higher score.",
     },
   };
   return (
@@ -3803,10 +3954,10 @@ function ValidationGuide({
               <span>{ACTIVE_SCORE_CONTRACT.kind === "learned" ? "Learned winner score" : "Fallback winner score"}</span>
               <h3>{activeScoreFormula()}</h3>
               <p>
-                G, S, C, and D are layer scores expressed from 0 to 1. The
-                geometric form keeps every layer visible. These ranking weights
-                were selected against held-out synthetic decision regret; they
-                apply only after immutable evidence and ROI coherence gates.
+                V6 combines twenty diagnostic scores with non-negative learned
+                weights. Missing diagnostics receive a neutral research value;
+                immutable evidence and ROI-coherence gates determine eligibility
+                separately and cannot be overridden by the numeric rank.
               </p>
             </section>
             <section className="score-weight-visual">
@@ -3818,8 +3969,8 @@ function ValidationGuide({
               ))}
             </section>
             <section className="validation-explanation-grid">
-              <article><span className="detail-icon mint">✓</span><h3>Learned rank</h3><p>Compares models only when all four layers have enough evidence to run and the candidate is inside the zero-failed-gate pool.</p></article>
-              <article><span className="detail-icon orange">◆</span><h3>Gates</h3><p>Only applicable gates affect the score. External prediction becomes a gate only when the anchor evidence qualifies.</p></article>
+              <article><span className="detail-icon mint">✓</span><h3>Learned rank</h3><p>Compares candidates within the highest available immutable eligibility tier using twenty diagnostic signals.</p></article>
+              <article><span className="detail-icon orange">◆</span><h3>Gates</h3><p>Gates determine eligibility, not score points. A higher V6 score can never repair a failed gate.</p></article>
               <article><span className="detail-icon">A</span><h3>Evidence grade</h3><p>Reports how complete the validation evidence is independently of the numerical score.</p></article>
               <article><span className="detail-icon">≠</span><h3>No false winner</h3><p>An untestable anchor does not lower the numeric score, but it caps the evidence grade and prevents a decision-grade label.</p></article>
             </section>
@@ -4892,12 +5043,9 @@ function AgenticView({
   const champion = selectAgenticWinner(scoredRuns);
   const comparisonLeader = champion ?? ranked[0];
   const comparisonIndustryPriorChannels = comparisonLeader
-    ? Array.from(
-        new Set([
-          ...industryPriorChannels,
-          ...(comparisonLeader.spec.evidencePriorChannels ?? []),
-        ]),
-      )
+    ? comparisonLeader.spec.family === "frequentist"
+      ? []
+      : comparisonLeader.spec.evidencePriorChannels ?? []
     : industryPriorChannels;
   const forceFailedGates = comparisonLeader?.validation?.gates.filter(
     (gate) => gate.applicable && !gate.passed,
@@ -4981,7 +5129,7 @@ function AgenticView({
             starts, feasibility-aware refinement, and local champion challenges.
           </p>
         </div>
-        <span className="agentic-protocol-pill">Global channel search · v5</span>
+        <span className="agentic-protocol-pill">Global channel search · active V6 score</span>
       </section>
 
       <section className="agentic-workspace-tabs" aria-label="Agentic search stages">
@@ -5089,7 +5237,7 @@ function AgenticView({
                 <span>Objective</span>
                 <b>
                   {ACTIVE_SCORE_CONTRACT.kind === "learned"
-                    ? "Learned decision-regret score · V4"
+                    ? "Learned diagnostic decision-loss score · V6"
                     : "Audited heuristic fallback"}
                 </b>
               </div>
@@ -5121,6 +5269,10 @@ function AgenticView({
               <div>
                 <span>Decision-grade rule</span>
                 <b>Score ≥75 + qualified anchor + gates</b>
+              </div>
+              <div>
+                <span>Evidence challenge</span>
+                <b>Paired refit for material implausible channels</b>
               </div>
               <div>
                 <span>Selection rule</span>
@@ -5828,12 +5980,7 @@ function AgenticView({
           industryPriorChannels={
             inspectedSpecification.spec.family === "frequentist"
               ? []
-              : Array.from(
-                  new Set([
-                    ...industryPriorChannels,
-                    ...(inspectedSpecification.spec.evidencePriorChannels ?? []),
-                  ]),
-                )
+              : inspectedSpecification.spec.evidencePriorChannels ?? []
           }
           onClose={() => setInspectedSpecification(undefined)}
         />
@@ -6286,8 +6433,8 @@ function SamplingView({
             </div>
             {serviceReady === false && (
               <div className="sampling-service-warning">
-                <b>V2 local sampler unavailable</b>
-                <span>{serviceDetail ?? "Restart the V2 Flux server to activate production sampling."}</span>
+                <b>Production sampler unavailable</b>
+                <span>{serviceDetail ?? "Restart the local Flux server to activate production sampling."}</span>
               </div>
             )}
             <button
@@ -7281,8 +7428,19 @@ function CalibrationView({
   onRun: () => void;
 }) {
   const [showForm, setShowForm] = useState(false);
+  const defaultStartDate = String(
+    dataset.rows[0]?.[dataset.dateColumn] ?? "2018-01-01",
+  ).slice(0, 10);
+  const defaultEndDate = String(
+    dataset.rows[Math.min(8, Math.max(dataset.rows.length - 1, 0))]?.[
+      dataset.dateColumn
+    ] ?? defaultStartDate,
+  ).slice(0, 10);
   const [draft, setDraft] = useState({
     channel: dataset.mediaColumns[0] ?? "",
+    startDate: defaultStartDate,
+    endDate: defaultEndDate,
+    outcomeEndDate: defaultEndDate,
     incrementalOutcome: "50000",
     incrementalSpend: "20000",
     standardError: "0.35",
@@ -7333,8 +7491,12 @@ function CalibrationView({
           event.preventDefault();
           setExperiments([...experiments, {
             channel: draft.channel,
-            startDate: "2018-01-01",
-            endDate: "2018-02-28",
+            startDate: draft.startDate,
+            endDate: draft.endDate,
+            outcomeEndDate:
+              draft.outcomeEndDate && draft.outcomeEndDate !== draft.endDate
+                ? draft.outcomeEndDate
+                : undefined,
             incrementalOutcome: Number(draft.incrementalOutcome),
             incrementalSpend: Number(draft.incrementalSpend),
             standardError: Number(draft.standardError),
@@ -7345,11 +7507,15 @@ function CalibrationView({
           setShowForm(false);
         }}>
           <label><span>Channel</span><select value={draft.channel} onChange={(event) => setDraft({ ...draft, channel: event.target.value })}>{dataset.mediaColumns.map((channel) => <option key={channel}>{channel}</option>)}</select></label>
+          <label><span>Campaign start</span><input type="date" required value={draft.startDate} onChange={(event) => setDraft({ ...draft, startDate: event.target.value })} /></label>
+          <label><span>Campaign end</span><input type="date" required min={draft.startDate} value={draft.endDate} onChange={(event) => setDraft({ ...draft, endDate: event.target.value, outcomeEndDate: event.target.value > draft.outcomeEndDate ? event.target.value : draft.outcomeEndDate })} /></label>
+          <label><span>Outcome observed through <small>optional carryover</small></span><input type="date" min={draft.endDate} value={draft.outcomeEndDate} onChange={(event) => setDraft({ ...draft, outcomeEndDate: event.target.value })} /></label>
           <label><span>Incremental outcome</span><input type="number" value={draft.incrementalOutcome} onChange={(event) => setDraft({ ...draft, incrementalOutcome: event.target.value })} /></label>
           <label><span>Incremental spend</span><input type="number" value={draft.incrementalSpend} onChange={(event) => setDraft({ ...draft, incrementalSpend: event.target.value })} /></label>
           <label><span>ROI standard error</span><input type="number" step="0.01" value={draft.standardError} onChange={(event) => setDraft({ ...draft, standardError: event.target.value })} /></label>
           <label><span>Source</span><input value={draft.source} onChange={(event) => setDraft({ ...draft, source: event.target.value })} /></label>
           <button className="button primary" type="submit">Save evidence</button>
+          <p className="experiment-form-note">Flux compares the reported lift with model-attributed ROI from campaign-window spend. Extending the outcome date captures declared carryover without adding post-test spend to the denominator.</p>
         </form>
       )}
       <section className="card">
@@ -7359,7 +7525,13 @@ function CalibrationView({
           {experiments.map((experiment, index) => (
             <div className="experiment-row" key={`${experiment.channel}-${index}`}>
               <strong>{cleanChannel(experiment.channel)}<small>{experiment.source}</small></strong>
-              <span>{experiment.startDate.slice(0, 7)} → {experiment.endDate.slice(0, 7)}</span>
+              <span>
+                {experiment.startDate.slice(0, 7)} → {experiment.endDate.slice(0, 7)}
+                {experiment.outcomeEndDate &&
+                experiment.outcomeEndDate !== experiment.endDate ? (
+                  <small>Outcomes through {experiment.outcomeEndDate.slice(0, 7)}</small>
+                ) : null}
+              </span>
               <span>{formatFull(experiment.incrementalOutcome, true)}</span>
               <span>{formatFull(experiment.incrementalSpend, true)}</span>
               <b>{(experiment.incrementalOutcome / Math.max(experiment.incrementalSpend, 1)).toFixed(2)}×</b>
@@ -7763,11 +7935,44 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     setAnchorIndependenceConfirmed,
   ] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [workspaceReady, setWorkspaceReady] = useState(false);
+  const [workspaceSaveStatus, setWorkspaceSaveStatus] =
+    useState<WorkspaceSaveStatus>("restoring");
+  const [workspaceSavedAt, setWorkspaceSavedAt] = useState<string>();
   const fileRef = useRef<HTMLInputElement>(null);
   const generationRef = useRef(0);
   const agenticGenerationRef = useRef(0);
   const samplingGenerationRef = useRef(0);
   const budgetGenerationRef = useRef(0);
+  const workspaceCheckpointRef = useRef<
+    WorkspaceCheckpointEnvelope<WorkspaceCheckpointPayload>
+  >(undefined);
+  const workspaceCheckpointRevisionRef = useRef(0);
+  const workspaceCheckpointDirtyRef = useRef(false);
+  const workspaceCheckpointSavingRef = useRef(false);
+
+  const flushWorkspaceCheckpoint = useEffectEvent(async () => {
+    const checkpoint = workspaceCheckpointRef.current;
+    if (
+      !checkpoint ||
+      !workspaceCheckpointDirtyRef.current ||
+      workspaceCheckpointSavingRef.current
+    ) {
+      return;
+    }
+    const revision = workspaceCheckpointRevisionRef.current;
+    workspaceCheckpointDirtyRef.current = false;
+    workspaceCheckpointSavingRef.current = true;
+    const stored = await persistWorkspaceCheckpoint(checkpoint);
+    workspaceCheckpointSavingRef.current = false;
+    if (revision !== workspaceCheckpointRevisionRef.current) return;
+    if (!stored) {
+      setWorkspaceSaveStatus("unavailable");
+      return;
+    }
+    setWorkspaceSavedAt(checkpoint.savedAt);
+    setWorkspaceSaveStatus("saved");
+  });
 
   const resetBudget = useCallback(() => {
     budgetGenerationRef.current += 1;
@@ -7802,11 +8007,16 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     const parsed = parseCsv(rawCsv);
     const nextDataset = await createDataset(name, rawCsv, parsed.columns, parsed.rows);
     const nextValidation = validateDataset(nextDataset);
+    const nextExperiments = defaultExperimentsForDataset(origin);
+    const storedBenchmarkPolicy = readStoredBenchmarkPolicy(
+      nextDataset,
+      nextExperiments,
+    );
     setDataset(nextDataset);
     setValidation(nextValidation);
     setConfig(defaultConfigForDataset(nextDataset));
     setAdvancedConfig(DEFAULT_ADVANCED_CONFIG);
-    setExperiments(defaultExperimentsForDataset(origin));
+    setExperiments(nextExperiments);
     setEda(null);
     setModels({});
     setModelStatuses({ frequentist: "idle", bayesian: "idle" });
@@ -7820,7 +8030,8 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     });
     setValidationProgress({});
     setAnchorIndependenceConfirmed(false);
-    setIndustryPriorChannels([]);
+    setGuardrailMode(storedBenchmarkPolicy?.mode ?? "suggest");
+    setIndustryPriorChannels(storedBenchmarkPolicy?.channels ?? []);
     setBenchmarkScreeningRois({});
     setPromotedAgenticSpecification(undefined);
     resetSampling();
@@ -7844,17 +8055,259 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
   }, [resetAgenticSearch, resetSampling]);
 
   useEffect(() => {
-    void fetch("/data/robyn_weekly.csv")
-      .then((response) => response.text())
-      .then((csv) => loadCsv(csv, "Robyn Public weekly data demo.csv", "robyn-demo"))
-      .catch(() => setToast("The sample dataset could not be loaded."));
-  }, [loadCsv]);
+    let cancelled = false;
+    void (async () => {
+      setWorkspaceSaveStatus("restoring");
+      const checkpoint =
+        await readLatestWorkspaceCheckpoint<WorkspaceCheckpointPayload>();
+      if (cancelled) return;
+      if (checkpoint && checkpoint.payload.demoMode === demoMode) {
+        const restored = checkpoint.payload;
+        const interruptedAgentic = restored.agenticStatus === "running";
+        const interruptedSampling =
+          restored.samplingStatus === "running" ||
+          restored.samplingStatus === "queued";
+        const interruptedBudget =
+          restored.budgetStatus === "running" ||
+          restored.budgetStatus === "queued";
+        setDataset(restored.dataset);
+        setValidation(restored.validation);
+        setEda(restored.eda);
+        setEdaStatus(restored.eda ? "complete" : "idle");
+        setExperiments(restored.experiments);
+        setGuardrailMode(restored.guardrailMode);
+        setIndustryPriorChannels(restored.industryPriorChannels);
+        setBenchmarkScreeningRois(restored.benchmarkScreeningRois);
+        setConfig(restored.config);
+        setAdvancedConfig(restored.advancedConfig);
+        setModels(restored.models);
+        setModelStatuses({
+          frequentist: restored.models.frequentist
+            ? restored.models.frequentist.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+          bayesian: restored.models.bayesian
+            ? restored.models.bayesian.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+        });
+        setAdvancedResult(restored.advancedResult);
+        setAdvancedStatus(
+          restored.advancedResult
+            ? restored.advancedResult.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+        );
+        setValidationResults(restored.validationResults);
+        setValidationStatuses({
+          frequentist: restored.validationResults.frequentist
+            ? restored.validationResults.frequentist.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+          bayesian: restored.validationResults.bayesian
+            ? restored.validationResults.bayesian.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+          advanced: restored.validationResults.advanced
+            ? restored.validationResults.advanced.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+        });
+        setValidationProgress({});
+        setAnchorIndependenceConfirmed(
+          restored.anchorIndependenceConfirmed,
+        );
+        setAgenticContract(restored.agenticContract);
+        setAgenticRuns(interruptedAgentic ? [] : restored.agenticRuns);
+        setAgenticStatus(interruptedAgentic ? "idle" : restored.agenticStatus);
+        setAgenticStopReason(
+          interruptedAgentic
+            ? "The previous search was interrupted by a browser reload. Start it again to preserve the full eligibility contract."
+            : restored.agenticStopReason,
+        );
+        setPromotedAgenticSpecification(
+          restored.promotedAgenticSpecification,
+        );
+        setSamplingContract(restored.samplingContract);
+        setSamplingResult(restored.samplingResult);
+        setSamplingHistory(restored.samplingHistory);
+        setSamplingStatus(
+          restored.samplingResult
+            ? restored.samplingResult.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+        );
+        setSamplingProgress(undefined);
+        setBudgetContract(restored.budgetContract);
+        setBudgetResult(restored.budgetResult);
+        setBudgetStatus(
+          restored.budgetResult
+            ? restored.budgetResult.cached
+              ? "cached"
+              : "complete"
+            : "idle",
+        );
+        setBudgetProgress(undefined);
+        const restoredView =
+          restored.view === "budget" && !restored.samplingResult
+            ? restored.promotedAgenticSpecification
+              ? "sampling"
+              : "agentic"
+            : restored.view === "sampling" &&
+                !restored.promotedAgenticSpecification
+              ? "agentic"
+              : restored.view;
+        setView(restoredView);
+        setWorkspaceSavedAt(checkpoint.savedAt);
+        setWorkspaceSaveStatus("saved");
+        setWorkspaceReady(true);
+        setToast(
+          interruptedAgentic || interruptedSampling || interruptedBudget
+            ? "Workspace restored. A job that was running during sleep was safely returned to an idle state."
+            : "Local workspace restored from the latest checkpoint.",
+        );
+        return;
+      }
+
+      try {
+        const response = await fetch("/data/robyn_weekly.csv");
+        const csv = await response.text();
+        await loadCsv(
+          csv,
+          "Robyn Public weekly data demo.csv",
+          "robyn-demo",
+        );
+      } catch {
+        setToast("The sample dataset could not be loaded.");
+      } finally {
+        if (!cancelled) setWorkspaceReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [demoMode, loadCsv]);
 
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(null), 3600);
     return () => window.clearTimeout(timer);
   }, [toast]);
+
+  useEffect(() => {
+    if (!dataset) return;
+    writeStoredBenchmarkPolicy(dataset, {
+      mode: guardrailMode,
+      channels:
+        guardrailMode === "off"
+          ? []
+          : eligibleStoredBenchmarkChannels(
+              dataset,
+              experiments,
+              industryPriorChannels,
+            ),
+    });
+  }, [dataset, experiments, guardrailMode, industryPriorChannels]);
+
+  const checkpointAgenticRuns =
+    agenticStatus === "running"
+      ? EMPTY_AGENTIC_CHECKPOINT_RUNS
+      : agenticRuns;
+
+  useEffect(() => {
+    if (!workspaceReady || !dataset || !validation) return;
+    workspaceCheckpointRef.current = createWorkspaceCheckpoint(dataset.hash, {
+      demoMode,
+      view,
+      dataset,
+      validation,
+      eda,
+      experiments,
+      guardrailMode,
+      industryPriorChannels,
+      benchmarkScreeningRois,
+      config,
+      advancedConfig,
+      models,
+      advancedResult,
+      validationResults,
+      anchorIndependenceConfirmed,
+      agenticContract,
+      agenticRuns: checkpointAgenticRuns,
+      agenticStatus,
+      agenticStopReason,
+      promotedAgenticSpecification,
+      samplingContract,
+      samplingResult,
+      samplingHistory,
+      samplingStatus,
+      budgetContract,
+      budgetResult,
+      budgetStatus,
+    });
+    workspaceCheckpointRevisionRef.current += 1;
+    workspaceCheckpointDirtyRef.current = true;
+    const frame = window.requestAnimationFrame(() => {
+      setWorkspaceSaveStatus("saving");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    advancedConfig,
+    advancedResult,
+    agenticContract,
+    checkpointAgenticRuns,
+    agenticStatus,
+    agenticStopReason,
+    anchorIndependenceConfirmed,
+    benchmarkScreeningRois,
+    budgetContract,
+    budgetResult,
+    budgetStatus,
+    config,
+    dataset,
+    demoMode,
+    eda,
+    experiments,
+    guardrailMode,
+    industryPriorChannels,
+    models,
+    promotedAgenticSpecification,
+    samplingContract,
+    samplingHistory,
+    samplingResult,
+    samplingStatus,
+    validation,
+    validationResults,
+    view,
+    workspaceReady,
+  ]);
+
+  useEffect(() => {
+    if (!workspaceReady) return;
+    const interval = window.setInterval(() => {
+      void flushWorkspaceCheckpoint();
+    }, 2500);
+    const saveBeforeBackgrounding = () => {
+      if (document.visibilityState === "hidden") {
+        void flushWorkspaceCheckpoint();
+      }
+    };
+    document.addEventListener("visibilitychange", saveBeforeBackgrounding);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener(
+        "visibilitychange",
+        saveBeforeBackgrounding,
+      );
+    };
+  }, [workspaceReady]);
 
   useEffect(() => {
     if (view !== "sampling") return;
@@ -7898,7 +8351,9 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     });
     setValidationProgress({});
     setAnchorIndependenceConfirmed(false);
-    setIndustryPriorChannels([]);
+    setIndustryPriorChannels((current) =>
+      eligibleStoredBenchmarkChannels(nextDataset, experiments, current),
+    );
     setBenchmarkScreeningRois({});
     setPromotedAgenticSpecification(undefined);
     resetSampling();
@@ -7914,7 +8369,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       setEda(runEda(nextDataset));
       setEdaStatus("complete");
     }, 240);
-  }, [resetAgenticSearch, resetSampling]);
+  }, [experiments, resetAgenticSearch, resetSampling]);
 
   const handleModelConfigChange = useCallback((nextConfig: ModelConfig) => {
     setConfig(nextConfig);
@@ -7930,7 +8385,6 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     });
     setValidationProgress({});
     setAnchorIndependenceConfirmed(false);
-    setIndustryPriorChannels([]);
     setBenchmarkScreeningRois({});
     resetAgenticSearch();
   }, [resetAgenticSearch]);
@@ -7962,7 +8416,11 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
 
   const handleExperimentsChange = useCallback((nextExperiments: Experiment[]) => {
     setExperiments(nextExperiments);
-    setIndustryPriorChannels([]);
+    setIndustryPriorChannels((current) =>
+      dataset
+        ? eligibleStoredBenchmarkChannels(dataset, nextExperiments, current)
+        : [],
+    );
     setBenchmarkScreeningRois({});
     setModels((current) => ({ frequentist: current.frequentist }));
     setModelStatuses((current) => ({
@@ -7980,7 +8438,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     setValidationProgress({});
     setAnchorIndependenceConfirmed(false);
     resetAgenticSearch();
-  }, [resetAgenticSearch]);
+  }, [dataset, resetAgenticSearch]);
 
   const invalidateGuardrailedArtifacts = useCallback(() => {
     setModels((current) => ({ frequentist: current.frequentist }));
@@ -8480,10 +8938,18 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           break;
         }
       }
+      const fitIndustryChannels =
+        spec.family === "frequentist"
+          ? []
+          : spec.evidencePriorChannels ?? selectedIndustryChannels;
+      spec = {
+        ...spec,
+        evidencePriorChannels: [...fitIndustryChannels],
+      };
       setAgenticRuns((current) =>
         current.map((run) =>
           run.spec.id === spec.id
-            ? { ...run, state: "running", error: undefined }
+            ? { ...run, spec, state: "running", error: undefined }
             : run,
         ),
       );
@@ -8497,16 +8963,14 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
                 spec.config,
                 spec.advancedConfig,
                 experiments,
-                selectedIndustryChannels,
+                fitIndustryChannels,
               )
             : await modelFingerprint(
                 dataset,
                 spec.config,
                 experiments,
                 spec.family,
-                spec.family === "bayesian"
-                  ? selectedIndustryChannels
-                  : [],
+                fitIndustryChannels,
               );
         let model = await getCachedModel(modelKey);
         const modelWasCached = Boolean(model);
@@ -8519,7 +8983,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
                   spec.advancedConfig,
                   experiments,
                   modelKey,
-                  selectedIndustryChannels,
+                  fitIndustryChannels,
                 )
               : await runModel(
                   dataset,
@@ -8527,9 +8991,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
                   experiments,
                   spec.family,
                   modelKey,
-                  spec.family === "bayesian"
-                    ? selectedIndustryChannels
-                    : [],
+                  fitIndustryChannels,
                 );
           void persistModel(dataset.hash, model);
         }
@@ -8543,10 +9005,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           );
         const validationOptions = {
           anchorIndependenceConfirmed,
-          industryPriorChannels:
-            spec.family === "frequentist"
-              ? []
-              : selectedIndustryChannels,
+          industryPriorChannels: fitIndustryChannels,
           industryBenchmarkScreeningEnabled: guardrailMode !== "off",
         };
         const validationKey = await validationFingerprint(
@@ -8633,46 +9092,59 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     }
 
     if (agenticGenerationRef.current !== generation) return;
-    const rescueParents = [...evaluatedRuns]
+    const rescueParents = rankAgenticCandidates(evaluatedRuns)
       .filter(
         (run) =>
           run.state === "complete" &&
           run.spec.family !== "frequentist" &&
-          Boolean(run.model && run.validation) &&
-          rescueIndustryPriorChannels(
-            run.validation!.evidenceCoherence,
-            selectedIndustryChannels,
+          Boolean(run.model) &&
+          findAgenticBenchmarkRescueRecommendations(
+            run.model!,
+            experiments,
+            guardrailMode !== "off",
+            dataset,
+            run.spec.evidencePriorChannels ?? [],
           ).length > 0,
-      )
-      .sort(
-        (left, right) =>
-          (right.validation?.finalScore ?? -1) -
-          (left.validation?.finalScore ?? -1),
       )
       .slice(0, 3);
 
     for (const parent of rescueParents) {
       if (agenticGenerationRef.current !== generation) return;
-      const additionalChannels = rescueIndustryPriorChannels(
-        parent.validation!.evidenceCoherence,
-        selectedIndustryChannels,
+      const recommendations = findAgenticBenchmarkRescueRecommendations(
+        parent.model!,
+        experiments,
+        guardrailMode !== "off",
+        dataset,
+        parent.spec.evidencePriorChannels ?? [],
+      );
+      const additionalChannels = recommendations.map(
+        (recommendation) => recommendation.channel,
+      );
+      const channelBenchmarks = recommendations.filter(
+        (recommendation) => recommendation.role === "channel-benchmark",
+      );
+      const weakFallbacks = recommendations.filter(
+        (recommendation) => recommendation.role === "weak-fallback",
       );
       const rescueIndustryChannels = Array.from(
-        new Set([...selectedIndustryChannels, ...additionalChannels]),
+        new Set([
+          ...(parent.spec.evidencePriorChannels ?? []),
+          ...additionalChannels,
+        ]),
       );
       const rescueSpec: AgenticCandidateRun["spec"] = {
         ...parent.spec,
         id: `${parent.spec.id}R`,
         label: `${parent.spec.label} · evidence rescue`,
-        summary: `Prior-informed rescue of ${parent.spec.id} for ${additionalChannels.map(cleanChannel).join(", ")}`,
+        summary: `Paired evidence refit of ${parent.spec.id} for ${additionalChannels.map(cleanChannel).join(", ")}`,
         hypothesis:
-          "A broad industry prior may resolve a material boundary collapse without receiving validation credit for matching that same benchmark.",
+          `${channelBenchmarks.length ? `Channel benchmark: ${channelBenchmarks.map((item) => cleanChannel(item.channel)).join(", ")}. ` : ""}${weakFallbacks.length ? `Weak broad fallback: ${weakFallbacks.map((item) => cleanChannel(item.channel)).join(", ")}. ` : ""}The paired refit must improve the independent V6 score; benchmark agreement itself earns no validation credit.`,
         searchPhase: "rescue",
         rescueOf: parent.spec.id,
         evidencePriorChannels: rescueIndustryChannels,
         proposal: {
           method: "evidence-rescue",
-          reason: `Triggered after ${parent.spec.id} failed material-channel evidence coherence. The original candidate remains unchanged.`,
+          reason: `Triggered because ${parent.spec.id} placed material unanchored ROI outside its external plausibility range. The original fit remains unchanged for a non-circular paired comparison.`,
         },
       };
       setAgenticRuns((current) => [
@@ -8868,14 +9340,9 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       }
       if (options.promote) {
         const promotedIndustryChannels =
-          run.spec.family === "frequentist" || guardrailMode === "off"
+          run.spec.family === "frequentist"
             ? []
-            : Array.from(
-                new Set([
-                  ...industryPriorChannels,
-                  ...(run.spec.evidencePriorChannels ?? []),
-                ]),
-              );
+            : [...(run.spec.evidencePriorChannels ?? [])];
         setIndustryPriorChannels(promotedIndustryChannels);
         resetSampling();
         setSamplingContract(DEFAULT_SAMPLING_CONTRACT);
@@ -8904,8 +9371,6 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     [
       dataset,
       experiments,
-      guardrailMode,
-      industryPriorChannels,
       resetSampling,
     ],
   );
@@ -9319,7 +9784,13 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     <div className="app-shell">
       <Sidebar view={view} setView={setView} validation={validation} />
       <div className="workspace">
-        <Header dataset={dataset} onUpload={upload} demoMode={demoMode} />
+        <Header
+          dataset={dataset}
+          onUpload={upload}
+          demoMode={demoMode}
+          saveStatus={workspaceSaveStatus}
+          savedAt={workspaceSavedAt}
+        />
         {activeContent}
       </div>
       {!demoMode && (

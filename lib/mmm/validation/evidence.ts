@@ -5,7 +5,8 @@ import {
   industryRoiTail,
 } from "../benchmarks";
 import { toNumber } from "../csv";
-import type { Dataset, Experiment, ModelResult } from "../types";
+import { modelExperimentWindowRoi } from "../experiment-window";
+import type { Dataset, Experiment, ModelConfig, ModelResult } from "../types";
 import type {
   ChannelEvidenceCoherence,
   EvidenceCoherenceAssessment,
@@ -149,6 +150,7 @@ export function assessEvidenceCoherence(
   model: ModelResult,
   experiments: Experiment[],
   options: ValidationOptions,
+  config?: ModelConfig,
 ): EvidenceCoherenceAssessment {
   const materialSpendShareThreshold =
     options.materialSpendShareThreshold ?? DEFAULT_MATERIAL_SPEND_SHARE;
@@ -170,11 +172,73 @@ export function assessEvidenceCoherence(
 
     if (evidence.length) {
       const experiment = experimentSummary(evidence);
-      const comparable = comparableExperimentEstimate(
-        model,
-        estimate.channel,
-        evidence,
-      );
+      const windowComparisons = config
+        ? evidence.map((experiment) => ({
+            experiment,
+            estimate: modelExperimentWindowRoi(
+              dataset,
+              model,
+              config,
+              experiment,
+            ),
+          })).filter(
+            (item): item is typeof item & { estimate: NonNullable<typeof item.estimate> } =>
+              Boolean(item.estimate),
+          )
+        : [];
+      const comparable = windowComparisons.length
+        ? (() => {
+            const weights = windowComparisons.map(
+              ({ experiment }) =>
+                1 / Math.max(experiment.standardError, 0.01) ** 2,
+            );
+            const totalWeight = weights.reduce((total, value) => total + value, 0);
+            const weighted = (field: "roi" | "low" | "high") =>
+              windowComparisons.reduce(
+                (total, item, index) =>
+                  total + item.estimate[field] * weights[index],
+                0,
+              ) / Math.max(totalWeight, 1e-9);
+            return {
+              roi: weighted("roi"),
+              low: weighted("low"),
+              high: weighted("high"),
+              basis: "experiment-window" as const,
+              label: windowComparisons.length === 1
+                ? windowComparisons[0].estimate.label
+                : `${windowComparisons.length} matched experiment windows`,
+            };
+          })()
+        : config
+          ? undefined
+          : comparableExperimentEstimate(
+              model,
+              estimate.channel,
+              evidence,
+            );
+      if (!comparable) {
+        return {
+          channel: estimate.channel,
+          spendShare,
+          material,
+          roi: estimate.roi,
+          roiLow: estimate.roiLow,
+          roiHigh: estimate.roiHigh,
+          evidenceSource: "experiment",
+          evidenceLabel: experiment.label,
+          evidenceCenter: experiment.center,
+          evidenceLow: experiment.low,
+          evidenceHigh: experiment.high,
+          comparisonBasis: "unavailable" as const,
+          comparisonLabel: "Experiment-window ROI unavailable",
+          priorUse,
+          identification,
+          clipped,
+          status: "unidentified" as const,
+          blocking: material,
+          detail: "The experiment could not be matched to a complete campaign and outcome window with positive tested spend. Flux will not substitute a full-history ROI comparison.",
+        };
+      }
       const modelRoi = comparable?.roi ?? estimate.roi;
       const modelLow = comparable?.low ?? estimate.roiLow;
       const modelHigh = comparable?.high ?? estimate.roiHigh;
@@ -222,10 +286,8 @@ export function assessEvidenceCoherence(
         evidenceCenter: experiment.center,
         evidenceLow: experiment.low,
         evidenceHigh: experiment.high,
-        comparisonBasis: comparable?.basis ?? "full-history",
-        comparisonLabel: comparable
-          ? `Experiment-window ROI · ${comparable.label}`
-          : "Full-history ROI",
+        comparisonBasis: comparable.basis,
+        comparisonLabel: `Experiment-window ROI · ${comparable.label}`,
         standardizedGap,
         priorUse,
         identification,
@@ -265,7 +327,10 @@ export function assessEvidenceCoherence(
       };
     }
 
-    const benchmark = inferIndustryPrior(estimate.channel);
+    const benchmark = inferIndustryPrior(
+      estimate.channel,
+      options.industryPriorOverrides,
+    );
     const percentile = industryPriorPercentile(estimate.roi, benchmark);
     const tail = industryRoiTail(estimate.roi, benchmark);
     const credibleMatch =

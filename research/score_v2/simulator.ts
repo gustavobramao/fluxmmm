@@ -1,7 +1,3 @@
-import type { MediaResponseConfig } from "../../lib/mmm/types";
-import {
-  responseTransform,
-} from "../../lib/mmm/response";
 import {
   EVIDENCE_REGISTRY_VERSION,
   sampleHierarchicalRoi,
@@ -18,7 +14,7 @@ import type {
   SyntheticScenarioConfig,
 } from "./types";
 
-export const SIMULATOR_VERSION = "flux-score-v3-dgp-2026.08.1";
+export const SIMULATOR_VERSION = "flux-score-v7-dgp-2026.08.1-window-evidence";
 export const DECISION_BUDGET_STEPS = 21;
 export const DECISION_ALLOCATION_CANDIDATES = 240;
 
@@ -36,28 +32,6 @@ function standardize(values: number[]): number[] {
   return values.map((value) => (value - average) / Math.max(scale, 1e-12));
 }
 
-function responseContract(config: SyntheticChannelConfig): MediaResponseConfig {
-  return config.response.family === "weibull"
-    ? {
-        adstockType: "weibull",
-        adstock: 0.3,
-        weibullShape: config.response.shape,
-        weibullScale: config.response.scale,
-        saturation: config.response.hillShape,
-        halfSaturationQuantile: config.response.halfSaturationQuantile,
-        kernelNormalization: config.response.kernelNormalization,
-      }
-    : {
-        adstockType: "geometric",
-        adstock: config.response.decay,
-        weibullShape: 2,
-        weibullScale: 4,
-        saturation: config.response.hillShape,
-        halfSaturationQuantile: config.response.halfSaturationQuantile,
-        kernelNormalization: config.response.kernelNormalization,
-      };
-}
-
 export function fixedHill(
   values: number[],
   shape: number,
@@ -70,19 +44,61 @@ export function fixedHill(
   });
 }
 
+function quantile(values: number[], probability: number): number {
+  const positive = values
+    .filter((value) => Number.isFinite(value) && value > 0)
+    .sort((left, right) => left - right);
+  if (!positive.length) return 1;
+  const position = Math.min(1, Math.max(0, probability)) * (positive.length - 1);
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  const weight = position - lower;
+  return positive[lower] * (1 - weight) + positive[upper] * weight;
+}
+
+/**
+ * Deliberately independent from the production response implementation. The
+ * simulator uses a finite normalized convolution so candidate fits cannot win
+ * merely by sharing the exact same transform code as the answer key.
+ */
+function simulatorCarryover(
+  values: number[],
+  config: SyntheticChannelConfig,
+): number[] {
+  const response = config.response;
+  const kernel = response.family === "geometric"
+    ? Array.from({ length: 40 }, (_, lag) => response.decay ** lag)
+    : Array.from({ length: 52 }, (_, lag) => {
+        const lower = 1 - Math.exp(-((lag / response.scale) ** response.shape));
+        const upper = 1 - Math.exp(-(((lag + 1) / response.scale) ** response.shape));
+        return Math.max(0, upper - lower);
+      });
+  const kernelSum = Math.max(sum(kernel), 1e-12);
+  const weights = kernel.map((weight) => weight / kernelSum);
+  return values.map((_, index) =>
+    weights.reduce(
+      (total, weight, lag) =>
+        total + weight * (index - lag >= 0 ? values[index - lag] : 0),
+      0,
+    ),
+  );
+}
+
 function transformDelivery(
   deliveryUnits: number[],
   config: SyntheticChannelConfig,
   fixedHalfSaturation?: number,
 ): { transformed: number[]; halfSaturation: number } {
-  const transformed = responseTransform(
-    deliveryUnits,
-    responseContract(config),
-    fixedHalfSaturation,
-  );
+  const carried = simulatorCarryover(deliveryUnits, config);
+  const halfSaturation = fixedHalfSaturation ??
+    quantile(carried, config.response.halfSaturationQuantile);
   return {
-    transformed: transformed.transformed,
-    halfSaturation: transformed.halfSaturation,
+    transformed: fixedHill(
+      carried,
+      config.response.hillShape,
+      halfSaturation,
+    ),
+    halfSaturation,
   };
 }
 
@@ -511,37 +527,110 @@ function simulatedExperiments(
   return channels.flatMap((channel) => {
     const config = scenario.channels.find((item) => item.channel === channel.channel)!;
     if (config.experiment.design === "none") return [];
-    const standardError = Math.max(
-      0.12,
-      channel.targetRoi * config.experiment.standardErrorShare,
-    );
-    const observedRoi = Math.max(
-      0.05,
-      channel.targetRoi * (1 + config.experiment.biasShare) +
-        random.normal() * standardError,
-    );
-    const experiment = {
-      channel: channel.spendColumn,
-      startDate: weeklyDate(104),
-      endDate: weeklyDate(129),
-      incrementalOutcome: observedRoi * config.experiment.spend,
-      incrementalSpend: config.experiment.spend,
-      standardError,
-      confidence: 0.9,
-      scope: "total" as const,
-      source: `Simulated independent ${config.experiment.design} experiment`,
-    };
-    return [
-      {
+    const experimentConfig = config.experiment;
+    const replicates = Math.max(1, Math.floor(experimentConfig.replicates ?? 1));
+    return Array.from({ length: replicates }, (_, studyIndex) => {
+      const windowLength = Math.max(8, Math.min(13, Math.floor(scenario.periods / 8)));
+      const latestStart = Math.max(0, scenario.periods - windowLength - 1);
+      const desiredStart = Math.round(
+        ((studyIndex + 1) / (replicates + 1)) * latestStart,
+      );
+      const candidateStarts = Array.from(
+        { length: latestStart + 1 },
+        (_, index) => index,
+      ).sort(
+        (left, right) =>
+          Math.abs(left - desiredStart) - Math.abs(right - desiredStart),
+      );
+      const startIndex = candidateStarts.find((candidate) =>
+        sum(channel.spend.slice(candidate, candidate + windowLength)) > 0,
+      ) ?? desiredStart;
+      const endIndex = Math.min(
+        scenario.periods - 1,
+        startIndex + windowLength - 1,
+      );
+      const response = config.response;
+      const kernel = response.family === "geometric"
+        ? Array.from({ length: 40 }, (_, lag) => response.decay ** lag)
+        : Array.from({ length: 52 }, (_, lag) => {
+            const lower = 1 - Math.exp(-((lag / response.scale) ** response.shape));
+            const upper = 1 - Math.exp(-(((lag + 1) / response.scale) ** response.shape));
+            return Math.max(0, upper - lower);
+          });
+      const kernelTotal = Math.max(sum(kernel), 1e-12);
+      let cumulative = 0;
+      const carryoverTail = Math.max(
+        0,
+        kernel.findIndex((weight) => {
+          cumulative += weight / kernelTotal;
+          return cumulative >= 0.95;
+        }),
+      );
+      const outcomeEndIndex = Math.min(
+        scenario.periods - 1,
+        endIndex + carryoverTail,
+      );
+      const counterfactualDelivery = channel.deliveryUnits.map(
+        (value, index) =>
+          index >= startIndex && index <= endIndex ? 0 : value,
+      );
+      const counterfactual = transformDelivery(
+        counterfactualDelivery,
+        config,
+        channel.halfSaturation,
+      ).transformed;
+      const sourceWindowSpend = sum(
+        channel.spend.slice(startIndex, endIndex + 1),
+      );
+      const trueIncrementalOutcome = Array.from(
+        { length: outcomeEndIndex - startIndex + 1 },
+        (_, offset) => startIndex + offset,
+      ).reduce(
+        (total, index) =>
+          total +
+          channel.coefficient *
+            ((channel.transformed[index] ?? 0) - (counterfactual[index] ?? 0)),
+        0,
+      );
+      const trueRoi = Math.max(
+        0.01,
+        trueIncrementalOutcome / Math.max(sourceWindowSpend, 1),
+      );
+      const standardError = Math.max(
+        0.12,
+        trueRoi * experimentConfig.standardErrorShare,
+      );
+      const studyBias = experimentConfig.biasShare +
+        random.normal() * Math.abs(experimentConfig.biasShare) * 0.2;
+      const observedRoi = Math.max(
+        0.05,
+        trueRoi * (1 + studyBias) + random.normal() * standardError,
+      );
+      const experiment = {
+        channel: channel.spendColumn,
+        startDate: weeklyDate(startIndex),
+        endDate: weeklyDate(endIndex),
+        outcomeEndDate: weeklyDate(outcomeEndIndex),
+        incrementalOutcome: observedRoi * experimentConfig.spend,
+        incrementalSpend: experimentConfig.spend,
+        standardError,
+        confidence: 0.9,
+        scope: "total" as const,
+        source: `Simulated independent ${experimentConfig.design} experiment ${studyIndex + 1}`,
+      };
+      return {
         channel: channel.channel,
-        design: config.experiment.design,
-        trueRoi: channel.targetRoi,
+        design: experimentConfig.design,
+        trueRoi,
+        fullHistoryRoi: channel.targetRoi,
+        sourceWindowSpend,
+        trueIncrementalOutcome,
         observedRoi,
         standardError,
-        biasShare: config.experiment.biasShare,
+        biasShare: studyBias,
         experiment,
-      },
-    ];
+      };
+    });
   });
 }
 

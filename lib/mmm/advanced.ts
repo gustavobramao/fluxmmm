@@ -14,12 +14,16 @@ import {
   transpose,
 } from "./math";
 import { responseForChannel, responseTransform } from "./response";
+import { experimentResponseContrast } from "./experiment-window";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
   INDUSTRY_BENCHMARK_VERSION,
 } from "./benchmarks";
-import type { IndustryPriorSelection } from "./benchmarks";
+import type {
+  IndustryPriorOverrides,
+  IndustryPriorSelection,
+} from "./benchmarks";
 import type {
   AdvancedModelConfig,
   ChannelEstimate,
@@ -32,7 +36,7 @@ import type {
 } from "./types";
 
 const ADVANCED_MODEL_VERSION =
-  "flux-mmm-advanced-v2.0-channel-response-contracts";
+  "flux-mmm-advanced-v2.1-same-window-experiment-calibration";
 
 interface AdvancedDesign {
   matrix: number[][];
@@ -316,6 +320,7 @@ function initialVariance(
 function applyPriorCalibration(
   dataset: Dataset,
   design: AdvancedDesign,
+  config: ModelConfig,
   experiments: Experiment[],
   likelihoodVariance: number,
   effectMultiplier: number,
@@ -329,14 +334,40 @@ function applyPriorCalibration(
     if (!evidence.length) return;
     calibrated += evidence.length;
 
+    const rois = evidence.map(({ experiment }) =>
+      experiment.incrementalOutcome /
+      Math.max(experiment.incrementalSpend, 1),
+    );
+    const mapped = evidence.flatMap(({ experiment }) => {
+      const contrast = experimentResponseContrast(
+        dataset,
+        config,
+        channel,
+        experiment,
+      );
+      if (!contrast) return [];
+      const transformedContrast = contrast.outcomeRows.reduce(
+        (total, rowIndex) =>
+          total + (contrast.deltaTransformed[rowIndex] ?? 0),
+        0,
+      );
+      const roiScale =
+        (transformedContrast * effectMultiplier) /
+        Math.max(contrast.spend, 1);
+      if (roiScale <= 1e-12) return [];
+      const roi =
+        experiment.incrementalOutcome /
+        Math.max(experiment.incrementalSpend, 1);
+      return [{
+        mean: roi / roiScale,
+        standardDeviation:
+          Math.max(experiment.standardError, Math.abs(roi) * 0.12) /
+          roiScale,
+      }];
+    });
     const weights = evidence.map(
       ({ experiment }) =>
         1 / Math.max(experiment.standardError ** 2, 1e-6),
-    );
-    const rois = evidence.map(
-      ({ experiment }) =>
-        experiment.incrementalOutcome /
-        Math.max(experiment.incrementalSpend, 1),
     );
     const totalWeight = weights.reduce((total, value) => total + value, 0);
     const pooledRoi = rois.reduce(
@@ -352,12 +383,29 @@ function applyPriorCalibration(
       (total, value) => total + value,
       0,
     );
-    let priorMean =
-      (pooledRoi * spend) /
-      Math.max(transformed * effectMultiplier, 1e-9);
-    let mappedSd =
-      (Math.max(pooledSe, Math.abs(pooledRoi) * 0.12) * spend) /
-      Math.max(transformed * effectMultiplier, 1e-9);
+    let priorMean: number;
+    let mappedSd: number;
+    if (mapped.length) {
+      const mappedWeights = mapped.map(
+        (item) => 1 / Math.max(item.standardDeviation ** 2, 1e-9),
+      );
+      const mappedWeight = mappedWeights.reduce(
+        (total, value) => total + value,
+        0,
+      );
+      priorMean = mapped.reduce(
+        (total, item, index) => total + item.mean * mappedWeights[index],
+        0,
+      ) / mappedWeight;
+      mappedSd = Math.sqrt(1 / mappedWeight);
+    } else {
+      priorMean =
+        (pooledRoi * spend) /
+        Math.max(transformed * effectMultiplier, 1e-9);
+      mappedSd =
+        (Math.max(pooledSe, Math.abs(pooledRoi) * 0.12) * spend) /
+        Math.max(transformed * effectMultiplier, 1e-9);
+    }
     if (priorDistribution === "log-normal" && priorMean > 0) {
       const logVariance = Math.log(
         1 + mappedSd ** 2 / Math.max(priorMean ** 2, 1e-9),
@@ -396,6 +444,7 @@ function applyIndustryPriorCalibration(
   design: AdvancedDesign,
   experiments: Experiment[],
   industryPriorSelection: IndustryPriorSelection,
+  industryPriorOverrides: IndustryPriorOverrides | undefined,
   likelihoodVariance: number,
   effectMultiplier: number,
   priorDistribution: AdvancedModelConfig["priorDistribution"],
@@ -408,6 +457,7 @@ function applyIndustryPriorCalibration(
       channel,
       experiments,
       industryPriorSelection,
+      industryPriorOverrides,
     );
     if (!benchmark) return;
     calibrated += 1;
@@ -465,6 +515,7 @@ function applyIndustryPriorCalibration(
 function applyLikelihoodCalibration(
   dataset: Dataset,
   design: AdvancedDesign,
+  config: ModelConfig,
   experiments: Experiment[],
   likelihoodVariance: number,
   effectMultiplier: number,
@@ -474,7 +525,13 @@ function applyLikelihoodCalibration(
   dataset.mediaColumns.forEach((channel, mediaIndex) => {
     const evidence = matchingExperiments(dataset, experiments, channel);
     evidence.forEach(({ experiment, rows }) => {
-      const spend = rows.reduce(
+      const contrast = experimentResponseContrast(
+        dataset,
+        config,
+        channel,
+        experiment,
+      );
+      const spend = contrast?.spend ?? rows.reduce(
         (total, rowIndex) =>
           total + design.spendVectors[mediaIndex][rowIndex],
         0,
@@ -484,10 +541,11 @@ function applyLikelihoodCalibration(
 
       const indexes = design.channelCoefficientIndexes[mediaIndex];
       const h = indexes.map((_, knotIndex) =>
-        rows.reduce(
+        (contrast?.outcomeRows ?? rows).reduce(
           (total, rowIndex) =>
             total +
-            design.mediaVectors[mediaIndex][rowIndex] *
+            (contrast?.deltaTransformed[rowIndex] ??
+              design.mediaVectors[mediaIndex][rowIndex]) *
               design.kernelWeights[rowIndex][knotIndex] *
               effectMultiplier,
           0,
@@ -532,6 +590,7 @@ function channelEstimates(
   covariance: number[][],
   experiments: Experiment[],
   industryPriorSelection: IndustryPriorSelection,
+  industryPriorOverrides?: IndustryPriorOverrides,
   contributionVectors?: number[][],
 ): ChannelEstimate[] {
   const estimates = dataset.mediaColumns.map((channel, mediaIndex) => {
@@ -594,6 +653,7 @@ function channelEstimates(
       channel,
       experiments,
       industryPriorSelection,
+      industryPriorOverrides,
     );
 
     return {
@@ -695,15 +755,71 @@ function comparableRoiEstimate(
   };
 }
 
+function comparableExperimentRoiEstimate(
+  design: AdvancedDesign,
+  coefficients: number[],
+  covariance: number[][],
+  mediaIndex: number,
+  deltaTransformed: number[],
+  outcomeRows: number[],
+  spend: number,
+  effectMultiplier: number,
+): { roi: number; low: number; high: number } {
+  const indexes = design.channelCoefficientIndexes[mediaIndex];
+  const path = coefficientPath(design, coefficients, mediaIndex);
+  const contribution = outcomeRows.reduce(
+    (total, rowIndex) =>
+      total +
+      (deltaTransformed[rowIndex] ?? 0) *
+        (path[rowIndex] ?? 0) *
+        effectMultiplier,
+    0,
+  );
+  const gradient = indexes.map((_, knotIndex) =>
+    outcomeRows.reduce(
+      (total, rowIndex) =>
+        total +
+        (deltaTransformed[rowIndex] ?? 0) *
+          (design.kernelWeights[rowIndex][knotIndex] ?? 0) *
+          effectMultiplier,
+      0,
+    ),
+  );
+  const contributionVariance = gradient.reduce(
+    (outerTotal, outerValue, outerIndex) =>
+      outerTotal +
+      gradient.reduce(
+        (innerTotal, innerValue, innerIndex) =>
+          innerTotal +
+          outerValue *
+            (covariance[indexes[outerIndex]]?.[indexes[innerIndex]] ?? 0) *
+            innerValue,
+        0,
+      ),
+    0,
+  );
+  const roi = contribution / Math.max(spend, 1);
+  const roiSe = Math.sqrt(Math.max(contributionVariance, 0)) /
+    Math.max(spend, 1);
+  return {
+    roi,
+    low: Math.max(0, roi - 1.96 * roiSe),
+    high: Math.max(0, roi + 1.96 * roiSe),
+  };
+}
+
 function calibrationReceipts(
   dataset: Dataset,
   design: AdvancedDesign,
+  config: ModelConfig,
   advancedConfig: AdvancedModelConfig,
+  effectMultiplier: number,
   coefficients: number[],
   covariance: number[][],
   channels: ChannelEstimate[],
   experiments: Experiment[],
   industryPriorSelection: IndustryPriorSelection,
+  industryPriorOverrides: IndustryPriorOverrides | undefined,
   contributionVectors?: number[][],
 ): ModelCalibrationReceipt[] {
   const channelEstimate = new Map(
@@ -713,14 +829,31 @@ function calibrationReceipts(
   dataset.mediaColumns.forEach((channel, mediaIndex) => {
     const evidence = matchingExperiments(dataset, experiments, channel);
     evidence.forEach(({ experiment, rows }) => {
-      const comparable = comparableRoiEstimate(
-        design,
-        coefficients,
-        covariance,
-        mediaIndex,
-        rows,
-        contributionVectors,
+      const contrast = experimentResponseContrast(
+        dataset,
+        config,
+        channel,
+        experiment,
       );
+      const comparable = contrast
+        ? comparableExperimentRoiEstimate(
+            design,
+            coefficients,
+            covariance,
+            mediaIndex,
+            contrast.deltaTransformed,
+            contrast.outcomeRows,
+            contrast.spend,
+            effectMultiplier,
+          )
+        : comparableRoiEstimate(
+            design,
+            coefficients,
+            covariance,
+            mediaIndex,
+            rows,
+            contributionVectors,
+          );
       const targetRoi =
         experiment.incrementalOutcome /
         Math.max(experiment.incrementalSpend, 1);
@@ -746,6 +879,7 @@ function calibrationReceipts(
       channel,
       experiments,
       industryPriorSelection,
+      industryPriorOverrides,
     );
     const estimate = channelEstimate.get(channel.toLowerCase());
     if (!benchmark || !estimate) return;
@@ -885,6 +1019,7 @@ export async function advancedModelFingerprint(
   advancedConfig: AdvancedModelConfig,
   experiments: Experiment[],
   industryPriorSelection: IndustryPriorSelection = false,
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): Promise<string> {
   return sha256(
     JSON.stringify({
@@ -900,6 +1035,7 @@ export async function advancedModelFingerprint(
               ? []
               : [...industryPriorSelection].sort(),
         version: INDUSTRY_BENCHMARK_VERSION,
+        overrides: industryPriorOverrides,
       },
       version: ADVANCED_MODEL_VERSION,
     }),
@@ -913,6 +1049,7 @@ export async function runAdvancedModel(
   experiments: Experiment[],
   fingerprint: string,
   industryPriorSelection: IndustryPriorSelection = false,
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): Promise<ModelResult> {
   const design = buildAdvancedDesign(dataset, config, advancedConfig);
   const target = transformedOutcome(
@@ -943,6 +1080,7 @@ export async function runAdvancedModel(
           channel,
           experiments,
           industryPriorSelection,
+          industryPriorOverrides,
         ),
       );
       return hasExperimentPrior || hasIndustryPrior ? [mediaIndex] : [];
@@ -978,6 +1116,7 @@ export async function runAdvancedModel(
         ? applyLikelihoodCalibration(
             dataset,
             design,
+            config,
             experiments,
             likelihoodVariance,
             effectMultiplier,
@@ -986,6 +1125,7 @@ export async function runAdvancedModel(
         : applyPriorCalibration(
             dataset,
             design,
+            config,
             experiments,
             likelihoodVariance,
             effectMultiplier,
@@ -998,6 +1138,7 @@ export async function runAdvancedModel(
       design,
       experiments,
       industryPriorSelection,
+      industryPriorOverrides,
       likelihoodVariance,
       effectMultiplier,
       advancedConfig.priorDistribution,
@@ -1087,17 +1228,21 @@ export async function runAdvancedModel(
     covariance,
     experiments,
     industryPriorSelection,
+    industryPriorOverrides,
     contributionVectors,
   );
   const calibrationReceipt = calibrationReceipts(
     dataset,
     design,
+    config,
     advancedConfig,
+    effectMultiplier,
     coefficients,
     covariance,
     channels,
     experiments,
     industryPriorSelection,
+    industryPriorOverrides,
     contributionVectors,
   );
   const channelEstimateByName = new Map(
@@ -1214,6 +1359,7 @@ export async function runAdvancedModel(
       channel,
       experiments,
       industryPriorSelection,
+      industryPriorOverrides,
     );
     const source =
       advancedConfig.calibrationMode === "prior" && experimentEvidence.length

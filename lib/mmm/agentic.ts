@@ -18,7 +18,8 @@ import type {
   ValidationResult,
 } from "./validation";
 
-export const AGENTIC_SEARCH_VERSION = "flux-agentic-search-v5.0.0-global-channel-response";
+export const AGENTIC_SEARCH_VERSION =
+  "flux-agentic-search-v5.2.0-v6-paired-evidence-rescue";
 
 export interface AgenticSearchContract {
   families: Record<ValidationModelKind, boolean>;
@@ -86,6 +87,18 @@ export interface AgenticRoiGuardrailViolation {
   tail?: "low" | "high";
   spendShare?: number;
   reason?: string;
+}
+
+export interface AgenticBenchmarkRescueRecommendation {
+  channel: string;
+  roi: number;
+  benchmarkLabel: string;
+  benchmarkConfidence: "Medium" | "Low" | "Very low";
+  matchQuality: "Exact tactic" | "Channel only" | "Generic fallback";
+  role: "channel-benchmark" | "weak-fallback";
+  percentile: number;
+  tail?: "low" | "high";
+  spendShare?: number;
 }
 
 export interface AgenticForcePromotionAudit {
@@ -186,6 +199,69 @@ export function findAgenticRoiGuardrailViolations(
           tail === "low"
             ? "ROI is below the P05 industry plausibility tail."
             : "ROI is above the P95 industry plausibility tail.",
+      },
+    ];
+  });
+}
+
+/**
+ * Finds material, externally unanchored channels that need a paired
+ * benchmark-informed refit. Unlike the hard eligibility review above, this
+ * deliberately includes broad/low-confidence fallbacks. Those fallbacks are
+ * useful sensitivity evidence, but remain explicitly labelled as weak rather
+ * than being promoted to a decision-grade external anchor.
+ */
+export function findAgenticBenchmarkRescueRecommendations(
+  model: ModelResult,
+  experiments: Experiment[],
+  enabled = true,
+  dataset?: Dataset,
+  alreadyActive: readonly string[] = [],
+): AgenticBenchmarkRescueRecommendation[] {
+  if (!enabled) return [];
+  const active = new Set(alreadyActive.map((channel) => channel.toLowerCase()));
+  const spendByChannel = new Map(
+    (dataset?.mediaColumns ?? []).map((channel) => [
+      channel.toLowerCase(),
+      dataset?.rows.reduce(
+        (total, row) => total + Math.max(0, Number(row[channel]) || 0),
+        0,
+      ) ?? 0,
+    ]),
+  );
+  const totalSpend = [...spendByChannel.values()].reduce(
+    (total, spend) => total + spend,
+    0,
+  );
+
+  return model.channels.flatMap((channel) => {
+    const normalized = channel.channel.toLowerCase();
+    if (
+      active.has(normalized) ||
+      channelExperiments(experiments, channel.channel).length
+    ) {
+      return [];
+    }
+    const spendShare = dataset
+      ? (spendByChannel.get(normalized) ?? 0) / Math.max(totalSpend, 1)
+      : undefined;
+    if (spendShare !== undefined && spendShare < 0.02) return [];
+    const benchmark = inferIndustryPrior(channel.channel);
+    if (!isHighlyImprobableIndustryRoi(channel.roi, benchmark)) return [];
+    const weakFallback =
+      benchmark.matchQuality === "Generic fallback" ||
+      benchmark.confidence === "Very low";
+    return [
+      {
+        channel: channel.channel,
+        roi: channel.roi,
+        benchmarkLabel: benchmark.label,
+        benchmarkConfidence: benchmark.confidence,
+        matchQuality: benchmark.matchQuality,
+        role: weakFallback ? "weak-fallback" : "channel-benchmark",
+        percentile: industryPriorPercentile(channel.roi, benchmark),
+        tail: industryRoiTail(channel.roi, benchmark),
+        spendShare,
       },
     ];
   });

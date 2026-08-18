@@ -1,5 +1,6 @@
 import { runAdvancedModel } from "../advanced";
 import { toNumber } from "../csv";
+import { modelExperimentWindowRoi } from "../experiment-window";
 import { mean, normalise } from "../math";
 import { runModel } from "../models";
 import type {
@@ -43,9 +44,9 @@ function test(
 
 function nonOverlappingWindows(a: Experiment, b: Experiment): boolean {
   const aStart = Date.parse(a.startDate);
-  const aEnd = Date.parse(a.endDate);
+  const aEnd = Date.parse(a.outcomeEndDate ?? a.endDate);
   const bStart = Date.parse(b.startDate);
-  const bEnd = Date.parse(b.endDate);
+  const bEnd = Date.parse(b.outcomeEndDate ?? b.endDate);
   return (
     [aStart, aEnd, bStart, bEnd].every(Number.isFinite) &&
     (aEnd < bStart || bEnd < aStart)
@@ -162,6 +163,7 @@ export async function refitValidationModel(
       experiments,
       fingerprint,
       industryPriorChannels,
+      spec.validationOptions.industryPriorOverrides,
     );
   }
   return runModel(
@@ -171,6 +173,7 @@ export async function refitValidationModel(
     spec.kind,
     fingerprint,
     industryPriorChannels,
+    spec.validationOptions.industryPriorOverrides,
   );
 }
 
@@ -329,27 +332,39 @@ export async function runCausalValidation(
       const observed =
         experiment.incrementalOutcome /
         Math.max(experiment.incrementalSpend, 1);
+      const comparable = modelExperimentWindowRoi(
+        dataset,
+        recovered,
+        spec.config,
+        experiment,
+      );
+      if (!comparable) return null;
+      const modelRoi = comparable.roi;
+      const modelLow = comparable.low;
+      const modelHigh = comparable.high;
       const modelSe =
-        Math.max(channel.roiHigh - channel.roiLow, 0) / (2 * 1.96);
+        Math.max(modelHigh - modelLow, 0) / (2 * 1.96);
       const combinedSe = Math.sqrt(
         modelSe ** 2 + experiment.standardError ** 2,
       );
       const standardizedError =
-        Math.abs(channel.roi - observed) / Math.max(combinedSe, 1e-6);
+        Math.abs(modelRoi - observed) / Math.max(combinedSe, 1e-6);
       const relativeError =
-        Math.abs(channel.roi - observed) / Math.max(Math.abs(observed), 0.1);
+        Math.abs(modelRoi - observed) / Math.max(Math.abs(observed), 0.1);
       return {
         channel: experiment.channel,
         experimentRoi: observed,
         experimentLow: observed - 1.96 * experiment.standardError,
         experimentHigh: observed + 1.96 * experiment.standardError,
-        modelRoi: channel.roi,
-        modelLow: channel.roiLow,
-        modelHigh: channel.roiHigh,
+        modelRoi,
+        modelLow,
+        modelHigh,
         standardizedError,
         relativeError,
         covered:
-          observed >= channel.roiLow && observed <= channel.roiHigh,
+          observed >= modelLow && observed <= modelHigh,
+        comparisonBasis: comparable.basis,
+        comparisonLabel: comparable.label,
       };
     }),
   );
@@ -388,7 +403,7 @@ export async function runCausalValidation(
       const evidence = spec.experiments.filter(
         (experiment) =>
           !Number.isFinite(endDate) ||
-          Date.parse(experiment.endDate) <= endDate,
+          Date.parse(experiment.outcomeEndDate ?? experiment.endDate) <= endDate,
       );
       return refitValidationModel(
         snapshot,
@@ -565,6 +580,8 @@ export async function runCausalValidation(
         modelLow: anchor.modelLow,
         modelHigh: anchor.modelHigh,
         covered: anchor.covered,
+        comparisonBasis: anchor.comparisonBasis,
+        comparisonLabel: anchor.comparisonLabel,
       })),
       stability: materialEvidenceChannels
         .map((channel) => ({

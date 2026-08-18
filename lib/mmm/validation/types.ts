@@ -1,4 +1,5 @@
 import type { ModelResult } from "../types";
+import type { IndustryPriorOverrides } from "../benchmarks";
 import type { ValidationScoreContract } from "../score-contract";
 
 export type ValidationModelKind = ModelResult["kind"];
@@ -18,6 +19,7 @@ export interface ValidationOptions {
   industryPriorChannels?: string[];
   industryBenchmarkScreeningEnabled?: boolean;
   materialSpendShareThreshold?: number;
+  industryPriorOverrides?: IndustryPriorOverrides;
 }
 
 export type ChannelEvidenceStatus =
@@ -40,7 +42,7 @@ export interface ChannelEvidenceCoherence {
   evidenceCenter?: number;
   evidenceLow?: number;
   evidenceHigh?: number;
-  comparisonBasis: "experiment-window" | "full-history";
+  comparisonBasis: "experiment-window" | "full-history" | "unavailable";
   comparisonLabel: string;
   percentile?: number;
   standardizedGap?: number;
@@ -140,6 +142,8 @@ export interface CausalEvidence {
     modelLow: number;
     modelHigh: number;
     covered: boolean;
+    comparisonBasis?: "experiment-window" | "full-history";
+    comparisonLabel?: string;
   }[];
   stability: {
     channel: string;

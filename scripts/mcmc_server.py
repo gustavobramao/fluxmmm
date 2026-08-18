@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = ROOT / ".flux-artifacts" / "mcmc"
 MAX_BODY_BYTES = 32_000_000
 SAMPLING_CONTRACT_VERSION = (
-    "flux-pymc-nuts-v2.0.0-full-response-latent-planning-ppc-hdi"
+    "flux-pymc-nuts-v2.2.0-full-response-same-window-experiment-roi"
 )
 
 
@@ -159,6 +159,26 @@ def validate_compiled_model(compiled: dict[str, Any]) -> None:
             raise ValueError(
                 f"The Production payload for {channel} contains invalid raw spend values."
             )
+        if compiled["response"].get("channelSpecific"):
+            channel_response = media.get("response")
+            required_response_fields = {
+                "adstockType",
+                "adstock",
+                "weibullShape",
+                "weibullScale",
+                "saturation",
+                "halfSaturationQuantile",
+                "kernelNormalization",
+            }
+            missing_fields = sorted(
+                required_response_fields - set(channel_response or {})
+            )
+            if missing_fields:
+                raise ValueError(
+                    f"The Production payload for {channel} is missing its channel "
+                    f"response contract: {', '.join(missing_fields)}. Refresh the "
+                    "workspace and start a new sampling run."
+                )
 
 
 def build_model(compiled: dict[str, Any]):
@@ -349,6 +369,7 @@ def build_model(compiled: dict[str, Any]):
             )
 
         media_contributions = []
+        media_runtimes = []
         for media_index, media in enumerate(media_contracts):
             raw_spend = np.asarray(media["rawSpend"], dtype=float)
             media_response = media.get("response", response)
@@ -447,6 +468,18 @@ def build_model(compiled: dict[str, Any]):
                 transformed * coefficient_path,
             )
             media_contributions.append(contribution)
+            media_runtimes.append(
+                {
+                    "raw_spend": raw_spend,
+                    "weights": weights,
+                    "lag_count": lag_count,
+                    "normalize": media_response.get("kernelNormalization") == "sum",
+                    "hill_shape": channel_hill_shape,
+                    "half_saturation": half_saturation,
+                    "transformed": transformed,
+                    "coefficient_path": coefficient_path,
+                }
+            )
             linear_predictor = linear_predictor + contribution
 
         linear_predictor = pm.Deterministic("linear_predictor", linear_predictor)
@@ -507,10 +540,70 @@ def build_model(compiled: dict[str, Any]):
                 return pt.sum(mean_outcome[selected_rows] - without_channel[selected_rows]) / spend
             return pt.sum(contribution[selected_rows]) / spend
 
+        def experiment_roi(calibration: dict[str, Any], media_index: int) -> Any:
+            runtime = media_runtimes[media_index]
+            raw_spend = np.asarray(runtime["raw_spend"], dtype=float)
+            spend_rows = np.asarray(
+                calibration.get("spendRows", calibration.get("rows", [])),
+                dtype=int,
+            )
+            outcome_rows = np.asarray(
+                calibration.get("outcomeRows", calibration.get("rows", [])),
+                dtype=int,
+            )
+            spend_rows = spend_rows[
+                (spend_rows >= 0) & (spend_rows < raw_spend.size)
+            ]
+            outcome_rows = outcome_rows[
+                (outcome_rows >= 0) & (outcome_rows < raw_spend.size)
+            ]
+            counterfactual_spend = raw_spend.copy()
+            counterfactual_spend[spend_rows] = 0.0
+            counterfactual_carried = pt.dot(
+                lag_matrix(counterfactual_spend, int(runtime["lag_count"])),
+                runtime["weights"],
+            )
+            if runtime["normalize"]:
+                counterfactual_carried = (
+                    counterfactual_carried
+                    * counterfactual_spend.sum()
+                    / pt.maximum(pt.sum(counterfactual_carried), 1e-12)
+                )
+            powered_counterfactual = pt.exp(
+                runtime["hill_shape"]
+                * pt.log(pt.maximum(counterfactual_carried, 1e-9))
+            )
+            powered_half = pt.exp(
+                runtime["hill_shape"]
+                * math.log(max(float(runtime["half_saturation"]), 1e-9))
+            )
+            counterfactual_transformed = powered_counterfactual / pt.maximum(
+                powered_counterfactual + powered_half,
+                1e-12,
+            )
+            delta_contribution = (
+                runtime["transformed"] - counterfactual_transformed
+            ) * runtime["coefficient_path"]
+            spend = max(safe_number(calibration.get("spend"), 1.0), 1.0)
+            if likelihood == "log-normal":
+                without_test_spend = pt.exp(
+                    pt.clip(
+                        linear_predictor[outcome_rows]
+                        - delta_contribution[outcome_rows]
+                        + 0.5 * sigma**2,
+                        -30,
+                        30,
+                    )
+                )
+                return pt.sum(
+                    mean_outcome[outcome_rows] - without_test_spend
+                ) / spend
+            return pt.sum(delta_contribution[outcome_rows]) / spend
+
         all_rows = list(range(matrix.shape[0]))
         for media_index, media in enumerate(media_contracts):
             evidence = media.get("priorEvidence")
-            if evidence:
+            if evidence and evidence.get("source") != "experiment":
                 evidence_rows = evidence.get("rows") or all_rows
                 pm.Potential(
                     f"roi_prior_{media_index:03d}",
@@ -529,12 +622,30 @@ def build_model(compiled: dict[str, Any]):
                 for index, media in enumerate(media_contracts)
                 if media["channel"].lower() == calibration["channel"].lower()
             )
-            pm.Normal(
-                f"calibration_{calibration_index:03d}",
-                mu=roi_function(media_index, calibration.get("rows", all_rows)),
-                sigma=max(safe_number(calibration.get("standardError"), 1.0), 1e-6),
-                observed=safe_number(calibration.get("observedRoi")),
+            roi_value = experiment_roi(calibration, media_index)
+            calibration_sigma = max(
+                safe_number(calibration.get("standardError"), 1.0),
+                1e-6,
             )
+            calibration_target = safe_number(calibration.get("observedRoi"))
+            if calibration.get("route") == "prior":
+                pm.Potential(
+                    f"calibration_prior_{calibration_index:03d}",
+                    pm.logp(
+                        pm.Normal.dist(
+                            mu=calibration_target,
+                            sigma=calibration_sigma,
+                        ),
+                        roi_value,
+                    ),
+                )
+            else:
+                pm.Normal(
+                    f"calibration_{calibration_index:03d}",
+                    mu=roi_value,
+                    sigma=calibration_sigma,
+                    observed=calibration_target,
+                )
 
     return model, initial_values, parameter_names, matrix, outcome
 

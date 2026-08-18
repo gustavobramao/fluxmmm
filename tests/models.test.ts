@@ -10,6 +10,7 @@ import {
 import {
   createAgenticForcePromotionAudit,
   DEFAULT_AGENTIC_SEARCH_CONTRACT,
+  findAgenticBenchmarkRescueRecommendations,
   findAgenticRoiGuardrailViolations,
   passesAgenticEligibility,
   passesApplicableGates,
@@ -55,6 +56,7 @@ import {
   SAMPLE_EXPERIMENTS,
   runModel,
 } from "../lib/mmm/models";
+import { modelExperimentWindowRoi } from "../lib/mmm/experiment-window";
 import {
   diagonalPenalty,
   matrixVector,
@@ -64,6 +66,7 @@ import {
   ACTIVE_SCORE_CONTRACT,
   HEURISTIC_SCORE_WEIGHTS,
   scoreValidationLayers,
+  scoreValidationResult,
 } from "../lib/mmm/score-contract";
 import { createDataset } from "../lib/mmm/schema";
 import {
@@ -75,6 +78,7 @@ import {
 import type { SamplingResult } from "../lib/mmm/sampling";
 import type { Experiment, ModelResult } from "../lib/mmm/types";
 import { refitValidationModel } from "../lib/mmm/validation/causal";
+import { fitValidationFold } from "../lib/mmm/validation/adapter";
 import {
   assessEvidenceCoherence,
   assessExternalAnchorEligibility,
@@ -83,6 +87,11 @@ import {
   validationFingerprint,
 } from "../lib/mmm/validation";
 import type { ValidationResult as ModelValidationResult } from "../lib/mmm/validation";
+import {
+  createWorkspaceCheckpoint,
+  isCompatibleWorkspaceCheckpoint,
+  WORKSPACE_CHECKPOINT_VERSION,
+} from "../lib/mmm/workspace-checkpoint";
 
 function monthlyFixtureCsv(count = 48): string {
   const rows = Array.from({ length: count }, (_, index) => {
@@ -98,6 +107,24 @@ function monthlyFixtureCsv(count = 48): string {
     ...rows,
   ].join("\n");
 }
+
+test("workspace checkpoints are versioned and reject stale contracts", () => {
+  const checkpoint = createWorkspaceCheckpoint(
+    "dataset-hash",
+    { view: "agentic", promotedId: "C384" },
+    "2026-08-15T10:00:00.000Z",
+  );
+  assert.equal(checkpoint.version, WORKSPACE_CHECKPOINT_VERSION);
+  assert.equal(checkpoint.datasetHash, "dataset-hash");
+  assert.equal(isCompatibleWorkspaceCheckpoint(checkpoint), true);
+  assert.equal(
+    isCompatibleWorkspaceCheckpoint({
+      ...checkpoint,
+      version: "obsolete-workspace-contract",
+    }),
+    false,
+  );
+});
 
 test("stable least-squares solver uses QR for regular designs", () => {
   const matrix = [
@@ -294,20 +321,71 @@ test("experiment priors materially distinguish the Bayesian model", async () => 
   for (const experiment of SAMPLE_EXPERIMENTS) {
     const priorRoi =
       experiment.incrementalOutcome / experiment.incrementalSpend;
-    const frequentistRoi = frequentist.channels.find(
-      (channel) => channel.channel === experiment.channel,
+    const frequentistRoi = modelExperimentWindowRoi(
+      dataset,
+      frequentist,
+      DEFAULT_CONFIG,
+      experiment,
     )?.roi;
-    const bayesianRoi = bayesian.channels.find(
-      (channel) => channel.channel === experiment.channel,
+    const bayesianRoi = modelExperimentWindowRoi(
+      dataset,
+      bayesian,
+      DEFAULT_CONFIG,
+      experiment,
     )?.roi;
 
     assert.ok(frequentistRoi !== undefined && bayesianRoi !== undefined);
     assert.ok(
       Math.abs(bayesianRoi - priorRoi) <
         Math.abs(frequentistRoi - priorRoi),
-      `${experiment.channel} posterior should move toward its ROI prior`,
+      `${experiment.channel} same-window posterior should move toward its ROI prior`,
     );
   }
+});
+
+test("temporal validation folds cannot use experiments whose outcome window is still in the future", async () => {
+  const rawCsv = await readFile(
+    new URL("../public/data/robyn_weekly.csv", import.meta.url),
+    "utf8",
+  );
+  const parsed = parseCsv(rawCsv);
+  const dataset = await createDataset(
+    "Robyn weekly demo.csv",
+    rawCsv,
+    parsed.columns,
+    parsed.rows,
+  );
+  const firstExperiment = SAMPLE_EXPERIMENTS[0];
+  const trainIndexes = dataset.rows
+    .map((row, index) => ({
+      index,
+      date: Date.parse(String(row[dataset.dateColumn])),
+    }))
+    .filter(({ date }) => date < Date.parse(firstExperiment.startDate))
+    .map(({ index }) => index);
+  const testIndexes = Array.from(
+    { length: 4 },
+    (_, offset) => trainIndexes.at(-1)! + offset + 1,
+  );
+  const commonSpec = {
+    kind: "bayesian" as const,
+    config: DEFAULT_CONFIG,
+    advancedConfig: DEFAULT_ADVANCED_CONFIG,
+    validationOptions: { anchorIndependenceConfirmed: false },
+  };
+  const withFutureEvidence = fitValidationFold(
+    dataset,
+    { ...commonSpec, experiments: [firstExperiment] },
+    trainIndexes,
+    testIndexes,
+  );
+  const withoutEvidence = fitValidationFold(
+    dataset,
+    { ...commonSpec, experiments: [] },
+    trainIndexes,
+    testIndexes,
+  );
+  assert.deepEqual(withFutureEvidence.predicted, withoutEvidence.predicted);
 });
 
 test("production sampling compiles the promoted specification and fingerprints every contract", async () => {
@@ -366,6 +444,18 @@ test("production sampling compiles the promoted specification and fingerprints e
     compiled.media
       .filter((channel) => channel.priorEvidence)
       .every((channel) => (channel.priorEvidence?.rows.length ?? 0) > 0),
+  );
+  assert.equal(compiled.calibrations.length, SAMPLE_EXPERIMENTS.length);
+  assert.ok(
+    compiled.calibrations.every(
+      (calibration) =>
+        calibration.route === "prior" &&
+        calibration.basis === "experiment-window" &&
+        calibration.spend > 0 &&
+        calibration.spendRows.length > 0 &&
+        calibration.outcomeRows.length >= calibration.spendRows.length,
+    ),
+    "Sampling must calibrate experiment ROI on the declared spend and outcome windows.",
   );
   assert.match(compiled.version, /full-response/);
   assert.equal(compiled.response.adstockType, spec.config.adstockType);
@@ -1033,6 +1123,57 @@ test("agentic ROI review catches unanchored extremes and preserves experiment an
   assert.ok(lowTail[0].percentile <= 0.05);
 });
 
+test("agentic evidence rescue pairs channel benchmarks and weak fallbacks without overriding experiments", async () => {
+  const rawCsv = await readFile(
+    new URL("../public/data/robyn_weekly.csv", import.meta.url),
+    "utf8",
+  );
+  const parsed = parseCsv(rawCsv);
+  const dataset = await createDataset(
+    "Robyn weekly demo.csv",
+    rawCsv,
+    parsed.columns,
+    parsed.rows,
+  );
+  const recommendations = findAgenticBenchmarkRescueRecommendations(
+    {
+      channels: [
+        { channel: "search_S", roi: 0.03 },
+        { channel: "print_S", roi: 0.11 },
+        { channel: "facebook_S", roi: 25 },
+      ],
+    } as ModelResult,
+    SAMPLE_EXPERIMENTS,
+    true,
+    dataset,
+  );
+
+  assert.deepEqual(
+    recommendations.map((item) => item.channel),
+    ["search_S", "print_S"],
+    "material implausible channels should receive paired refits while the experiment-backed channel stays fixed",
+  );
+  assert.equal(
+    recommendations.find((item) => item.channel === "search_S")?.role,
+    "channel-benchmark",
+  );
+  assert.equal(
+    recommendations.find((item) => item.channel === "print_S")?.role,
+    "weak-fallback",
+  );
+  assert.deepEqual(
+    findAgenticBenchmarkRescueRecommendations(
+      { channels: [{ channel: "search_S", roi: 0.03 }] } as ModelResult,
+      SAMPLE_EXPERIMENTS,
+      true,
+      dataset,
+      ["search_S"],
+    ),
+    [],
+    "a benchmark already in the candidate contract must not trigger another rescue",
+  );
+});
+
 test("material zero ROI is capped and routed to a non-circular rescue refit", async () => {
   const rawCsv = await readFile(
     new URL("../public/data/robyn_weekly.csv", import.meta.url),
@@ -1118,8 +1259,11 @@ test("material zero ROI is capped and routed to a non-circular rescue refit", as
   assert.equal(searchAssessment?.material, true);
   assert.equal(searchAssessment?.status, "boundary-collapse");
   assert.equal(searchAssessment?.blocking, true);
-  assert.equal(assessment.causalScoreCap, 59);
-  assert.deepEqual(assessment.blockingChannels, [search.channel]);
+  assert.ok(
+    assessment.causalScoreCap <= 59,
+    "a boundary collapse may coexist with a stricter same-window experiment conflict",
+  );
+  assert.ok(assessment.blockingChannels.includes(search.channel));
   assert.deepEqual(
     rescueIndustryPriorChannels(assessment),
     [search.channel],
@@ -1675,7 +1819,7 @@ test("validation runs all four layers with deterministic scoring", async () => {
     const layerScores = Object.fromEntries(
       Object.entries(validation.layers).map(([id, layer]) => [id, layer.score]),
     ) as Record<"generalization" | "structure" | "causal" | "decision", number>;
-    const expected = scoreValidationLayers(layerScores);
+    const expected = scoreValidationResult(validation.layers);
     assert.ok(Math.abs(validation.finalScore - expected) < 1e-9);
     assert.equal(validation.scoreContract.version, ACTIVE_SCORE_CONTRACT.version);
     assert.equal(validation.scoreContract.kind, "learned");

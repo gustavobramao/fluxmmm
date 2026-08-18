@@ -133,9 +133,12 @@ function anchorTooltip(
   }[];
   const anchor = evidence.anchors[points[0]?.dataIndex ?? -1];
   if (!anchor) return "";
+  const basis = anchor.comparisonLabel
+    ? `<div class="flux-tooltip-row"><span>Comparison</span><b>${escapeHtml(anchor.comparisonLabel)}</b></div>`
+    : "";
   return `<div class="flux-tooltip-date">${escapeHtml(anchor.channel)}</div>
     <div class="flux-tooltip-row"><span><i class="flux-tooltip-dot violet"></i>MMM</span><b>${VALUE_FORMATTER.format(anchor.modelRoi)} <small>${VALUE_FORMATTER.format(anchor.modelLow)}–${VALUE_FORMATTER.format(anchor.modelHigh)}</small></b></div>
-    <div class="flux-tooltip-row"><span><i class="flux-tooltip-dot orange"></i>Experiment</span><b>${VALUE_FORMATTER.format(anchor.experimentRoi)} <small>${VALUE_FORMATTER.format(anchor.experimentLow)}–${VALUE_FORMATTER.format(anchor.experimentHigh)}</small></b></div>`;
+    <div class="flux-tooltip-row"><span><i class="flux-tooltip-dot orange"></i>Experiment</span><b>${VALUE_FORMATTER.format(anchor.experimentRoi)} <small>${VALUE_FORMATTER.format(anchor.experimentLow)}–${VALUE_FORMATTER.format(anchor.experimentHigh)}</small></b></div>${basis}`;
 }
 
 function decisionTooltip(

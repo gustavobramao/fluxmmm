@@ -53,6 +53,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
     scoreLabSource,
     auditArtifact,
     learnedScoreArtifact,
+    scoreV6Artifact,
   ] =
     await Promise.all([
       readFile(new URL("../public/data/robyn_weekly.csv", import.meta.url), "utf8"),
@@ -72,6 +73,7 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
       readFile(new URL("../app/components/score-lab-view.tsx", import.meta.url), "utf8"),
       readFile(new URL("../research/score_v3/artifacts/simulator-audit-v3-summary.json", import.meta.url), "utf8"),
       readFile(new URL("../research/score_v4/artifacts/learned-score-v4.json", import.meta.url), "utf8"),
+      readFile(new URL("../research/score_v6/artifacts/learned-score-v6-pilot.json", import.meta.url), "utf8"),
     ]);
 
   assert.match(sample, /"DATE","revenue","tv_S"/);
@@ -83,9 +85,9 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(workbenchSource, /Calibration evidence/);
   assert.match(workbenchSource, /Prior or likelihood/);
   assert.doesNotMatch(workbenchSource, /Prior, not likelihood/);
-  assert.match(workbenchSource, /Global channel search · v5/);
+  assert.match(workbenchSource, /Global channel search · active V6 score/);
   assert.match(workbenchSource, /Mandatory channel-response grid/);
-  assert.match(workbenchSource, /Learned decision-regret score · V4/);
+  assert.match(workbenchSource, /Learned diagnostic decision-loss score · V6/);
   assert.match(workbenchSource, /Two-sided coherence gate · immutable/);
   assert.match(workbenchSource, /Mandatory Advanced challenge/);
   assert.match(workbenchSource, /restart-balanced refinements/);
@@ -124,7 +126,10 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(workbenchSource, /Public fixture · read only/);
   assert.match(workbenchSource, /if \(!demoMode\) fileRef\.current\?\.click\(\)/);
   assert.match(workbenchSource, /defaultExperimentsForDataset\(origin\)/);
-  assert.match(workbenchSource, /"Robyn Public weekly data demo\.csv", "robyn-demo"/);
+  assert.match(
+    workbenchSource,
+    /"Robyn Public weekly data demo\.csv",\s*"robyn-demo"/s,
+  );
   assert.match(workbenchSource, /Shared contract · screening vs full posterior/);
   assert.match(workbenchSource, /Local approximation against sampled probability/);
   assert.match(workbenchSource, /How the two estimates are constructed/);
@@ -136,8 +141,20 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(samplingApiSource, /SAMPLING_SERVICE_PORT = 8790/);
   assert.match(samplingSource, /SAMPLING_PRESETS/);
   assert.match(samplingSource, /compileSamplingModel/);
-  assert.match(samplingSource, /full-response-latent-planning-ppc-hdi/);
+  assert.match(samplingSource, /full-response-same-window-experiment-roi/);
   assert.match(samplingSource, /posteriorSamples/);
+  const workspaceSamplingContract = samplingSource.match(
+    /SAMPLING_ENGINE_VERSION\s*=\s*\n?\s*"([^"]+)"/,
+  )?.[1];
+  const serviceSamplingContract = samplingServiceSource.match(
+    /SAMPLING_CONTRACT_VERSION\s*=\s*\(\s*"([^"]+)"/,
+  )?.[1];
+  assert.ok(workspaceSamplingContract, "workspace sampling contract is declared");
+  assert.equal(
+    serviceSamplingContract,
+    workspaceSamplingContract,
+    "browser compiler and local sampler must advertise the same contract",
+  );
   assert.match(budgetSource, /function solveFixedBudget/);
   assert.match(budgetSource, /function futureTransformedResponse/);
   assert.match(budgetSource, /Multi-start constrained frontier search/);
@@ -159,13 +176,18 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.doesNotMatch(viteConfig, /hostingConfig|sites\(\)/);
   assert.match(scoreLabSource, /Simulator Audit V3/);
   assert.match(scoreLabSource, /Split generators—not random rows/);
-  assert.match(scoreLabSource, /Learn from truth\. Test without it\./);
-  assert.match(scoreLabSource, /The score cannot rescue a scientifically invalid model/);
-  assert.match(scoreLabSource, /What “optimal” means here/);
+  assert.match(scoreLabSource, /V6 is now the validation ranker used by Agentic\./);
+  assert.match(scoreLabSource, /Two holdouts answer two different questions/);
+  assert.match(scoreLabSource, /The production sampler remains a separate shared stage/);
+  assert.match(scoreLabSource, /Twenty diagnostics, kept in four readable layers/);
   assert.match(auditArtifact, /"businessCount": 500/);
   assert.match(auditArtifact, /"audit": 80/);
   assert.match(learnedScoreArtifact, /"activation": "active"/);
   assert.match(learnedScoreArtifact, /"candidates": 3200/);
+  assert.match(scoreV6Artifact, /"activation": "active"/);
+  assert.match(scoreV6Artifact, /"runtimeContractChanged": true/);
+  assert.match(scoreV6Artifact, /"ready": false/);
+  assert.match(scoreV6Artifact, /"candidates": 14400/);
   await access(new URL("../public/og.png", import.meta.url));
   await assert.rejects(
     access(new URL("../app/chatgpt-auth.ts", import.meta.url)),

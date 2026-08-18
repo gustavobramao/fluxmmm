@@ -104,6 +104,8 @@ export interface Experiment {
   channel: string;
   startDate: string;
   endDate: string;
+  /** Optional end of the outcome-measurement window when carryover is included. */
+  outcomeEndDate?: string;
   incrementalOutcome: number;
   incrementalSpend: number;
   standardError: number;

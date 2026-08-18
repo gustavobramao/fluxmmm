@@ -12,12 +12,16 @@ import {
   transpose,
 } from "./math";
 import { responseForChannel, responseTransform } from "./response";
+import { experimentResponseContrast } from "./experiment-window";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
   INDUSTRY_BENCHMARK_VERSION,
 } from "./benchmarks";
-import type { IndustryPriorSelection } from "./benchmarks";
+import type {
+  IndustryPriorOverrides,
+  IndustryPriorSelection,
+} from "./benchmarks";
 import type {
   ChannelEstimate,
   Dataset,
@@ -27,7 +31,7 @@ import type {
   NumericalStabilityDiagnostics,
 } from "./types";
 
-const MODEL_VERSION = "flux-mmm-v2.0-channel-response-contracts";
+const MODEL_VERSION = "flux-mmm-v2.1-same-window-experiment-calibration";
 
 interface Design {
   matrix: number[][];
@@ -117,11 +121,13 @@ export function compileStaticSamplingDesign(
 }
 
 function solve(
+  dataset: Dataset,
   design: Design,
   config: ModelConfig,
   experiments: Experiment[],
   bayesian: boolean,
   industryPriorSelection: IndustryPriorSelection,
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): {
   coefficients: number[];
   covariance: number[][];
@@ -193,6 +199,31 @@ function solve(
       let priorMean = 0;
       let priorSd = outcomeScale * 3;
       if (evidence.length) {
+        const mapped = evidence.flatMap((experiment) => {
+          const contrast = experimentResponseContrast(
+            dataset,
+            config,
+            channel,
+            experiment,
+          );
+          if (!contrast) return [];
+          const transformedContrast = contrast.outcomeRows.reduce(
+            (total, rowIndex) =>
+              total + (contrast.deltaTransformed[rowIndex] ?? 0),
+            0,
+          );
+          const roiScale = transformedContrast / Math.max(contrast.spend, 1);
+          if (roiScale <= 1e-12) return [];
+          const roi =
+            experiment.incrementalOutcome /
+            Math.max(experiment.incrementalSpend, 1);
+          return [{
+            mean: roi / roiScale,
+            standardDeviation:
+              Math.max(experiment.standardError, Math.abs(roi) * 0.12) /
+              roiScale,
+          }];
+        });
         const weights = evidence.map(
           (experiment) => 1 / Math.max(experiment.standardError ** 2, 1e-6),
         );
@@ -209,10 +240,25 @@ function solve(
         const roiSe = Math.sqrt(
           1 / weights.reduce((total, weight) => total + weight, 0),
         );
-        priorMean = (pooledRoi * spend) / Math.max(transformed, 1);
-        priorSd =
-          (Math.max(roiSe, pooledRoi * 0.12) * spend) /
-          Math.max(transformed, 1);
+        if (mapped.length) {
+          const mappedWeights = mapped.map(
+            (item) => 1 / Math.max(item.standardDeviation ** 2, 1e-9),
+          );
+          const mappedWeight = mappedWeights.reduce(
+            (total, value) => total + value,
+            0,
+          );
+          priorMean = mapped.reduce(
+            (total, item, index) => total + item.mean * mappedWeights[index],
+            0,
+          ) / mappedWeight;
+          priorSd = Math.sqrt(1 / mappedWeight);
+        } else {
+          priorMean = (pooledRoi * spend) / Math.max(transformed, 1);
+          priorSd =
+            (Math.max(roiSe, pooledRoi * 0.12) * spend) /
+            Math.max(transformed, 1);
+        }
         priorRois.set(channel, pooledRoi);
         priorSources.set(channel, "experiment");
         priorLabels.set(
@@ -226,6 +272,7 @@ function solve(
           channel,
           experiments,
           industryPriorSelection,
+          industryPriorOverrides,
         );
         if (benchmark) {
           priorMean =
@@ -466,6 +513,7 @@ export async function modelFingerprint(
   experiments: Experiment[],
   kind: "frequentist" | "bayesian",
   industryPriorSelection: IndustryPriorSelection = false,
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): Promise<string> {
   return sha256(
     JSON.stringify({
@@ -482,6 +530,7 @@ export async function modelFingerprint(
                     ? []
                     : [...industryPriorSelection].sort(),
               version: INDUSTRY_BENCHMARK_VERSION,
+              overrides: industryPriorOverrides,
             }
           : undefined,
       kind,
@@ -497,6 +546,7 @@ export async function runModel(
   kind: "frequentist" | "bayesian",
   fingerprint: string,
   industryPriorSelection: IndustryPriorSelection = false,
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): Promise<ModelResult> {
   const design = buildDesign(dataset, config);
   const {
@@ -507,11 +557,13 @@ export async function runModel(
     priorLabels,
     numerical,
   } = solve(
+    dataset,
     design,
     config,
     experiments,
     kind === "bayesian",
     industryPriorSelection,
+    industryPriorOverrides,
   );
   const predicted = matrixVector(design.matrix, coefficients);
   const mediaByRow = design.outcome.map((_, rowIndex) =>
@@ -621,6 +673,7 @@ export const SAMPLE_EXPERIMENTS: Experiment[] = [
     channel: "facebook_S",
     startDate: "2018-05-01",
     endDate: "2018-06-10",
+    outcomeEndDate: "2018-07-15",
     incrementalOutcome: 40000,
     incrementalSpend: 12000,
     standardError: 0.42,
@@ -632,6 +685,7 @@ export const SAMPLE_EXPERIMENTS: Experiment[] = [
     channel: "tv_S",
     startDate: "2018-01-01",
     endDate: "2018-03-01",
+    outcomeEndDate: "2018-05-01",
     incrementalOutcome: 120000,
     incrementalSpend: 86000,
     standardError: 0.18,

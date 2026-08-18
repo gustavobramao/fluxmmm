@@ -160,6 +160,7 @@ function randomizedExperiment(
     spend: channel.averageWeeklySpend * between(random, 3, 10),
     standardErrorShare: between(random, 0.08, 0.38),
     biasShare: between(random, -0.12, 0.12),
+    replicates: random.uniform() < (split === "audit" ? 0.6 : 0.78) ? 2 : 1,
   };
 }
 
