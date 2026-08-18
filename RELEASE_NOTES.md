@@ -47,6 +47,17 @@ diagnostic weights, activation gates, held-out performance, and limitations.
 Cached V1 artifacts are intentionally invalidated when the model, validation,
 or sampling contract changes.
 
+## Predeclared score audit
+
+- Held-out validation (60 businesses): mean decision loss fell from 3.57 to
+  2.97, a 16.6% reduction; P90 loss also improved.
+- Sealed adversarial audit (60 businesses): mean decision loss fell from 3.02
+  to 2.83, a 6.2% reduction. P90 loss increased from 8.97 to 9.12, remaining
+  inside the predeclared 2% non-inferiority margin.
+- Search readiness remains incomplete: 36.7% of validation businesses produced
+  a decision-grade candidate, below the 50% target. This is reported separately
+  because score weights cannot override eligibility gates.
+
 ## Compatibility
 
 - Existing daily, weekly, and monthly CSV contracts remain supported.
