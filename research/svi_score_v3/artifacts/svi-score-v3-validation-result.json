@@ -1,0 +1,1180 @@
+{
+  "artifactId": "flux-svi-score-v3-validation-result-v1",
+  "protocolId": "flux-svi-score-v3-validation-v2-powered-screen",
+  "status": "did-not-pass",
+  "openedAt": "2026-09-01T21:38:51.857Z",
+  "completedAt": "2026-09-01T21:38:52.396Z",
+  "auditAccessed": false,
+  "provenance": {
+    "checkpointSha256": "5ae790280f1f8356abd5fc38ba37961cc8276d38f5449c3c1a1066d62a35cfe1",
+    "featureSha256": "b8fa848cb7eae11e19c174f17d9a3f0f2cb57cd62e0e71ac9cafbad290a7f9a4",
+    "challengerSha256": "4a86efcdc2c9cff5ff1a449aa9aa87197b1178fdb981d33d48475cb97efcf2f6",
+    "comparatorSha256": "a1cd2709d643ed6c296244188f6fc6023b63cf9e46ba49baa080c75a525d1c1c",
+    "protocolFreezeSha256": "58b9b519f88e074ce6e2a3752846ea256a604b6a20c39e9f3d51b417ea3b28e1"
+  },
+  "protocolReceipt": {
+    "protocolId": "flux-svi-score-v3-validation-v2-powered-screen",
+    "businesses": 120,
+    "rows": 5760,
+    "challenger": {
+      "meanExcessLoss": 2.087962816181856,
+      "p90ExcessLoss": 5.594095466735352,
+      "p95ExcessLoss": 11.340053451356,
+      "lowestLossSelectionRate": 0.3,
+      "decisionGradeBusinessShare": 0.19166666666666668,
+      "meanRegretWeightedMisrankingBound": 9.372261612738757,
+      "familyMeanExcessLoss": {
+        "delayed-tv": 2.5194256703308398,
+        "correlated-planning": 1.6564999620328729
+      }
+    },
+    "comparator": {
+      "meanExcessLoss": 1.847381913071361,
+      "p90ExcessLoss": 5.075259551197507,
+      "p95ExcessLoss": 8.985210080630068,
+      "lowestLossSelectionRate": 0.275,
+      "decisionGradeBusinessShare": 0.19166666666666668,
+      "meanRegretWeightedMisrankingBound": 9.673986998985209,
+      "familyMeanExcessLoss": {
+        "delayed-tv": 1.7989673867909928,
+        "correlated-planning": 1.8957964393517308
+      }
+    },
+    "pairedPrimary": {
+      "meanDifference": 0.2405809031104944,
+      "relativeMeanReduction": -0.1302280277879942,
+      "oneSided95UpperBound": 0.5553740070641264,
+      "nonInferiorityMargin": 0.03694763826142722,
+      "statisticallyNonInferior": false,
+      "pointEstimateImproves": false,
+      "statisticallySuperior": false
+    },
+    "gates": {
+      "completeCohort": true,
+      "primaryMeanImproves": false,
+      "theoremMisrankingBoundImproves": true,
+      "p90TailNonInferior": false,
+      "p95TailNonInferior": false,
+      "familyMeansNonInferior": false,
+      "oracleSelectionRateNonInferior": true,
+      "immutableEligibilityAgreement": true
+    },
+    "proceedToSealedAudit": false
+  },
+  "secondary": {
+    "challenger": {
+      "meanCappedRegret": 0.5635982256035343,
+      "meanRoiError": 0.732451910311528,
+      "meanContributionError": 0.47009900257052717,
+      "theoremAudit": {
+        "businesses": 120,
+        "violations": 0,
+        "meanSelectedNormalizedRegret": 0.5256626033906959,
+        "meanMisrankingUpperBound": 9.372261612738757,
+        "meanLogisticSurrogateUpperBound": 23.95870478059852,
+        "maximumNumericalSlack": 0
+      }
+    },
+    "comparator": {
+      "meanCappedRegret": 0.5503945899609417,
+      "meanRoiError": 0.7648456767531369,
+      "meanContributionError": 0.48101278178763424,
+      "theoremAudit": {
+        "businesses": 120,
+        "violations": 0,
+        "meanSelectedNormalizedRegret": 0.5283035297725681,
+        "meanMisrankingUpperBound": 9.673986998985209,
+        "meanLogisticSurrogateUpperBound": 23.88262263304672,
+        "maximumNumericalSlack": 0
+      }
+    }
+  },
+  "businessReceipts": [
+    {
+      "businessId": "delayed-tv-12001",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 6.076940020356343,
+      "comparatorExcessLoss": 6.376744756387673,
+      "pairedDifference": -0.29980473603133007
+    },
+    {
+      "businessId": "delayed-tv-12002",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C14 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.8179707334096855,
+      "comparatorExcessLoss": 1.8179707334096855,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12003",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12004",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C01 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.564707760151335,
+      "comparatorExcessLoss": 1.238662000147161,
+      "pairedDifference": -0.6739542399958262
+    },
+    {
+      "businessId": "delayed-tv-12005",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C09 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.8009272969847223,
+      "comparatorExcessLoss": 0.8009272969847223,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12006",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 14.505855172088426,
+      "comparatorExcessLoss": 4.804133439112322,
+      "pairedDifference": 9.701721732976104
+    },
+    {
+      "businessId": "delayed-tv-12007",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.0437904176192156,
+      "comparatorExcessLoss": 1.0437904176192156,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12008",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.1014158362241107,
+      "comparatorExcessLoss": 2.1014158362241107,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12009",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C17 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.3669535411190745,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 3.3669535411190745
+    },
+    {
+      "businessId": "delayed-tv-12010",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C24 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C24 · benchmark-gap-fill",
+      "challengerExcessLoss": 5.048622391702688,
+      "comparatorExcessLoss": 5.048622391702688,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12011",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.733679513286248,
+      "comparatorExcessLoss": 0.8813457800684642,
+      "pairedDifference": -0.14766626678221617
+    },
+    {
+      "businessId": "delayed-tv-12012",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 11.442007296386297,
+      "comparatorExcessLoss": 11.442007296386297,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12013",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.7581890229870941,
+      "comparatorExcessLoss": 0.1083283781978594,
+      "pairedDifference": 0.6498606447892348
+    },
+    {
+      "businessId": "delayed-tv-12014",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.00026001320136324066,
+      "comparatorExcessLoss": 0.00026001320136324066,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12015",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 11.937297046763254,
+      "comparatorExcessLoss": 11.937297046763254,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12016",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C19 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C19 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12017",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 8.512321356120948,
+      "comparatorExcessLoss": 8.951849856781935,
+      "pairedDifference": -0.4395285006609875
+    },
+    {
+      "businessId": "delayed-tv-12018",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C23 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C23 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.501444543252879,
+      "comparatorExcessLoss": 0.501444543252879,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12019",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 4.737866305214137,
+      "comparatorExcessLoss": 3.008804060425302,
+      "pairedDifference": 1.7290622447888349
+    },
+    {
+      "businessId": "delayed-tv-12020",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12021",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C01 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 6.687637517998652,
+      "comparatorExcessLoss": 2.3847345120038277,
+      "pairedDifference": 4.302903005994824
+    },
+    {
+      "businessId": "delayed-tv-12022",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 12.043605607642988,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 12.043605607642988
+    },
+    {
+      "businessId": "delayed-tv-12023",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.2220539821121879,
+      "comparatorExcessLoss": 1.2220539821121879,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12024",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.0015997377707433,
+      "comparatorExcessLoss": 0.2099628528691132,
+      "pairedDifference": 1.7916368849016302
+    },
+    {
+      "businessId": "delayed-tv-12025",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C24 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.6454686620159577,
+      "comparatorExcessLoss": 0.003793456556464958,
+      "pairedDifference": 0.6416752054594927
+    },
+    {
+      "businessId": "delayed-tv-12026",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.7145499726227691,
+      "pairedDifference": -0.7145499726227691
+    },
+    {
+      "businessId": "delayed-tv-12027",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.7682972076077279,
+      "comparatorExcessLoss": 0.7682972076077279,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12028",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C24 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C24 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12029",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12030",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C23 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C23 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.8828152660972471,
+      "comparatorExcessLoss": 0.8828152660972471,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12031",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C19 · experiments-only",
+      "comparatorCandidateId": "V6-C19 · experiments-only",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12032",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C23 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C07 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.46333456904761555,
+      "pairedDifference": -0.46333456904761555
+    },
+    {
+      "businessId": "delayed-tv-12033",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C15 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C15 · experiments-only",
+      "challengerExcessLoss": 6.676437479483694,
+      "comparatorExcessLoss": 6.676437479483694,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12034",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.449172012844826,
+      "comparatorExcessLoss": 0.449172012844826,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12035",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12036",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.46030707828072037,
+      "comparatorExcessLoss": 0.46030707828072037,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12037",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C15 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.7544612180638297,
+      "comparatorExcessLoss": 2.2857484683517995,
+      "pairedDifference": -0.5312872502879697
+    },
+    {
+      "businessId": "delayed-tv-12038",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 4.064519338614103,
+      "comparatorExcessLoss": 5.481197016303035,
+      "pairedDifference": -1.4166776776889325
+    },
+    {
+      "businessId": "delayed-tv-12039",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C01 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C01 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12040",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.0871350465652387,
+      "comparatorExcessLoss": 3.0871350465652387,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12041",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.289994739923487,
+      "comparatorExcessLoss": 0.289994739923487,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12042",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C03 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.26311741685997436,
+      "pairedDifference": -0.26311741685997436
+    },
+    {
+      "businessId": "delayed-tv-12043",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 5.314993986650858,
+      "comparatorExcessLoss": 5.314993986650858,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12044",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C19 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C19 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.867624255220125,
+      "comparatorExcessLoss": 1.867624255220125,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12045",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C03 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 11.3346874595123,
+      "comparatorExcessLoss": 1.4235725046828018,
+      "pairedDifference": 9.911114954829499
+    },
+    {
+      "businessId": "delayed-tv-12046",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.3431808793010096,
+      "comparatorExcessLoss": 1.3431808793010096,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12047",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.5864121545326315,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0.5864121545326315
+    },
+    {
+      "businessId": "delayed-tv-12048",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.251967997549342,
+      "comparatorExcessLoss": 3.251967997549342,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12049",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.18629039609999462,
+      "comparatorExcessLoss": 0.18629039609999462,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12050",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C15 · experiments-only",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 2.8223085436686546,
+      "pairedDifference": -2.8223085436686546
+    },
+    {
+      "businessId": "delayed-tv-12051",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.584933430299769,
+      "comparatorExcessLoss": 1.8183521979413477,
+      "pairedDifference": 1.7665812323584213
+    },
+    {
+      "businessId": "delayed-tv-12052",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12053",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12054",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C19 · experiments-only",
+      "comparatorCandidateId": "V6-C19 · experiments-only",
+      "challengerExcessLoss": 0.13622246392199777,
+      "comparatorExcessLoss": 0.13622246392199777,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12055",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.22461225499594295,
+      "comparatorExcessLoss": 0.22461225499594295,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12056",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.6742096250274354,
+      "comparatorExcessLoss": 2.6742096250274354,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12057",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12058",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12059",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.733841666906124,
+      "comparatorExcessLoss": 0.733841666906124,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "delayed-tv-12060",
+      "family": "delayed-tv",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 4.942810487943623,
+      "comparatorExcessLoss": 0.43461151129928377,
+      "pairedDifference": 4.508198976644339
+    },
+    {
+      "businessId": "correlated-planning-12001",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12002",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12003",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.7472425678166186,
+      "comparatorExcessLoss": 1.7472425678166186,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12004",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C21 · benchmark-gap-fill",
+      "challengerExcessLoss": 5.540446071888571,
+      "comparatorExcessLoss": 9.61905433374461,
+      "pairedDifference": -4.07860826185604
+    },
+    {
+      "businessId": "correlated-planning-12005",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.18844968245522312,
+      "comparatorExcessLoss": 1.6622455721283602,
+      "pairedDifference": -1.4737958896731371
+    },
+    {
+      "businessId": "correlated-planning-12006",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.7464804970052875,
+      "comparatorExcessLoss": 0.7464804970052875,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12007",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C23 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C23 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12008",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C24 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C24 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.7327883872892217,
+      "comparatorExcessLoss": 0.7327883872892217,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12009",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 4.224676510938625,
+      "comparatorExcessLoss": 4.224676510938625,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12010",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.5990084469606423,
+      "comparatorExcessLoss": 0.5990084469606423,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12011",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.426666420968133,
+      "comparatorExcessLoss": 3.1469685767855844,
+      "pairedDifference": -0.7203021558174516
+    },
+    {
+      "businessId": "correlated-planning-12012",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C12 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C12 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12013",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C12 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C09 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.5607539803776846,
+      "comparatorExcessLoss": 0.5921482570216194,
+      "pairedDifference": -0.03139427664393479
+    },
+    {
+      "businessId": "correlated-planning-12014",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.478592664225742,
+      "comparatorExcessLoss": 3.735343562586171,
+      "pairedDifference": -0.25675089836042897
+    },
+    {
+      "businessId": "correlated-planning-12015",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.048360380821980214,
+      "comparatorExcessLoss": 0.048360380821980214,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12016",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12017",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C14 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12018",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C19 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.2028886556175053,
+      "comparatorExcessLoss": 0.0236377325008695,
+      "pairedDifference": 0.1792509231166358
+    },
+    {
+      "businessId": "correlated-planning-12019",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.5897898400465653,
+      "comparatorExcessLoss": 2.6385970505864806,
+      "pairedDifference": -0.048807210539915324
+    },
+    {
+      "businessId": "correlated-planning-12020",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C01 · experiments-only",
+      "challengerExcessLoss": 0.7793212834126996,
+      "comparatorExcessLoss": 0.8007106918892178,
+      "pairedDifference": -0.021389408476518268
+    },
+    {
+      "businessId": "correlated-planning-12021",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 2.084640765362858,
+      "pairedDifference": -2.084640765362858
+    },
+    {
+      "businessId": "correlated-planning-12022",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12023",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C12 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C23 · experiments-only",
+      "challengerExcessLoss": 0.42469784061154264,
+      "comparatorExcessLoss": 0.42469784061154264,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12024",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.5016446875717686,
+      "comparatorExcessLoss": 0.5016446875717686,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12025",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12026",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.0707369809430887,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 2.0707369809430887
+    },
+    {
+      "businessId": "correlated-planning-12027",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.1309830066503341,
+      "comparatorExcessLoss": 1.9432210194420403,
+      "pairedDifference": -0.8122380127917062
+    },
+    {
+      "businessId": "correlated-planning-12028",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 7.753291616440501,
+      "pairedDifference": -7.753291616440501
+    },
+    {
+      "businessId": "correlated-planning-12029",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C19 · experiments-only",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 1.2617193167674134,
+      "comparatorExcessLoss": 0.621299820579451,
+      "pairedDifference": 0.6404194961879625
+    },
+    {
+      "businessId": "correlated-planning-12030",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C23 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C17 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.08435272282998711,
+      "comparatorExcessLoss": 0.03317399150882081,
+      "pairedDifference": 0.0511787313211663
+    },
+    {
+      "businessId": "correlated-planning-12031",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C15 · experiments-only",
+      "comparatorCandidateId": "V6-C15 · experiments-only",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12032",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.7427559690929351,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0.7427559690929351
+    },
+    {
+      "businessId": "correlated-planning-12033",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.4813452524076203,
+      "comparatorExcessLoss": 0.4813452524076203,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12034",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C15 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.4698595140679225,
+      "comparatorExcessLoss": 1.393936894037812,
+      "pairedDifference": 1.0759226200301104
+    },
+    {
+      "businessId": "correlated-planning-12035",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C14 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.697703640286328,
+      "comparatorExcessLoss": 0.5332957026192461,
+      "pairedDifference": 0.16440793766708195
+    },
+    {
+      "businessId": "correlated-planning-12036",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12037",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 10.391650479502731,
+      "comparatorExcessLoss": 10.391650479502731,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12038",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.1511069982736538,
+      "comparatorExcessLoss": 0.1511069982736538,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12039",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.05696381688017155,
+      "comparatorExcessLoss": 1.0557317906453634,
+      "pairedDifference": -0.9987679737651918
+    },
+    {
+      "businessId": "correlated-planning-12040",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C01 · experiments-only",
+      "challengerExcessLoss": 3.622473406229605,
+      "comparatorExcessLoss": 0.07129843879884254,
+      "pairedDifference": 3.551174967430762
+    },
+    {
+      "businessId": "correlated-planning-12041",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 19.588418825426892,
+      "comparatorExcessLoss": 19.588418825426892,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12042",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C22 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.5296356440717872,
+      "comparatorExcessLoss": 1.101856228413557,
+      "pairedDifference": -0.5722205843417697
+    },
+    {
+      "businessId": "correlated-planning-12043",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 2.5087779514714943,
+      "comparatorExcessLoss": 2.5087779514714943,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12044",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C12 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C12 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.6550600733940369,
+      "comparatorExcessLoss": 0.6550600733940369,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12045",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C01 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.4095391416606464,
+      "pairedDifference": -0.4095391416606464
+    },
+    {
+      "businessId": "correlated-planning-12046",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12047",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 4.715230144281813,
+      "comparatorExcessLoss": 4.715230144281813,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12048",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C16 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12049",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C09 · experiments-only",
+      "comparatorCandidateId": "V6-C19 · experiments-only",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.00856907493150828,
+      "pairedDifference": -0.00856907493150828
+    },
+    {
+      "businessId": "correlated-planning-12050",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C24 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.8878863914785642,
+      "comparatorExcessLoss": 1.7081723876386277,
+      "pairedDifference": -0.8202859961600635
+    },
+    {
+      "businessId": "correlated-planning-12051",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C10 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C02 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.009573510906346838,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0.009573510906346838
+    },
+    {
+      "businessId": "correlated-planning-12052",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C09 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12053",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C14 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C22 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.41568745274979735,
+      "comparatorExcessLoss": 2.579671721830495,
+      "pairedDifference": -2.163984269080698
+    },
+    {
+      "businessId": "correlated-planning-12054",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C02 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.825222729048599,
+      "comparatorExcessLoss": 0.5593088105614132,
+      "pairedDifference": 0.2659139184871857
+    },
+    {
+      "businessId": "correlated-planning-12055",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C08 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C08 · benchmark-gap-fill",
+      "challengerExcessLoss": 0.035182310249833315,
+      "comparatorExcessLoss": 0.035182310249833315,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12056",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12057",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 3.3880528091569286,
+      "comparatorExcessLoss": 3.3880528091569286,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12058",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C20 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 17.877810857796653,
+      "comparatorExcessLoss": 17.877810857796653,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12059",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C01 · experiments-only",
+      "comparatorCandidateId": "V6-C01 · experiments-only",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0,
+      "pairedDifference": 0
+    },
+    {
+      "businessId": "correlated-planning-12060",
+      "family": "correlated-planning",
+      "challengerCandidateId": "V6-C16 · benchmark-gap-fill",
+      "comparatorCandidateId": "V6-C20 · benchmark-gap-fill",
+      "challengerExcessLoss": 0,
+      "comparatorExcessLoss": 0.8545381584123855,
+      "pairedDifference": -0.8545381584123855
+    }
+  ],
+  "governance": {
+    "validationExecutedOnce": true,
+    "weightsChangedAfterValidation": false,
+    "protocolChangedAfterValidation": false,
+    "auditMayOpen": false
+  }
+}

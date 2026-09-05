@@ -15,6 +15,7 @@ import {
 } from "./math";
 import { responseForChannel, responseTransform } from "./response";
 import { experimentResponseContrast } from "./experiment-window";
+import { channelEvidenceAttribution } from "./evidence-attribution";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
@@ -327,6 +328,7 @@ function applyPriorCalibration(
   priorDistribution: AdvancedModelConfig["priorDistribution"],
   penalties: LeastSquaresPenalty[],
   priorPrecisions: Map<number, number>,
+  experimentPenalties: LeastSquaresPenalty[],
 ): number {
   let calibrated = 0;
   dataset.mediaColumns.forEach((channel, mediaIndex) => {
@@ -422,14 +424,14 @@ function applyPriorCalibration(
       Math.max(mappedSd ** 2 * indexes.length, 1e-9);
 
     indexes.forEach((coefficientIndex) => {
-      penalties.push(
-        diagonalPenalty(
-          design.matrix[0].length,
-          coefficientIndex,
-          precision,
-          priorMean,
-        ),
+      const penalty = diagonalPenalty(
+        design.matrix[0].length,
+        coefficientIndex,
+        precision,
+        priorMean,
       );
+      penalties.push(penalty);
+      experimentPenalties.push(penalty);
       priorPrecisions.set(
         coefficientIndex,
         (priorPrecisions.get(coefficientIndex) ?? 0) + precision,
@@ -450,6 +452,7 @@ function applyIndustryPriorCalibration(
   priorDistribution: AdvancedModelConfig["priorDistribution"],
   penalties: LeastSquaresPenalty[],
   priorPrecisions: Map<number, number>,
+  benchmarkPenalties: LeastSquaresPenalty[],
 ): number {
   let calibrated = 0;
   dataset.mediaColumns.forEach((channel, mediaIndex) => {
@@ -495,14 +498,14 @@ function applyIndustryPriorCalibration(
       Math.max(mappedSd ** 2 * indexes.length, 1e-9);
 
     indexes.forEach((coefficientIndex) => {
-      penalties.push(
-        diagonalPenalty(
-          design.matrix[0].length,
-          coefficientIndex,
-          precision,
-          priorMean,
-        ),
+      const penalty = diagonalPenalty(
+        design.matrix[0].length,
+        coefficientIndex,
+        precision,
+        priorMean,
       );
+      penalties.push(penalty);
+      benchmarkPenalties.push(penalty);
       priorPrecisions.set(
         coefficientIndex,
         (priorPrecisions.get(coefficientIndex) ?? 0) + precision,
@@ -520,6 +523,7 @@ function applyLikelihoodCalibration(
   likelihoodVariance: number,
   effectMultiplier: number,
   penalties: LeastSquaresPenalty[],
+  experimentPenalties: LeastSquaresPenalty[],
 ): number {
   let calibrated = 0;
   dataset.mediaColumns.forEach((channel, mediaIndex) => {
@@ -562,7 +566,9 @@ function applyLikelihoodCalibration(
       indexes.forEach((coefficientIndex, index) => {
         coefficients[coefficientIndex] = h[index];
       });
-      penalties.push({ coefficients, target: observedRoi, precision });
+      const penalty = { coefficients, target: observedRoi, precision };
+      penalties.push(penalty);
+      experimentPenalties.push(penalty);
     });
   });
   return calibrated;
@@ -1063,6 +1069,7 @@ export async function runAdvancedModel(
   const iterations =
     advancedConfig.likelihoodDistribution === "student-t" ? 4 : 1;
   let observationWeights = Array(target.length).fill(1);
+  let finalFitObservationWeights = [...observationWeights];
   let finalCoefficients: number[] = [];
   let finalUnconstrainedCoefficients: number[] = [];
   let finalSolution: ReturnType<typeof solveLeastSquares> | undefined;
@@ -1070,6 +1077,10 @@ export async function runAdvancedModel(
   let likelihoodVariance = 1;
   let calibratedExperiments = 0;
   let calibratedIndustryPriors = 0;
+  let finalEvidencePenalties: Record<
+    "experiment" | "benchmark" | "regularization",
+    LeastSquaresPenalty[]
+  > = { experiment: [], benchmark: [], regularization: [] };
   const externallyPriorCalibratedMedia = new Set(
     dataset.mediaColumns.flatMap((channel, mediaIndex) => {
       const hasExperimentPrior =
@@ -1111,6 +1122,11 @@ export async function runAdvancedModel(
       priorPrecisions,
       externallyPriorCalibratedMedia,
     );
+    const evidencePenalties = {
+      experiment: [] as LeastSquaresPenalty[],
+      benchmark: [] as LeastSquaresPenalty[],
+      regularization: [...penalties],
+    };
     calibratedExperiments =
       advancedConfig.calibrationMode === "likelihood"
         ? applyLikelihoodCalibration(
@@ -1121,6 +1137,7 @@ export async function runAdvancedModel(
             likelihoodVariance,
             effectMultiplier,
             penalties,
+            evidencePenalties.experiment,
           )
         : applyPriorCalibration(
             dataset,
@@ -1132,6 +1149,7 @@ export async function runAdvancedModel(
             advancedConfig.priorDistribution,
             penalties,
             priorPrecisions,
+            evidencePenalties.experiment,
           );
     calibratedIndustryPriors = applyIndustryPriorCalibration(
       dataset,
@@ -1144,15 +1162,18 @@ export async function runAdvancedModel(
       advancedConfig.priorDistribution,
       penalties,
       priorPrecisions,
+      evidencePenalties.benchmark,
     );
 
+    finalFitObservationWeights = [...observationWeights];
     finalSolution = solveLeastSquares(design.matrix, target, {
-      weights: observationWeights,
+      weights: finalFitObservationWeights,
       penalties,
     });
     finalUnconstrainedCoefficients = [...finalSolution.coefficients];
     finalCoefficients = [...finalUnconstrainedCoefficients];
     finalPriorPrecisions = priorPrecisions;
+    finalEvidencePenalties = evidencePenalties;
     design.channelCoefficientIndexes.flat().forEach((index) => {
       finalCoefficients[index] = Math.max(0, finalCoefficients[index]);
     });
@@ -1329,7 +1350,7 @@ export async function runAdvancedModel(
     clippedChannels.some((channel) => channel.roiIntervalMaterial);
   const dataDiagnostics = diagnoseDesignMatrix(
     design.matrix,
-    observationWeights,
+    finalFitObservationWeights,
   );
   const priorInfluence = dataset.mediaColumns.map((channel, mediaIndex) => {
     const indexes = design.channelCoefficientIndexes[mediaIndex];
@@ -1339,7 +1360,7 @@ export async function runAdvancedModel(
         design.matrix.reduce(
           (total, row, rowIndex) =>
             total +
-            (observationWeights[rowIndex] ?? 1) *
+            (finalFitObservationWeights[rowIndex] ?? 1) *
               (row[coefficientIndex] ?? 0) ** 2,
           0,
         ),
@@ -1391,6 +1412,33 @@ export async function runAdvancedModel(
               : undefined,
     };
   });
+  const parameterCount = design.matrix[0]?.length ?? 0;
+  const evidenceAttribution = channelEvidenceAttribution({
+    matrix: design.matrix,
+    weights: finalFitObservationWeights,
+    posteriorPrecisionInverse: finalSolution.precisionInverse,
+    penalties: finalEvidencePenalties,
+    channels: dataset.mediaColumns.map((channel, mediaIndex) => {
+      const indexes = design.channelCoefficientIndexes[mediaIndex];
+      const contributionGradient = indexes.map((_, knotIndex) =>
+        design.mediaVectors[mediaIndex].reduce(
+          (total, value, rowIndex) =>
+            total + value * design.kernelWeights[rowIndex][knotIndex],
+          0,
+        ),
+      );
+      const spend = design.spendVectors[mediaIndex].reduce(
+        (total, value) => total + value,
+        0,
+      );
+      const roiGradient = Array(parameterCount).fill(0);
+      indexes.forEach((coefficientIndex, index) => {
+        roiGradient[coefficientIndex] =
+          contributionGradient[index] / Math.max(spend, 1);
+      });
+      return { channel, coefficientIndexes: indexes, roiGradient };
+    }),
+  });
   const numericalStatus =
     finalSolution.diagnostics.status === "rank-deficient"
       ? "rank-deficient"
@@ -1412,6 +1460,7 @@ export async function runAdvancedModel(
       : null,
     status: numericalStatus,
     priorInfluence,
+    evidenceAttribution,
     clipping: {
       applied: clippedChannels.length > 0,
       material: clippingMaterial,

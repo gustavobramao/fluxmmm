@@ -1,0 +1,30 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: flux-v10-amss-truth-001
+  labels:
+    fluxmmm-audit-id: v10-amss-external-001
+    fluxmmm-workload: amss-frozen-truth
+spec:
+  template:
+    spec:
+      taskCount: 100
+      parallelism: 100
+      template:
+        spec:
+          containers:
+            - image: europe-west1-docker.pkg.dev/fluxmmm-production/fluxmmm-research/amss-truth-v10@sha256:dea05248f57db3411cbd892668c6d523d62063d88126d59fa688ac00f8eea3eb
+              env:
+                - name: FLUX_GCS_BUCKET
+                  value: fluxmmm-production-svi-research
+                - name: FLUX_TRUTH_INPUT_PREFIX
+                  value: v10-amss-external-001/truth-input
+                - name: FLUX_TRUTH_OUTPUT_PREFIX
+                  value: v10-amss-external-001/truth-results
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 2Gi
+          maxRetries: 0
+          serviceAccountName: fluxmmm-v10-amss-truth@fluxmmm-production.iam.gserviceaccount.com
+          timeoutSeconds: "14400"

@@ -1,0 +1,31 @@
+{
+  "artifactId": "flux-v10-amss-step2-interface-smoke-v1",
+  "status": "passed",
+  "researchLabels": false,
+  "upstreamRevision": "cbf5e7f6c668de493077ce1d08a2ab963891f0cc",
+  "amssVersion": "1.0.1",
+  "runtime": {
+    "rVersion": "4.6.1",
+    "wallSeconds": 95.83
+  },
+  "scenario": {
+    "seed": 1,
+    "cadence": "weekly",
+    "timePoints": 208,
+    "burnInTimePoints": 52,
+    "observedTimePoints": 156,
+    "nativeChannels": ["tv", "search"],
+    "hiddenConsumerStatesPerTimePoint": 198
+  },
+  "files": {
+    "default-observed.csv": "e13347fef65c2b0521e19d50caea516df3c2f172f18b52e7ba17398e1fc8efed",
+    "default-budget.csv": "216a10e59b623e241e7f3751a8d944583296fe364c04377ee2c98013485cf2bb",
+    "counterfactual-interface-smoke.csv": "df1cd09b0cfd29c93393e4bfc91da470c0cebef7bbc19f1a1f9de01cbeb72c3a",
+    "truth-interface-smoke.csv": "a2dfe2427c86992a22b59d9efa2609d1529a05962e2b85855d3e98ff296ee643"
+  },
+  "inputs": {
+    "reproduce-default-amss.R": "65aae874b08355533e1100459f55e0c6640531092e44bd5b7f0ca86270554245",
+    "amss-upstream.lock.json": "3b7bec045bdac69c63f95e1b35109a583435d361a7ef9413f2ba8b43fd219402"
+  },
+  "truthBoundary": "ROAS values are low-repetition interface checks and are not admissible V10 outcomes."
+}

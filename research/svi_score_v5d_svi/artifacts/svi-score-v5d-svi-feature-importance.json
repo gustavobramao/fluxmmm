@@ -1,0 +1,4485 @@
+{
+  "artifactId": "flux-svi-score-v5d-svi-standardized-coefficient-importance-v1",
+  "releaseName": "V5D-SVI",
+  "generatedAt": "2026-09-02T19:55:19.907Z",
+  "activation": "public-research-release",
+  "provenance": {
+    "v5aSha256": "ef80fec76ba648bc721a4413f987478a4a1cc4e8254a0942cfff7acd6f667b73",
+    "releaseSha256": "1f82734969262e081a2b27af92e2d6ed2f675f8a768bfdbe9ec93bd704b55528",
+    "freshValidationAccessed": false,
+    "auditAccessed": false
+  },
+  "method": {
+    "models": 20,
+    "folds": 5,
+    "candidateRegions": 4,
+    "importance": "mean absolute standardized coefficient across 20 cross-fitted models, normalized to sum to one",
+    "riskApproximation": "0.65 mean-loss coefficient + 0.35 P90-loss coefficient before output clamping",
+    "interpretation": "positive coefficients raise predicted economic loss; negative coefficients reduce predicted economic loss",
+    "limitation": "correlated transformed features share or exchange coefficient importance; these are predictive associations, not causal effects"
+  },
+  "modelReceipts": [
+    {
+      "fold": 0,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    }
+  ],
+  "meanLoss": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.23891247708677493,
+        "meanCoefficient": -0.008062326785600305
+      },
+      {
+        "group": "posterior-roi",
+        "importance": 0.22124168594160612,
+        "meanCoefficient": -0.44244096479772393
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.21408720884799654,
+        "meanCoefficient": 0.06249432574154575
+      },
+      {
+        "group": "structure",
+        "importance": 0.07801207050467933,
+        "meanCoefficient": 0.0367219557002366
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.0679000823663538,
+        "meanCoefficient": -0.03468254065315999
+      },
+      {
+        "group": "posterior-decision-safety",
+        "importance": 0.05049450016999489,
+        "meanCoefficient": -0.027686704530960986
+      },
+      {
+        "group": "generalization",
+        "importance": 0.04534533494344389,
+        "meanCoefficient": -0.09934033784377316
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.04104031893928747,
+        "meanCoefficient": -0.038582530891130486
+      },
+      {
+        "group": "posterior-reliability",
+        "importance": 0.036350211761636934,
+        "meanCoefficient": 0.06942577540045805
+      },
+      {
+        "group": "posterior-predictive",
+        "importance": 0.006616109438225731,
+        "meanCoefficient": -0.16680489952885835
+      }
+    ],
+    "features": [
+      {
+        "feature": "svi:roi:log-center:paid-social",
+        "description": "Log posterior ROI center for paid social.",
+        "group": "posterior-roi",
+        "meanCoefficient": -1.8683183552653255,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.07410453013547579
+      },
+      {
+        "feature": "svi:roi:log-center:mean",
+        "description": "Mean log posterior ROI center across modeled channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.8753466407994649,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.034719538744187664
+      },
+      {
+        "feature": "svi:roi:log-center:minimum",
+        "description": "Lowest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.8192446949927055,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.03249432465153619
+      },
+      {
+        "feature": "svi:roi:log-center:maximum",
+        "description": "Highest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.8037433088625446,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.03187948139830432
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "description": "Interaction between saturation and spend regimes.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.7444190145663823,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02952645684975971
+      },
+      {
+        "feature": "svi:convergence:seed-log-roi-difference",
+        "description": "Largest cross-seed difference in log ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.6766058665179094,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.026836732446540494
+      },
+      {
+        "feature": "diagnostic:functional-form",
+        "description": "Adequacy of the response-curve and baseline functional form.",
+        "group": "structure",
+        "meanCoefficient": 0.5767681228642474,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.022876792181333372
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "description": "Generalization across low- and high-spend periods.",
+        "group": "generalization",
+        "meanCoefficient": -0.531869595102081,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.021095947768916594
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "description": "Ability to distinguish competing carryover kernels.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.4755518481624539,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01886217419200549
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "description": "Temporal-identification interaction for kernel distinguishability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.433296681943962,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01718617543644379
+      },
+      {
+        "feature": "svi:roi:log-center:range",
+        "description": "Range between highest and lowest channel log posterior ROI centers.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.37068752728336385,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014702860976021399
+      },
+      {
+        "feature": "svi:roi:log-center:standard-deviation",
+        "description": "Dispersion of log posterior ROI centers across channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.35877014464419676,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014230172775730857
+      },
+      {
+        "feature": "svi:decision:log-relative-roi-width",
+        "description": "Log-scaled largest ROI interval width relative to its center.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.357521556492162,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014180649075405108
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "description": "Absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.3526850769567698,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013988816113709892
+      },
+      {
+        "feature": "svi:margin:roi-precision",
+        "description": "Distance inside or outside the posterior ROI precision gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.3291501796181839,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0130553336030085
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "description": "Consistency between ROI estimates and marginal-return economics.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.3235827496287323,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01283450839820989
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "description": "Indicator for the likelihood / student t model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.31917834961482083,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012659813334791086
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "description": "Shortfall below 50/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.3128220390875105,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012407698161970543
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "description": "Indicator for the likelihood / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.3081321726717587,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01222168042780977
+      },
+      {
+        "feature": "svi:roi:log-center:nonbrand-search",
+        "description": "Log posterior ROI center for non-brand search.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.2896875282941366,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011490096486953223
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "description": "Interaction between temporal identification and the likelihood / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.28663512291089255,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011369026613571727
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "description": "Interaction between planning and confounder.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.2540619517183046,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010872473559640992
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "description": "Interaction between benchmark and compatibility.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.2530480575310831,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010036837326030943
+      },
+      {
+        "feature": "spec:planning:off",
+        "description": "Indicator for the planning / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.2530066327270017,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010035194262559584
+      },
+      {
+        "feature": "spec:planning:on",
+        "description": "Indicator for the planning / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.2530066327269832,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01003519426255885
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "description": "Agreement between residual behavior and the selected likelihood.",
+        "group": "structure",
+        "meanCoefficient": 0.2405156679773357,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009655344520443317
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "description": "Residual behavior after campaigns stop.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.24098328577806094,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009619046220051186
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "description": "Interaction between temporal identification and the family / advanced specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.24249945434343734,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00961844006487731
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "description": "Indicator for the calibration / prior model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.239912842464498,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009515845316333418
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "description": "Indicator for the calibration / likelihood model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.2399128414924964,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009515845274529526
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "description": "Interaction between log normal and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.23070521390288504,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009335911474391527
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "description": "Shortfall below 70/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.23392227932753062,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009293203064043574
+      },
+      {
+        "feature": "svi:convergence:log-elbo-drift",
+        "description": "Log-scaled remaining drift in the variational objective.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -0.19640018542626642,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008813443046275099
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "description": "Interaction between temporal identification and the family / bayesian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.2175769541395066,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008629920007677901
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "description": "Interaction between temporal identification and the planning / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.21465556509527867,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008514046734873335
+      },
+      {
+        "feature": "svi:decision:implausible-probability",
+        "description": "Largest posterior probability of an implausible channel ROI.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.20979362790008466,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00832120402667927
+      },
+      {
+        "feature": "svi:margin:roi-plausibility",
+        "description": "Distance inside or outside the posterior ROI plausibility gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.2097936279000819,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008321204026679161
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "description": "Interaction between student t and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.19526314452638888,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00816768696055166
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "description": "Interaction between ctv long and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.18967452768716883,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007905180854500014
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "description": "Interaction between benchmark and dependence.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.19362678954639406,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007679966436415221
+      },
+      {
+        "feature": "svi:roi:log-center:ctv",
+        "description": "Log posterior ROI center for connected TV.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.19201991868344845,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007620680773396708
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "description": "How often predictive intervals cover observed outcomes.",
+        "group": "generalization",
+        "meanCoefficient": 0.1855625546635733,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007560281151127449
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "description": "Interaction between temporal identification and the calibration / likelihood specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1886489363106066,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007482526062251043
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "description": "Interaction between temporal identification and the likelihood / student t specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.1878828429136476,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007452139917908166
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "description": "Data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1696564260423653,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006772969777909988
+      },
+      {
+        "feature": "svi:predictive:coverage",
+        "description": "Observed share covered by the SVI posterior predictive interval.",
+        "group": "posterior-predictive",
+        "meanCoefficient": -0.16680489952885835,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006616109438225731
+      },
+      {
+        "feature": "svi:margin:predictive-coverage",
+        "description": "Distance above or below the posterior predictive coverage gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.1668048995287858,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006616109438222853
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "description": "Quality and transportability of external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.1633933629108312,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006480795069876035
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "description": "Interaction between temporal identification and the ctv normalization / peak specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.15914692361356247,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006411967111556531
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "description": "Temporal-identification interaction for carryover support.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.15023823240876125,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006383216680339859
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "description": "Interaction between temporal identification and the planning / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.1597047471127914,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006334490699534817
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "description": "How much decisions depend on a particular evidence source.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.15831974798616744,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0062795564271035335
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "description": "Sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.1519398804743041,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006246974803015281
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "description": "Indicator for the ctv normalization / peak model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.15048627841526324,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006189595840098325
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "description": "Indicator for the ctv normalization / sum model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.15048627841526113,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006189595840098039
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "description": "Interaction between weibull and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.1560365491048103,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006188996175510444
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "description": "Interaction between ridge and identification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.15126090182018487,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006019851501384113
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "description": "Posterior ROI mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.15051795365047957,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005970107931973986
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "description": "Shortfall below 50/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.14177281229503352,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005948489545835024
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "description": "Shortfall below 70/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.14844639118799421,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005887941976425706
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "description": "Interaction between temporal identification and the ctv normalization / sum specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.13762662390817962,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005772532709701216
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "description": "Interaction between temporal identification and the ctv adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1437975031938147,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005738065265007128
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "description": "Shortfall below 50/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.11198917367393368,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005644174661679222
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "description": "Recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.12018744064859362,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005603742896676863
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "description": "Interaction between temporal identification and the calibration / prior specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.10208558727929998,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005447494571777568
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "description": "Interaction between planning and placebo.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.11385730332407658,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005406425634435446
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "description": "Shortfall below 70/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.13106047629374123,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005289673360155523
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "description": "Strength of information identifying channel-level ROI.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.13187549092103928,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0052350994430312115
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "description": "Interaction between ctv long and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.021778703293235117,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0050266964721912355
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "description": "Shortfall below 50/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.12606260028336963,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005000116674617129
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "description": "Shortfall below 70/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.10060614100226979,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004965262845967165
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "description": "Interaction between temporal identification and the global adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.12366968970297118,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004905204844565846
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "description": "Indicator for the family / bayesian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.11609721059842985,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004753531698823969
+      },
+      {
+        "feature": "spec:family:advanced",
+        "description": "Indicator for the family / advanced model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.11609721059841968,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0047535316988236275
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "description": "Indicator for the likelihood / gaussian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.047398251195488836,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004609266130607556
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "description": "Reliance on the zero-effect boundary or coefficient clipping.",
+        "group": "structure",
+        "meanCoefficient": -0.10848809645897912,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004549632099484729
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "description": "Interaction between temporal identification and the ctv adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.11105820838724337,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004496554256030718
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "description": "Shortfall below 70/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.10874701734448829,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004460179883568101
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "description": "Shortfall below 50/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.014940941089827459,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004420133682178217
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "description": "Stability of residual variance across fitted values.",
+        "group": "structure",
+        "meanCoefficient": -0.017018151298477103,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004267795331450576
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "description": "Interaction between time varying and fold.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.10716106398751309,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004250410682543752
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "description": "Shortfall below 50/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.09817725163164727,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004235226838784563
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "description": "Interaction between temporal identification and the time varying / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.10475168964908041,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00415484583795137
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "description": "Shortfall below 70/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.052491885422183936,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0041269075390842165
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "description": "Shortfall below 50/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.060006142673002916,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0040549901343168255
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "description": "Interaction between student t and variance.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.048487284934656955,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004052243408223896
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "description": "Sensitivity to influential observations.",
+        "group": "structure",
+        "meanCoefficient": -0.04789294393613718,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004025593457350828
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "description": "Interaction between temporal identification and the global adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.09875890613448482,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003954710779327087
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "description": "Shortfall below 70/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.002695065946653339,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003946808114430068
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "description": "Consistency of performance across temporal folds.",
+        "group": "generalization",
+        "meanCoefficient": -0.0973336234759923,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0038606174444223156
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "description": "Temporal-identification interaction for rolling oos.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.03823741516890759,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0036006261884968145
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "description": "Shortfall below 70/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": 0.04464111290912013,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0035376774226068735
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "description": "Accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.036854281056041674,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003443092050832145
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "description": "Interaction between temporal identification and the prior / half normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.08477051514007106,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033623173353157436
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "description": "Ability to distinguish economically different channel ROIs.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.07534426049185575,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033445924269536464
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "description": "Interaction between time varying and new data.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.08374291187694274,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0033215587265030657
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "description": "Stability of budget decisions under ROI uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.007690094382384116,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003197465979806174
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "description": "Shortfall below 50/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.05664778650698267,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0031599608001705204
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "description": "Shortfall below 70/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.07391763777908102,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003147599342802345
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "description": "Shortfall below 70/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.05885743042041869,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0029645021274648186
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "description": "Shortfall below 70/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.07042758081842235,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0029642127974633826
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "description": "Whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.06268724409788567,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002881192068665145
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "description": "Indicator for the ctv adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.025478238889104426,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00286035498290836
+      },
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "description": "Indicator for the ctv adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025478238889118876,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0028603549829083184
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "description": "Interaction between weibull and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0022225670198950352,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002840890886382426
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "description": "Performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.031891657085645314,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002809611654773323
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "description": "Interaction between temporal identification and the time varying / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0694573814100814,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00275494088003201
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "description": "Agreement between observational data and external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.04423812301832093,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0026701836523152144
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "description": "Indicator for the time varying / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.06302389105130714,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002499764545284319
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "description": "Indicator for the time varying / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.06302389202334006,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0024997645034833074
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "description": "Indicator for the prior / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04775728960357715,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0024438386616364685
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "description": "Indicator for the prior / half normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.04775728960355423,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0024438386616357317
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "description": "Shortfall below 50/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.025614207411252938,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0024053690899610847
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "description": "Temporal-identification interaction for post flight residual stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.05948058990149283,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0023592238198639815
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "description": "Shortfall below 50/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0400616884208458,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002323043119404075
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "description": "Temporal-identification interaction for whole flight generalization.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012889372802144356,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00222571435132027
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "description": "Interaction between temporal identification and the prior / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.05385998156287856,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0021658454334418744
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "description": "Indicator for the global adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.00011950077164182213,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002102550445216943
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "description": "Indicator for the global adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.00011950077164605485,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002102550445216691
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "description": "Interaction between temporal identification and the likelihood / gaussian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.01692515630306508,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002099187316944048
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "description": "Temporal-identification interaction for new data stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.013293801015891685,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0020429660585989298
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "description": "Stability of estimates as new observations arrive.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.03924432049394581,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0019953375166429583
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "description": "Interaction between saturation and roi resolution.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.013829016956073494,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0018850717389198622
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "description": "Interaction between benchmark and quality.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.03811960399565716,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0018739433804876757
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "description": "Shortfall below 50/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.008583135340654354,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0018628692985280652
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "description": "Interaction between ridge and collinearity.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.016792065883145163,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.001767229258686039
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "description": "Whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": -0.0164001298255957,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0015019152445400062
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "description": "Interaction between temporal identification and the evidence / benchmark gap fill specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.022015408043944227,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0012668342349061324
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "description": "Indicator for the evidence / experiments only model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.021548442678369854,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.001231267222446603
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "description": "Indicator for the evidence / benchmark gap fill model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.021548442678359318,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00123126722244648
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "description": "Interaction between temporal identification and the evidence / experiments only specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.001967813197953635,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0009807760853676466
+      },
+      {
+        "feature": "svi:convergence:adjudication-used",
+        "description": "Whether an additional fit was needed to resolve seed disagreement.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -0.0057747722159148486,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0002333450836136681
+      },
+      {
+        "feature": "svi:convergence:elbo-stable",
+        "description": "Whether the variational objective stabilized.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.0057747722151429235,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00023334508358456295
+      },
+      {
+        "feature": "svi:status:labelled",
+        "description": "Whether the posterior fit produced a usable economic-loss label.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.0057747722151429235,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00023334508358456295
+      },
+      {
+        "feature": "svi:convergence:finite",
+        "description": "Whether all posterior summaries are finite.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -1.2751403895081256e-8,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 5.090192695358827e-10
+      },
+      {
+        "feature": "svi:convergence:seed-agreement",
+        "description": "Whether independent SVI seeds agree on channel ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -1.2751403895081256e-8,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 5.090192695358827e-10
+      }
+    ]
+  },
+  "p90Loss": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.30950567523125916,
+        "meanCoefficient": -0.005251301056260063
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.28045967473791755,
+        "meanCoefficient": -0.004055174640151585
+      },
+      {
+        "group": "structure",
+        "importance": 0.09183924233863625,
+        "meanCoefficient": -0.005612621671969511
+      },
+      {
+        "group": "posterior-decision-safety",
+        "importance": 0.061415432764361094,
+        "meanCoefficient": 0.0038545602306517338
+      },
+      {
+        "group": "generalization",
+        "importance": 0.06115600726931148,
+        "meanCoefficient": -0.024499541873155086
+      },
+      {
+        "group": "posterior-roi",
+        "importance": 0.05633070393911182,
+        "meanCoefficient": -0.001375166108089601
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.051827305033959416,
+        "meanCoefficient": -0.0009011826631204979
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.05076575417276718,
+        "meanCoefficient": 0.005698294168061377
+      },
+      {
+        "group": "posterior-reliability",
+        "importance": 0.029428718809309935,
+        "meanCoefficient": 0.009790890933981042
+      },
+      {
+        "group": "posterior-predictive",
+        "importance": 0.0072714857033660965,
+        "meanCoefficient": 0.017565575259677463
+      }
+    ],
+    "features": [
+      {
+        "feature": "svi:decision:log-relative-roi-width",
+        "description": "Log-scaled largest ROI interval width relative to its center.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.058423660343404016,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.024185192038691006
+      },
+      {
+        "feature": "svi:margin:roi-precision",
+        "description": "Distance inside or outside the posterior ROI precision gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.05671643444985621,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.023478464903722285
+      },
+      {
+        "feature": "svi:roi:log-center:paid-social",
+        "description": "Log posterior ROI center for paid social.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.0489647281273307,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.020269550827886215
+      },
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "description": "Indicator for the ctv adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04680903771586668,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.019377176295534475
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "description": "Indicator for the ctv adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.04680903771585605,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.019377176295530076
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "description": "Absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.04634218785465708,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.019183918059398213
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "description": "Interaction between temporal identification and the ctv adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.04528529398011927,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01874640385419489
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "description": "Interaction between temporal identification and the ctv adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.04520899985477479,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.018714820963598267
+      },
+      {
+        "feature": "svi:convergence:seed-log-roi-difference",
+        "description": "Largest cross-seed difference in log ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.042848777860769835,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.017737778069616073
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "description": "Interaction between saturation and spend regimes.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04265391625208774,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.017657112712477475
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "description": "Consistency of performance across temporal folds.",
+        "group": "generalization",
+        "meanCoefficient": -0.04148804779335825,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.017174487139199633
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "description": "Interaction between time varying and fold.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04081188839355514,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01689458264781919
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "description": "Shortfall below 50/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.03896126422352335,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.016128494034394696
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "description": "Interaction between weibull and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03883874907177417,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.016077777382009564
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "description": "Shortfall below 70/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.03569839878367785,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.014777790795411817
+      },
+      {
+        "feature": "spec:planning:off",
+        "description": "Indicator for the planning / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03192917799442162,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01321747553805598
+      },
+      {
+        "feature": "spec:planning:on",
+        "description": "Indicator for the planning / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0319291779944001,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.013217475538047072
+      },
+      {
+        "feature": "diagnostic:functional-form",
+        "description": "Adequacy of the response-curve and baseline functional form.",
+        "group": "structure",
+        "meanCoefficient": 0.03151003794336957,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01304396736403509
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "description": "Shortfall below 50/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.03132373433763684,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012966844697367814
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "description": "Generalization across low- and high-spend periods.",
+        "group": "generalization",
+        "meanCoefficient": -0.030606563589729786,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012669963054541714
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "description": "Interaction between temporal identification and the planning / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.03054234587591203,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012643379342876968
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "description": "Interaction between ctv long and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.030329926283975246,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012555445642838753
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "description": "Indicator for the likelihood / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.03009290386009339,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012457327298226921
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "description": "Interaction between temporal identification and the planning / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.029960731491707915,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012402612922358957
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "description": "Interaction between temporal identification and the likelihood / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.029915467099856274,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012383875171197664
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "description": "Shortfall below 70/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.028818471185879057,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011929760234042864
+      },
+      {
+        "feature": "svi:roi:log-center:ctv",
+        "description": "Log posterior ROI center for connected TV.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.027411599198948096,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011347368289105072
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "description": "Indicator for the prior / half normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.027362166806767885,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011326905142996403
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "description": "Indicator for the prior / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.027362166806761595,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011326905142993799
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "description": "Interaction between temporal identification and the prior / half normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.026511791309991213,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010974881757716281
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "description": "Interaction between planning and placebo.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025947497057180424,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01074128521839744
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "description": "Accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.02566986798868265,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01062635725432133
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "description": "Indicator for the calibration / prior model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025503528444945654,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010557498956411523
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "description": "Indicator for the calibration / likelihood model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02550352621962767,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010557498035213803
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "description": "Data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.025375043911463512,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010504311205113465
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "description": "Interaction between temporal identification and the calibration / likelihood specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02533165271406495,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010486348885811582
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "description": "Interaction between temporal identification and the likelihood / gaussian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.02483132950948936,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010305485963708413
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "description": "Temporal-identification interaction for rolling oos.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0246082408546243,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010186883658182893
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "description": "Interaction between temporal identification and the calibration / prior specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.023769145357398186,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010132020261948451
+      },
+      {
+        "feature": "svi:convergence:log-elbo-drift",
+        "description": "Log-scaled remaining drift in the variational objective.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.024410443015558538,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010105002812400118
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "description": "Indicator for the likelihood / gaussian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.02427419616374981,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010049357462801466
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "description": "Shortfall below 70/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.02427276870359592,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010048010839387143
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "description": "Interaction between temporal identification and the ctv normalization / peak specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.024108535695267615,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009980024567692331
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "description": "Shortfall below 70/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0233371271974044,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00986797158006125
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "description": "Interaction between temporal identification and the prior / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02353884555633164,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009744194335013822
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "description": "Indicator for the ctv normalization / peak model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.023365718733474546,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009672526359518343
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "description": "Indicator for the ctv normalization / sum model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.023365718733459655,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00967252635951218
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "description": "Interaction between temporal identification and the ctv normalization / sum specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02304650247808996,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009540382868457197
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "description": "Temporal-identification interaction for carryover support.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.02253969331145758,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00933058298686938
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "description": "Whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.021026561802258,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008704203607099522
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "description": "Interaction between ctv long and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.02034452667926631,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008421866787911361
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "description": "Shortfall below 50/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.019710993373663353,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008159607891963154
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "description": "Shortfall below 70/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.01904866589498476,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007885429294282183
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "description": "Performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.019019071875818375,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007873178486432611
+      },
+      {
+        "feature": "svi:margin:predictive-coverage",
+        "description": "Distance above or below the posterior predictive coverage gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.017565575259710246,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007271485703379667
+      },
+      {
+        "feature": "svi:predictive:coverage",
+        "description": "Observed share covered by the SVI posterior predictive interval.",
+        "group": "posterior-predictive",
+        "meanCoefficient": 0.017565575259677463,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0072714857033660965
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "description": "Ability to distinguish competing carryover kernels.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.017270712005699417,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007149423436457524
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "description": "Shortfall below 70/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.016871644067950976,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0069842243603606075
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "description": "Temporal-identification interaction for kernel distinguishability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.016656531909024726,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0068951760391340825
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "description": "Strength of information identifying channel-level ROI.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.015938780073818694,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0065980538480808724
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "description": "Temporal-identification interaction for whole flight generalization.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.015906028229170813,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00658449581957368
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "description": "Interaction between log normal and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.015758304250781695,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0065233436636652625
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "description": "Shortfall below 70/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.014774195495034583,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006115959752681187
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "description": "Whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.014772445557221453,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0061152353444223154
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "description": "Shortfall below 50/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.013879548299918007,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0059017063165917654
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "description": "Interaction between weibull and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.013941702839180902,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005771339189123938
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "description": "Temporal-identification interaction for new data stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.013583920907049494,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00562323096232488
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "description": "Stability of estimates as new observations arrive.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.013279448720448997,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005497190959694259
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "description": "Shortfall below 50/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.01305490080121455,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0054042365895529045
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "description": "Interaction between temporal identification and the family / bayesian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012892164944800125,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005336870082288042
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "description": "Shortfall below 50/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012403071427663722,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005134403811477639
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "description": "Interaction between temporal identification and the global adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012371089167909579,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005121164362092941
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "description": "Shortfall below 50/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.012213912372065091,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005056099096254043
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "description": "Indicator for the family / bayesian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.012061297678925224,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0049929223688833435
+      },
+      {
+        "feature": "spec:family:advanced",
+        "description": "Indicator for the family / advanced model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.012061297678915325,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004992922368879246
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "description": "Interaction between time varying and new data.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.011938901936528959,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004942255147467011
+      },
+      {
+        "feature": "svi:roi:log-center:minimum",
+        "description": "Lowest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.01090405383526277,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004816070660376735
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "description": "Interaction between ridge and collinearity.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.011629783764281403,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0048142918819935165
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "description": "Stability of residual variance across fitted values.",
+        "group": "structure",
+        "meanCoefficient": -0.011226587412171113,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004783340604790731
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "description": "Indicator for the global adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.011400330999546484,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00471930709079241
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "description": "Indicator for the global adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.011400330999536369,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004719307090788222
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "description": "Interaction between temporal identification and the family / advanced specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.011143908877235025,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004613158002655526
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "description": "Stability of budget decisions under ROI uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.01100693702185917,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004556456820177581
+      },
+      {
+        "feature": "svi:roi:log-center:standard-deviation",
+        "description": "Dispersion of log posterior ROI centers across channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.010999114598994289,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004553218632120157
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "description": "Quality and transportability of external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.010839466842185033,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004487130481629702
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "description": "Interaction between temporal identification and the global adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.01067456279131281,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004418866423628875
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "description": "Shortfall below 70/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.01055973574644631,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004371332357550024
+      },
+      {
+        "feature": "svi:roi:log-center:range",
+        "description": "Range between highest and lowest channel log posterior ROI centers.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.010426241448427024,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004316070752667865
+      },
+      {
+        "feature": "svi:roi:log-center:nonbrand-search",
+        "description": "Log posterior ROI center for non-brand search.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.008988627758636342,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004214721095303842
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "description": "Interaction between saturation and roi resolution.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.010081429025816008,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004173331413688478
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "description": "Interaction between planning and confounder.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.009345393404517916,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0038686404247333266
+      },
+      {
+        "feature": "svi:roi:log-center:mean",
+        "description": "Mean log posterior ROI center across modeled channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.005992191307631163,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00365326823914963
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "description": "Indicator for the likelihood / student t model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.004872473318759556,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00347205811546096
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "description": "Shortfall below 50/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.007501757337527397,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0033453262647547334
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "description": "Shortfall below 50/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.002251821390274901,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0033267770803334473
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "description": "Posterior ROI mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0016419480189659905,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0033121198483967605
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "description": "Interaction between temporal identification and the likelihood / student t specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.004694677998724024,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033072154411570034
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "description": "Recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.001135874424718963,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003304162258021098
+      },
+      {
+        "feature": "svi:margin:roi-plausibility",
+        "description": "Distance inside or outside the posterior ROI plausibility gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.00779133484507045,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003240145059284267
+      },
+      {
+        "feature": "svi:decision:implausible-probability",
+        "description": "Largest posterior probability of an implausible channel ROI.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.0077913348450698305,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0032401450592838706
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "description": "Interaction between benchmark and compatibility.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.00774499712057905,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003206136719255743
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "description": "Indicator for the time varying / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.007700329304549895,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003187647770368152
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "description": "Indicator for the time varying / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.007700331529879982,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0031876468491889064
+      },
+      {
+        "feature": "svi:roi:log-center:maximum",
+        "description": "Highest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.0029659385994979227,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0031604354425023066
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "description": "Sensitivity to influential observations.",
+        "group": "structure",
+        "meanCoefficient": -0.005587035007746573,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0031590181679064097
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "description": "Interaction between temporal identification and the time varying / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0074170403749675064,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0030703749948725358
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "description": "Sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.006324521347743905,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0029769596661349414
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "description": "Ability to distinguish economically different channel ROIs.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.006025672050507238,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002935583161815435
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "description": "How often predictive intervals cover observed outcomes.",
+        "group": "generalization",
+        "meanCoefficient": -0.006534752381362791,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0028537332706141754
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "description": "Agreement between observational data and external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.003675760251023629,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002798105239354811
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "description": "Shortfall below 70/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.004566482217006049,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002769416064856491
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "description": "Temporal-identification interaction for post flight residual stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.004981895499210022,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0027559327535157125
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "description": "Shortfall below 50/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.006023153580736905,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002721657145793012
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "description": "Shortfall below 70/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.0004736257979187057,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002634099540522391
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "description": "Interaction between student t and variance.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.00602639820776477,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002562619243596979
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "description": "How much decisions depend on a particular evidence source.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.002979515991155756,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002439483297270992
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "description": "Interaction between ridge and identification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0035959197511933848,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0024310652858000434
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "description": "Shortfall below 70/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.0035249455028062864,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0022273473769958752
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "description": "Shortfall below 50/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.00201010066959552,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0022120186605215967
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "description": "Interaction between student t and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0020904148679920624,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0020794502120375464
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "description": "Interaction between temporal identification and the time varying / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.002506202069654981,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0020385997412832187
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "description": "Interaction between benchmark and dependence.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.004689854998180759,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0019709039973489473
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "description": "Interaction between temporal identification and the evidence / benchmark gap fill specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.004673814108762981,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0019347827765183484
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "description": "Indicator for the evidence / benchmark gap fill model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.004508670792269254,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0018664196715736914
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "description": "Indicator for the evidence / experiments only model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.004508670792260276,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.001866419671569975
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "description": "Agreement between residual behavior and the selected likelihood.",
+        "group": "structure",
+        "meanCoefficient": 0.00003298969221133454,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0016613637967271173
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "description": "Reliance on the zero-effect boundary or coefficient clipping.",
+        "group": "structure",
+        "meanCoefficient": 0.0019320654010598463,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0014659178293157846
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "description": "Interaction between temporal identification and the evidence / experiments only specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0029204248077705514,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0012127874090593642
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "description": "Consistency between ROI estimates and marginal-return economics.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0005600643631244607,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.001127693339758108
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "description": "Interaction between benchmark and quality.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0010787710046136138,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.000999728238747615
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "description": "Residual behavior after campaigns stop.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0014338501306218904,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0005935598789935748
+      },
+      {
+        "feature": "svi:convergence:adjudication-used",
+        "description": "Whether an additional fit was needed to resolve seed disagreement.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -0.001277033149599463,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0005286435629212395
+      },
+      {
+        "feature": "svi:convergence:elbo-stable",
+        "description": "Whether the variational objective stabilized.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.0012770331490755608,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0005286435627043639
+      },
+      {
+        "feature": "svi:status:labelled",
+        "description": "Whether the posterior fit produced a usable economic-loss label.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.0012770331490755608,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0005286435627043639
+      },
+      {
+        "feature": "svi:convergence:finite",
+        "description": "Whether all posterior summaries are finite.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -8.743506359564924e-9,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 3.6194818872122896e-9
+      },
+      {
+        "feature": "svi:convergence:seed-agreement",
+        "description": "Whether independent SVI seeds agree on channel ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -8.743506359564924e-9,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 3.6194818872122896e-9
+      }
+    ]
+  },
+  "risk": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.23921540155263396,
+        "meanCoefficient": -0.007078467780331226
+      },
+      {
+        "group": "posterior-roi",
+        "importance": 0.21877971817466493,
+        "meanCoefficient": -0.28806793525635194
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.21398276116192774,
+        "meanCoefficient": 0.03920200060795169
+      },
+      {
+        "group": "structure",
+        "importance": 0.07893302824001722,
+        "meanCoefficient": 0.021904853619964474
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.06718411533516687,
+        "meanCoefficient": -0.02285906535664618
+      },
+      {
+        "group": "posterior-decision-safety",
+        "importance": 0.051309398222338286,
+        "meanCoefficient": -0.016647261864396534
+      },
+      {
+        "group": "generalization",
+        "importance": 0.046691696397436686,
+        "meanCoefficient": -0.0731460592540568
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.04141247111771617,
+        "meanCoefficient": -0.023084242120413326
+      },
+      {
+        "group": "posterior-reliability",
+        "importance": 0.03635484625969575,
+        "meanCoefficient": 0.048553565837191094
+      },
+      {
+        "group": "posterior-predictive",
+        "importance": 0.006136563538402403,
+        "meanCoefficient": -0.10227523335287081
+      }
+    ],
+    "features": [
+      {
+        "feature": "svi:roi:log-center:paid-social",
+        "description": "Log posterior ROI center for paid social.",
+        "group": "posterior-roi",
+        "meanCoefficient": -1.2315445857670269,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.07379144178464775
+      },
+      {
+        "feature": "svi:roi:log-center:mean",
+        "description": "Mean log posterior ROI center across modeled channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.5710725834773231,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.034217412658454106
+      },
+      {
+        "feature": "svi:roi:log-center:minimum",
+        "description": "Lowest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.5363254705876005,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.03213544210893508
+      },
+      {
+        "feature": "svi:roi:log-center:maximum",
+        "description": "Highest channel log posterior ROI center.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.5234712292704784,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.031365244252681695
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "description": "Interaction between saturation and spend regimes.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.4988012301563794,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.029887072187704002
+      },
+      {
+        "feature": "svi:convergence:seed-log-roi-difference",
+        "description": "Largest cross-seed difference in log ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.4547908854879106,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.02725006917209418
+      },
+      {
+        "feature": "diagnostic:functional-form",
+        "description": "Adequacy of the response-curve and baseline functional form.",
+        "group": "structure",
+        "meanCoefficient": 0.38592779314194026,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.02312394419969325
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "description": "Generalization across low- and high-spend periods.",
+        "group": "generalization",
+        "meanCoefficient": -0.35642753407275796,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02135635358633368
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "description": "Ability to distinguish competing carryover kernels.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.31515345050758986,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01888330131537843
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "description": "Temporal-identification interaction for kernel distinguishability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.2874726294317339,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01722472742322973
+      },
+      {
+        "feature": "svi:decision:log-relative-roi-width",
+        "description": "Log-scaled largest ROI interval width relative to its center.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.2528372928400967,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.015149454263548155
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "description": "Absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.24546506577103036,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01470772663884231
+      },
+      {
+        "feature": "svi:roi:log-center:range",
+        "description": "Range between highest and lowest channel log posterior ROI centers.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.2445960772411359,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01465565875818552
+      },
+      {
+        "feature": "svi:roi:log-center:standard-deviation",
+        "description": "Dispersion of log posterior ROI centers across channels.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.23705028412837592,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014203531438042717
+      },
+      {
+        "feature": "svi:margin:roi-precision",
+        "description": "Distance inside or outside the posterior ROI precision gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.2337983688092692,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.014008683827382308
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "description": "Indicator for the likelihood / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.21081842858767583,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012631776372569969
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "description": "Consistency between ROI estimates and marginal-return economics.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.21052480978576957,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012614183380015624
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "description": "Indicator for the likelihood / student t model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.2057605615880677,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012328720110888933
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "description": "Interaction between temporal identification and the likelihood / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.19678324337702985,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011790818956673332
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "description": "Shortfall below 50/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.19237101838870896,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011526448143688377
+      },
+      {
+        "feature": "svi:roi:log-center:nonbrand-search",
+        "description": "Log posterior ROI center for non-brand search.",
+        "group": "posterior-roi",
+        "meanCoefficient": 0.19144291310671147,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011470838117321457
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "description": "Interaction between planning and confounder.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.16841115630847925,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010853041573311505
+      },
+      {
+        "feature": "spec:planning:off",
+        "description": "Indicator for the planning / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.1756295235705987,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010523334610864757
+      },
+      {
+        "feature": "spec:planning:on",
+        "description": "Indicator for the planning / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.17562952357057915,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010523334610863586
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "description": "Interaction between benchmark and compatibility.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.16719198638740668,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010017775948145666
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "description": "Indicator for the calibration / prior model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.16486958255765471,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009878622620702916
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "description": "Indicator for the calibration / likelihood model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.16486958114699235,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00987862253617913
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "description": "Interaction between temporal identification and the family / advanced specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.16152501343026654,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009678223397718485
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "description": "Interaction between log normal and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.1554737955246489,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009491264620817591
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "description": "Agreement between residual behavior and the selected likelihood.",
+        "group": "structure",
+        "meanCoefficient": 0.15634673057754217,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009460532115396027
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "description": "Residual behavior after campaigns stop.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.15714098330145732,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009457925337030933
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "description": "Interaction between temporal identification and the planning / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1502159383685003,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009000608503622885
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "description": "Interaction between temporal identification and the family / bayesian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.14593727792135933,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008744240584060444
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "description": "Shortfall below 70/100 for data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.14388148704380332,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008721237235112934
+      },
+      {
+        "feature": "svi:convergence:log-elbo-drift",
+        "description": "Log-scaled remaining drift in the variational objective.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -0.11911646547162771,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008340643422789097
+      },
+      {
+        "feature": "svi:decision:implausible-probability",
+        "description": "Largest posterior probability of an implausible channel ROI.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": 0.1336388909392806,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008007348296504397
+      },
+      {
+        "feature": "svi:margin:roi-plausibility",
+        "description": "Distance inside or outside the posterior ROI plausibility gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.13363889093927858,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008007348296504275
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "description": "Interaction between student t and shape.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.12618939873835552,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007960056072739198
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "description": "Interaction between temporal identification and the calibration / likelihood specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.13148788705181705,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007878464876468523
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "description": "Interaction between benchmark and dependence.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.12749886245451936,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007639451299736592
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "description": "How often predictive intervals cover observed outcomes.",
+        "group": "generalization",
+        "meanCoefficient": 0.11832849719784569,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0073364880173837225
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "description": "Interaction between ctv long and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.1126729687972684,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007248032256796463
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "description": "Interaction between temporal identification and the likelihood / student t specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.12048071059431756,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007218939082466476
+      },
+      {
+        "feature": "svi:roi:log-center:ctv",
+        "description": "Log posterior ROI center for connected TV.",
+        "group": "posterior-roi",
+        "meanCoefficient": -0.11521888742460965,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0069401490563966136
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "description": "Interaction between temporal identification and the planning / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.11429434164541215,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0068482654670510915
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "description": "Interaction between temporal identification and the ctv adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.10929152702515074,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006548507822807557
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "description": "Shortfall below 70/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.1049856233184548,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006290507547076525
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "description": "Sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.100974504780008,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0062569706138609444
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "description": "How much decisions depend on a particular evidence source.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.10395066678791334,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006228495229003992
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "description": "Data support for the estimated persistence of media effects.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1013954115585252,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006184580286043493
+      },
+      {
+        "feature": "svi:predictive:coverage",
+        "description": "Observed share covered by the SVI posterior predictive interval.",
+        "group": "posterior-predictive",
+        "meanCoefficient": -0.10227523335287081,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006136563538402403
+      },
+      {
+        "feature": "svi:margin:predictive-coverage",
+        "description": "Distance above or below the posterior predictive coverage gate.",
+        "group": "posterior-decision-safety",
+        "meanCoefficient": -0.10227523335281219,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006136563538399148
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "description": "Quality and transportability of external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.10241187249727553,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006136294060951738
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "description": "Shortfall below 50/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.09477794305990637,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00600357872912235
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "description": "Interaction between ridge and identification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.09957815809603784,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0059821650114314255
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "description": "Temporal-identification interaction for carryover support.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.08976595840668466,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005933126293036148
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "description": "Posterior ROI mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.09841135167944984,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005922555822216925
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "description": "Shortfall below 50/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": -0.08642940536629004,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005873573092957346
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "description": "Interaction between temporal identification and the ctv normalization / peak specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.09500751285547197,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005845788910164661
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "description": "Interaction between temporal identification and the calibration / prior specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.07467483260663435,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005811806564995232
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "description": "Interaction between weibull and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.09654416092441338,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0057847136943600655
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "description": "Indicator for the ctv normalization / peak model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.08963807941320498,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005701659731471638
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "description": "Indicator for the ctv normalization / sum model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.08963807941320884,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005701659731471602
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "description": "Interaction between planning and placebo.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.08308887113066292,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005691991593821441
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "description": "Recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.07851939247023748,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005582912147374397
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "description": "Shortfall below 70/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.09185634265417647,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005572425280826738
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "description": "Strength of information identifying channel-level ROI.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.09129764212451207,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0054703538319001484
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "description": "Interaction between temporal identification and the ctv adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.08803768834474995,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00527502457436447
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "description": "Shortfall below 70/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.07548045656653303,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005260974545803461
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "description": "Interaction between temporal identification and the ctv normalization / sum specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.08139102967298525,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0052429649897035744
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "description": "Shortfall below 50/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.08650990546461536,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0051834831858009215
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "description": "Interaction between temporal identification and the global adstock / weibull specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.08412139528389077,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005040368911263143
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "description": "Interaction between time varying and fold.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.08393885252962782,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005029431351080526
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "description": "Indicator for the family / bayesian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.07968464107660324,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004893849919880801
+      },
+      {
+        "feature": "spec:family:advanced",
+        "description": "Indicator for the family / advanced model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.07968464107659315,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004893849919880299
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "description": "Interaction between ctv long and whole flight.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.007035572802859613,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0047363081427484474
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "description": "Consistency of performance across temporal folds.",
+        "group": "generalization",
+        "meanCoefficient": -0.0777876719870704,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004660866147547692
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "description": "Indicator for the likelihood / gaussian model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02231289461975531,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004660707073006634
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "description": "Shortfall below 50/100 for accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.014569453613359155,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004486782942389729
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "description": "Reliance on the zero-effect boundary or coefficient clipping.",
+        "group": "structure",
+        "meanCoefficient": -0.06984103980796548,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004458331656011704
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "description": "Shortfall below 70/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0694518303479352,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004410850352473268
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "description": "Stability of residual variance across fitted values.",
+        "group": "structure",
+        "meanCoefficient": -0.014991103938270006,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00423852969667353
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "description": "Shortfall below 50/100 for posterior roi mass inside evidence-informed plausible ranges.",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.06311167832621231,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004171030414985241
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "description": "Interaction between temporal identification and the time varying / on specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.06896576899628151,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0041322771313658975
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "description": "Interaction between temporal identification and the global adstock / geometric specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.06852317019618348,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004118834048974585
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "description": "Sensitivity to influential observations.",
+        "group": "structure",
+        "meanCoefficient": -0.03308587581120047,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004025668808217197
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "description": "Shortfall below 70/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.03042381801316336,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00402199348067664
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "description": "Shortfall below 50/100 for strength of information identifying channel-level roi.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.03689588898419398,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004014529494792593
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "description": "Interaction between student t and variance.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.033625974580244695,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004009338621508498
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "description": "Shortfall below 70/100 for sensitivity to plausible unobserved demand confounding.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.003350061641276791,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0038121724320025166
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "description": "Temporal-identification interaction for rolling oos.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.03346720415890845,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0037006459960788594
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "description": "Accuracy on rolling future holdouts.",
+        "group": "generalization",
+        "meanCoefficient": -0.03293973648246602,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003590231157978397
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "description": "Shortfall below 70/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.053951539980185495,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0034014830599915623
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "description": "Shortfall below 70/100 for absence of systematic time or regressor patterns in residuals.",
+        "group": "structure",
+        "meanCoefficient": 0.016522283816640827,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0032396893337581145
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "description": "Whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.048106005294415985,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003205897226328968
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "description": "Stability of budget decisions under ROI uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.008850989306200385,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0031737402010316223
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "description": "Shortfall below 50/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.03760919871613494,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003171086398029699
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "description": "Shortfall below 70/100 for whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": 0.05094889595523663,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0031705407636460625
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "description": "Ability to distinguish economically different channel ROIs.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.04686478410202871,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003164059068228663
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "description": "Interaction between time varying and new data.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.050254277042227645,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0030437767076671647
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "description": "Indicator for the ctv adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.03294401847846749,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0029650703268545406
+      },
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "description": "Indicator for the ctv adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03294401847848062,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0029650703268545176
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "description": "Performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.02738625226220589,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002945206973191472
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "description": "Shortfall below 70/100 for recovery of held-out experimental evidence.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.038091560744000594,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0029179953458886502
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "description": "Interaction between weibull and carryover.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.012148893612189187,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002889531079527076
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "description": "Interaction between temporal identification and the time varying / off specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.04774326204779154,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002860671211359011
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "description": "Interaction between temporal identification and the prior / half normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.045821707882549266,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002745535913815389
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "description": "Indicator for the time varying / on model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.043660644439942095,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002616049916414849
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "description": "Indicator for the time varying / off model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.043660645850629044,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0026160498318948274
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "description": "Agreement between observational data and external evidence.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.027468263874050335,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002589382612357138
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "description": "Interaction between temporal identification and the likelihood / gaussian specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.019692316925313574,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0023791771773755558
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "description": "Temporal-identification interaction for whole flight generalization.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.013945202201603616,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0023640997386026054
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "description": "Shortfall below 50/100 for whether future media spuriously explains current outcomes.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.00975038713653223,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002340446160819562
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "description": "Temporal-identification interaction for post flight residual stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.036918720011246825,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002216085036730198
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "description": "Shortfall below 50/100 for performance when complete media flights are held out.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02169902247386747,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0021933922464546004
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "description": "Indicator for the prior / log normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.021465479859958583,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0021499189499280635
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "description": "Indicator for the prior / half normal model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02146547985994149,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002149918949927527
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "description": "Indicator for the global adstock / geometric model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.003912440348274085,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0020689110793689854
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "description": "Indicator for the global adstock / weibull model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.003912440348267793,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0020689110793687265
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "description": "Temporal-identification interaction for new data stability.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0038865983428622727,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0019612306848312997
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "description": "Shortfall below 50/100 for stability of budget decisions under roi uncertainty.",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.009853907301648113,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0018651643265417128
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "description": "Interaction between benchmark and quality.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.025155312448791926,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.001859396187353429
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "description": "Stability of estimates as new observations arrive.",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.020861001268907615,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0018309045172125568
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "description": "Interaction between saturation and roi resolution.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0054603608624121695,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.001781953568960466
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "description": "Interaction between ridge and collinearity.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.014985267141542847,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0017713823691349198
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "description": "Interaction between temporal identification and the prior / log normal specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.026770392071154992,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.001769448228563579
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "description": "Whether media effects are separately identifiable under correlation.",
+        "group": "structure",
+        "meanCoefficient": -0.005489728441609697,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0014510087490207596
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "description": "Interaction between temporal identification and the evidence / benchmark gap fill specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.012674180290496707,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0012104081200949393
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "description": "Indicator for the evidence / experiments only model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.01242845296364931,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0011613407836986792
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "description": "Indicator for the evidence / benchmark gap fill model specification.",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.012428452963639319,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0011613407836985003
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "description": "Interaction between temporal identification and the evidence / experiments only specification.",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0023012272613895566,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0009579546987830344
+      },
+      {
+        "feature": "svi:convergence:adjudication-used",
+        "description": "Whether an additional fit was needed to resolve seed disagreement.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -0.004200563542704464,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00025471076830550836
+      },
+      {
+        "feature": "svi:convergence:elbo-stable",
+        "description": "Whether the variational objective stabilized.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.004200563542019345,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0002547107682679532
+      },
+      {
+        "feature": "svi:status:labelled",
+        "description": "Whether the posterior fit produced a usable economic-loss label.",
+        "group": "posterior-reliability",
+        "meanCoefficient": 0.004200563542019345,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0002547107682679532
+      },
+      {
+        "feature": "svi:convergence:finite",
+        "description": "Whether all posterior summaries are finite.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -1.1348639757650539e-8,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 6.799855236179221e-10
+      },
+      {
+        "feature": "svi:convergence:seed-agreement",
+        "description": "Whether independent SVI seeds agree on channel ROI.",
+        "group": "posterior-reliability",
+        "meanCoefficient": -1.1348639757650539e-8,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 6.799855236179221e-10
+      }
+    ]
+  },
+  "top50RiskFeatures": [
+    {
+      "rank": 1,
+      "feature": "svi:roi:log-center:paid-social",
+      "description": "Log posterior ROI center for paid social.",
+      "group": "posterior-roi",
+      "meanCoefficient": -1.2315445857670269,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.07379144178464775
+    },
+    {
+      "rank": 2,
+      "feature": "svi:roi:log-center:mean",
+      "description": "Mean log posterior ROI center across modeled channels.",
+      "group": "posterior-roi",
+      "meanCoefficient": -0.5710725834773231,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.034217412658454106
+    },
+    {
+      "rank": 3,
+      "feature": "svi:roi:log-center:minimum",
+      "description": "Lowest channel log posterior ROI center.",
+      "group": "posterior-roi",
+      "meanCoefficient": -0.5363254705876005,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.03213544210893508
+    },
+    {
+      "rank": 4,
+      "feature": "svi:roi:log-center:maximum",
+      "description": "Highest channel log posterior ROI center.",
+      "group": "posterior-roi",
+      "meanCoefficient": -0.5234712292704784,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.031365244252681695
+    },
+    {
+      "rank": 5,
+      "feature": "interaction:saturation:spend-regimes",
+      "description": "Interaction between saturation and spend regimes.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.4988012301563794,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.029887072187704002
+    },
+    {
+      "rank": 6,
+      "feature": "svi:convergence:seed-log-roi-difference",
+      "description": "Largest cross-seed difference in log ROI.",
+      "group": "posterior-reliability",
+      "meanCoefficient": 0.4547908854879106,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.02725006917209418
+    },
+    {
+      "rank": 7,
+      "feature": "diagnostic:functional-form",
+      "description": "Adequacy of the response-curve and baseline functional form.",
+      "group": "structure",
+      "meanCoefficient": 0.38592779314194026,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.02312394419969325
+    },
+    {
+      "rank": 8,
+      "feature": "diagnostic:spend-regimes",
+      "description": "Generalization across low- and high-spend periods.",
+      "group": "generalization",
+      "meanCoefficient": -0.35642753407275796,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.02135635358633368
+    },
+    {
+      "rank": 9,
+      "feature": "diagnostic:kernel-distinguishability",
+      "description": "Ability to distinguish competing carryover kernels.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.31515345050758986,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.01888330131537843
+    },
+    {
+      "rank": 10,
+      "feature": "context:temporal:kernel-distinguishability",
+      "description": "Temporal-identification interaction for kernel distinguishability.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.2874726294317339,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.01722472742322973
+    },
+    {
+      "rank": 11,
+      "feature": "svi:decision:log-relative-roi-width",
+      "description": "Log-scaled largest ROI interval width relative to its center.",
+      "group": "posterior-decision-safety",
+      "meanCoefficient": 0.2528372928400967,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.015149454263548155
+    },
+    {
+      "rank": 12,
+      "feature": "diagnostic:residual-independence",
+      "description": "Absence of systematic time or regressor patterns in residuals.",
+      "group": "structure",
+      "meanCoefficient": -0.24546506577103036,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.01470772663884231
+    },
+    {
+      "rank": 13,
+      "feature": "svi:roi:log-center:range",
+      "description": "Range between highest and lowest channel log posterior ROI centers.",
+      "group": "posterior-roi",
+      "meanCoefficient": 0.2445960772411359,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.01465565875818552
+    },
+    {
+      "rank": 14,
+      "feature": "svi:roi:log-center:standard-deviation",
+      "description": "Dispersion of log posterior ROI centers across channels.",
+      "group": "posterior-roi",
+      "meanCoefficient": 0.23705028412837592,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.014203531438042717
+    },
+    {
+      "rank": 15,
+      "feature": "svi:margin:roi-precision",
+      "description": "Distance inside or outside the posterior ROI precision gate.",
+      "group": "posterior-decision-safety",
+      "meanCoefficient": -0.2337983688092692,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.014008683827382308
+    },
+    {
+      "rank": 16,
+      "feature": "spec:likelihood:log-normal",
+      "description": "Indicator for the likelihood / log normal model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.21081842858767583,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.012631776372569969
+    },
+    {
+      "rank": 17,
+      "feature": "diagnostic:roi-economic-consistency",
+      "description": "Consistency between ROI estimates and marginal-return economics.",
+      "group": "decision-coherence",
+      "meanCoefficient": -0.21052480978576957,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.012614183380015624
+    },
+    {
+      "rank": 18,
+      "feature": "spec:likelihood:student-t",
+      "description": "Indicator for the likelihood / student t model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.2057605615880677,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.012328720110888933
+    },
+    {
+      "rank": 19,
+      "feature": "context:temporal:spec:likelihood:log-normal",
+      "description": "Interaction between temporal identification and the likelihood / log normal specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.19678324337702985,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.011790818956673332
+    },
+    {
+      "rank": 20,
+      "feature": "deficit:carryover-support:50",
+      "description": "Shortfall below 50/100 for data support for the estimated persistence of media effects.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.19237101838870896,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.011526448143688377
+    },
+    {
+      "rank": 21,
+      "feature": "svi:roi:log-center:nonbrand-search",
+      "description": "Log posterior ROI center for non-brand search.",
+      "group": "posterior-roi",
+      "meanCoefficient": 0.19144291310671147,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.011470838117321457
+    },
+    {
+      "rank": 22,
+      "feature": "interaction:planning:confounder",
+      "description": "Interaction between planning and confounder.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.16841115630847925,
+      "signStability": 0.9,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.010853041573311505
+    },
+    {
+      "rank": 23,
+      "feature": "spec:planning:off",
+      "description": "Indicator for the planning / off model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.1756295235705987,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.010523334610864757
+    },
+    {
+      "rank": 24,
+      "feature": "spec:planning:on",
+      "description": "Indicator for the planning / on model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.17562952357057915,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.010523334610863586
+    },
+    {
+      "rank": 25,
+      "feature": "interaction:benchmark:compatibility",
+      "description": "Interaction between benchmark and compatibility.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.16719198638740668,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.010017775948145666
+    },
+    {
+      "rank": 26,
+      "feature": "spec:calibration:prior",
+      "description": "Indicator for the calibration / prior model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.16486958255765471,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.009878622620702916
+    },
+    {
+      "rank": 27,
+      "feature": "spec:calibration:likelihood",
+      "description": "Indicator for the calibration / likelihood model specification.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.16486958114699235,
+      "signStability": 0.75,
+      "direction": "raises-predicted-loss",
+      "importance": 0.00987862253617913
+    },
+    {
+      "rank": 28,
+      "feature": "context:temporal:spec:family:advanced",
+      "description": "Interaction between temporal identification and the family / advanced specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.16152501343026654,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.009678223397718485
+    },
+    {
+      "rank": 29,
+      "feature": "interaction:log-normal:shape",
+      "description": "Interaction between log normal and shape.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": -0.1554737955246489,
+      "signStability": 0.95,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.009491264620817591
+    },
+    {
+      "rank": 30,
+      "feature": "diagnostic:likelihood-shape",
+      "description": "Agreement between residual behavior and the selected likelihood.",
+      "group": "structure",
+      "meanCoefficient": 0.15634673057754217,
+      "signStability": 0.95,
+      "direction": "raises-predicted-loss",
+      "importance": 0.009460532115396027
+    },
+    {
+      "rank": 31,
+      "feature": "diagnostic:post-flight-residual-stability",
+      "description": "Residual behavior after campaigns stop.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.15714098330145732,
+      "signStability": 0.7,
+      "direction": "raises-predicted-loss",
+      "importance": 0.009457925337030933
+    },
+    {
+      "rank": 32,
+      "feature": "context:temporal:spec:planning:on",
+      "description": "Interaction between temporal identification and the planning / on specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.1502159383685003,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.009000608503622885
+    },
+    {
+      "rank": 33,
+      "feature": "context:temporal:spec:family:bayesian",
+      "description": "Interaction between temporal identification and the family / bayesian specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": -0.14593727792135933,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.008744240584060444
+    },
+    {
+      "rank": 34,
+      "feature": "deficit:carryover-support:70",
+      "description": "Shortfall below 70/100 for data support for the estimated persistence of media effects.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.14388148704380332,
+      "signStability": 0.9,
+      "direction": "raises-predicted-loss",
+      "importance": 0.008721237235112934
+    },
+    {
+      "rank": 35,
+      "feature": "svi:convergence:log-elbo-drift",
+      "description": "Log-scaled remaining drift in the variational objective.",
+      "group": "posterior-reliability",
+      "meanCoefficient": -0.11911646547162771,
+      "signStability": 0.8,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.008340643422789097
+    },
+    {
+      "rank": 36,
+      "feature": "svi:decision:implausible-probability",
+      "description": "Largest posterior probability of an implausible channel ROI.",
+      "group": "posterior-decision-safety",
+      "meanCoefficient": 0.1336388909392806,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.008007348296504397
+    },
+    {
+      "rank": 37,
+      "feature": "svi:margin:roi-plausibility",
+      "description": "Distance inside or outside the posterior ROI plausibility gate.",
+      "group": "posterior-decision-safety",
+      "meanCoefficient": -0.13363889093927858,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.008007348296504275
+    },
+    {
+      "rank": 38,
+      "feature": "interaction:student-t:shape",
+      "description": "Interaction between student t and shape.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.12618939873835552,
+      "signStability": 0.9,
+      "direction": "raises-predicted-loss",
+      "importance": 0.007960056072739198
+    },
+    {
+      "rank": 39,
+      "feature": "context:temporal:spec:calibration:likelihood",
+      "description": "Interaction between temporal identification and the calibration / likelihood specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.13148788705181705,
+      "signStability": 0.75,
+      "direction": "raises-predicted-loss",
+      "importance": 0.007878464876468523
+    },
+    {
+      "rank": 40,
+      "feature": "interaction:benchmark:dependence",
+      "description": "Interaction between benchmark and dependence.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.12749886245451936,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.007639451299736592
+    },
+    {
+      "rank": 41,
+      "feature": "diagnostic:predictive-coverage",
+      "description": "How often predictive intervals cover observed outcomes.",
+      "group": "generalization",
+      "meanCoefficient": 0.11832849719784569,
+      "signStability": 0.9,
+      "direction": "raises-predicted-loss",
+      "importance": 0.0073364880173837225
+    },
+    {
+      "rank": 42,
+      "feature": "interaction:ctv-long:carryover",
+      "description": "Interaction between ctv long and carryover.",
+      "group": "model-specification-and-interactions",
+      "meanCoefficient": 0.1126729687972684,
+      "signStability": 0.9,
+      "direction": "raises-predicted-loss",
+      "importance": 0.007248032256796463
+    },
+    {
+      "rank": 43,
+      "feature": "context:temporal:spec:likelihood:student-t",
+      "description": "Interaction between temporal identification and the likelihood / student t specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": -0.12048071059431756,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.007218939082466476
+    },
+    {
+      "rank": 44,
+      "feature": "svi:roi:log-center:ctv",
+      "description": "Log posterior ROI center for connected TV.",
+      "group": "posterior-roi",
+      "meanCoefficient": -0.11521888742460965,
+      "signStability": 0.95,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.0069401490563966136
+    },
+    {
+      "rank": 45,
+      "feature": "context:temporal:spec:planning:off",
+      "description": "Interaction between temporal identification and the planning / off specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": -0.11429434164541215,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.0068482654670510915
+    },
+    {
+      "rank": 46,
+      "feature": "context:temporal:spec:ctv-adstock:weibull",
+      "description": "Interaction between temporal identification and the ctv adstock / weibull specification.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.10929152702515074,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.006548507822807557
+    },
+    {
+      "rank": 47,
+      "feature": "deficit:future-media-placebo:70",
+      "description": "Shortfall below 70/100 for whether future media spuriously explains current outcomes.",
+      "group": "causal-robustness",
+      "meanCoefficient": 0.1049856233184548,
+      "signStability": 1,
+      "direction": "raises-predicted-loss",
+      "importance": 0.006290507547076525
+    },
+    {
+      "rank": 48,
+      "feature": "diagnostic:confounder-sensitivity",
+      "description": "Sensitivity to plausible unobserved demand confounding.",
+      "group": "causal-robustness",
+      "meanCoefficient": -0.100974504780008,
+      "signStability": 0.9,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.0062569706138609444
+    },
+    {
+      "rank": 49,
+      "feature": "diagnostic:evidence-decision-dependence",
+      "description": "How much decisions depend on a particular evidence source.",
+      "group": "decision-coherence",
+      "meanCoefficient": -0.10395066678791334,
+      "signStability": 1,
+      "direction": "reduces-predicted-loss",
+      "importance": 0.006228495229003992
+    },
+    {
+      "rank": 50,
+      "feature": "diagnostic:carryover-support",
+      "description": "Data support for the estimated persistence of media effects.",
+      "group": "temporal-evidence",
+      "meanCoefficient": 0.1013954115585252,
+      "signStability": 0.95,
+      "direction": "raises-predicted-loss",
+      "importance": 0.006184580286043493
+    }
+  ]
+}

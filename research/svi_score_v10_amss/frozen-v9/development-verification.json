@@ -1,0 +1,17 @@
+{
+  "snapshotVersion": "flux-svi-score-v10-amss-v9-freeze-v1",
+  "selectorVersion": "flux-svi-score-v9.0.0-setwise-distributional-development",
+  "selectorArtifactId": "flux-svi-score-v9-development-selector-v1",
+  "selectorModel": "deepsets-balanced",
+  "ensembleMembers": 5,
+  "sourceModelSha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+  "developmentConclusion": {
+    "allDevelopmentChecksPassed": true,
+    "eligibleToFreezeForNewAudit": true,
+    "v8AuditReused": false,
+    "newSealedAuditRequired": true,
+    "productionActivationPermitted": false,
+    "sotaClaimPermitted": false
+  },
+  "sourceDevelopmentArtifactSha256": "10bf6b88f0df411a0cced06542f51e7dd7974211f86a9f9606a9c2138d4e0036"
+}

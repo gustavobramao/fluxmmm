@@ -1,0 +1,522 @@
+{
+  "artifactId": "flux-svi-score-v3-unbiased-design-pilot",
+  "version": "flux-svi-score-v3.1.0-unbiased-500-business-design",
+  "generatedAt": "2026-08-22T06:58:20.185Z",
+  "activation": "research-only",
+  "stage": "smoke",
+  "contract": {
+    "businesses": 500,
+    "candidatesPerBusiness": 48,
+    "targetSviFits": 24000,
+    "splits": {
+      "train": 300,
+      "validation": 120,
+      "audit": 80
+    },
+    "inference": {
+      "method": "fullrank-advi",
+      "iterations": 5000,
+      "draws": 128,
+      "primarySeeds": [
+        30071,
+        81119
+      ],
+      "adjudicationSeed": 190081,
+      "learningRate": 0.001,
+      "initialScale": 0.01,
+      "gradientNorm": 10,
+      "elboWindow": 250,
+      "maximumElboDrift": 0.05,
+      "maximumSeedLogRoiDifference": 0.25
+    },
+    "targetMcmcAuditFits": 96
+  },
+  "progress": {
+    "businessesStarted": 2,
+    "businessesComplete": 2,
+    "candidateAttempts": 4,
+    "labelled": 4,
+    "review": 0,
+    "errors": 0,
+    "completionShare": 0.00016666666666666666
+  },
+  "feasibility": {
+    "medianRuntimeSeconds": 40.59733724989928,
+    "p90RuntimeSeconds": 44.182104541920125,
+    "projectedSerialHours": 270.64891499932855,
+    "projectedEightWorkerHours": 33.83111437491607,
+    "observedFits": 4
+  },
+  "safeguards": [
+    "All 48 candidate/evidence contracts receive SVI; MAP score, gates, and hidden truth cannot shortlist the training labels.",
+    "MAP values are permitted only as numerical initializers and as comparison features.",
+    "Two independent full-rank fits are required; a third predeclared seed adjudicates unstable ELBO or ROI agreement.",
+    "Finite review-labelled fits are retained rather than silently discarded, so approximation difficulty can be modeled instead of creating convergence-selection bias.",
+    "The gold NUTS audit is sampled independently within estimator-family and evidence-arm strata with recorded inclusion probabilities.",
+    "Businesses—not candidate rows—define train, mechanism-held-out validation, and sealed audit splits."
+  ],
+  "goldAuditSelection": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "businessInclusionProbability": 6,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 6,
+      "stratum": "bayesian:experiments-only"
+    },
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "businessInclusionProbability": 6,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 6,
+      "stratum": "advanced:experiments-only"
+    },
+    {
+      "businessId": "search-demand-harvesting-12001",
+      "family": "search-demand-harvesting",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "businessInclusionProbability": 6,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 6,
+      "stratum": "bayesian:experiments-only"
+    },
+    {
+      "businessId": "search-demand-harvesting-12001",
+      "family": "search-demand-harvesting",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "businessInclusionProbability": 6,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 6,
+      "stratum": "advanced:experiments-only"
+    }
+  ],
+  "records": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 1,
+      "layerScores": {
+        "generalization": 84.30621285307545,
+        "structure": 75.68717378948794,
+        "causal": 70.94975496030841,
+        "decision": 59.82750258582091
+      },
+      "diagnostics": {
+        "rolling-oos": 85.64018572921157,
+        "predictive-coverage": 94,
+        "fold-stability": 76.28142177017502,
+        "spend-regimes": 77.35994839165096,
+        "residual-independence": 36.37765356974925,
+        "variance-structure": 64.37077410666356,
+        "likelihood-shape": 89.1452029750936,
+        "multicollinearity": 96.95399589046612,
+        "functional-form": 90.9912179393587,
+        "influence-stability": 92.4951409688417,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 79.45234276432029,
+        "new-data-stability": 54.60590250252645,
+        "confounder-sensitivity": 64.46850323005383,
+        "future-media-placebo": 80.87007697707698,
+        "roi-posterior-plausibility": 63.928493888802805,
+        "roi-decision-stability": 44.64984031733129,
+        "roi-resolution": 55.18853972105029,
+        "roi-identification": 100,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 69.26651444504384,
+      "decisionLoss": 0.48278937550520906,
+      "cappedRegret": 0.2611276792931495,
+      "roiError": 0.5638692951018492,
+      "contributionError": 0.3424565896114185,
+      "status": "labelled",
+      "inferenceFingerprint": "8293179936420ec8872695dc8c2bb0ab5c2de21986dae1077774993a868d044f",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 128,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.4757266149983175,
+      "sviProfitRegret": 0.2510380214261616,
+      "sviRoiError": 0.6343734617468914,
+      "sviContributionError": 0.45078914519849267,
+      "mapToSviLossShift": -0.0070627605068915855,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 2.561553323821533,
+        "google_search_nonbrand_spend": 0.4883423761512269,
+        "ctv_spend": 0.45395187526705516
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": true,
+        "maximumElboDrift": 0.00014493672394536248,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.010298358210123482,
+        "adjudicationUsed": false,
+        "predictiveCoverage": 0.9615384615384616,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.6880562453830219
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 5000,
+          "finalLoss": 140.02140165440375,
+          "elboDrift": 0.000007817372011075245,
+          "finite": true,
+          "runtimeSeconds": 6.941739000030793
+        },
+        {
+          "seed": 81119,
+          "iterations": 5000,
+          "finalLoss": 140.0528821284176,
+          "elboDrift": 0.00014493672394536248,
+          "finite": true,
+          "runtimeSeconds": 6.232221749960445
+        }
+      ],
+      "runtimeSeconds": 13.585144374985248
+    },
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 1,
+      "layerScores": {
+        "generalization": 84.5256200539,
+        "structure": 79.75054776295407,
+        "causal": 82.29012989530924,
+        "decision": 73.44155211459547
+      },
+      "diagnostics": {
+        "rolling-oos": 86.92928090539365,
+        "predictive-coverage": 89.00000000000001,
+        "fold-stability": 75.69529511136716,
+        "spend-regimes": 80.15165654134456,
+        "residual-independence": 52.579342126989964,
+        "variance-structure": 67.97164439549746,
+        "likelihood-shape": 86.0632944339305,
+        "multicollinearity": 96.95399589046612,
+        "functional-form": 89.30725168419832,
+        "influence-stability": 92.62681329647194,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 76.95976087731918,
+        "new-data-stability": 90.5742448455541,
+        "confounder-sensitivity": 89.40953535510818,
+        "future-media-placebo": 73.59328490995792,
+        "roi-posterior-plausibility": 63.928493888802805,
+        "roi-decision-stability": 71.19369993963289,
+        "roi-resolution": 100,
+        "roi-identification": 61.45619766203411,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 78.68127699561757,
+      "decisionLoss": 0.49658061671508913,
+      "cappedRegret": 0.28082945245012103,
+      "roiError": 1.3628905478555884,
+      "contributionError": 0.377713950012802,
+      "status": "labelled",
+      "inferenceFingerprint": "90171bd75bbbb4d431a5950d09e66b66269acd8f2a43353e7bbf22e1681eadd0",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 128,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.4757266149983175,
+      "sviProfitRegret": 0.2510380214261616,
+      "sviRoiError": 0.9185622448350401,
+      "sviContributionError": 0.3531901572145567,
+      "mapToSviLossShift": -0.020854001716771653,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 3.5324918893280444,
+        "google_search_nonbrand_spend": 0.21367778492710085,
+        "ctv_spend": 0.25545569077956914
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": true,
+        "maximumElboDrift": 0.012420850923089208,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.007866253144265922,
+        "adjudicationUsed": false,
+        "predictiveCoverage": 0.967948717948718,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.542036403925975
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 5000,
+          "finalLoss": 143.93542192206374,
+          "elboDrift": 0.012420850923089208,
+          "finite": true,
+          "runtimeSeconds": 33.492769917007536
+        },
+        {
+          "seed": 81119,
+          "iterations": 5000,
+          "finalLoss": 144.82303903469705,
+          "elboDrift": 0.007418234238347052,
+          "finite": true,
+          "runtimeSeconds": 10.004923042026348
+        }
+      ],
+      "runtimeSeconds": 44.182104541920125
+    },
+    {
+      "businessId": "search-demand-harvesting-12001",
+      "family": "search-demand-harvesting",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 3,
+      "layerScores": {
+        "generalization": 75.66011073767513,
+        "structure": 66.96144080455058,
+        "causal": 66.10506153473183,
+        "decision": 28.847027381968072
+      },
+      "diagnostics": {
+        "rolling-oos": 84.14205903424806,
+        "predictive-coverage": 76.69230769230771,
+        "fold-stability": 54.90266708809627,
+        "spend-regimes": 67.86982369996929,
+        "residual-independence": 18.068429002030683,
+        "variance-structure": 70.96586938698736,
+        "likelihood-shape": 98.4178635482205,
+        "multicollinearity": 100,
+        "functional-form": 42.673335167430736,
+        "influence-stability": 99.28519810244505,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 85.62457120864921,
+        "new-data-stability": 59.899991263499516,
+        "confounder-sensitivity": 66.79240170546,
+        "future-media-placebo": 21.1808958147149,
+        "roi-posterior-plausibility": 4.510606096310541,
+        "roi-decision-stability": 65.50766234153207,
+        "roi-resolution": 98.29660946447578,
+        "roi-identification": 82.52025880667817,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 48.83668966521348,
+      "decisionLoss": 0.463844547048948,
+      "cappedRegret": 0.4096055981460034,
+      "roiError": 0.8051383072840134,
+      "contributionError": 0.8962524036941901,
+      "status": "labelled",
+      "inferenceFingerprint": "8eed2814247dd07cc9dae3563dccca5e7917eb1da31ff89823ad2058c136454d",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 128,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.6193112453576197,
+      "sviProfitRegret": 0.4191648868526228,
+      "sviRoiError": 0.6044383602982693,
+      "sviContributionError": 0.5582287767171673,
+      "mapToSviLossShift": 0.1554666983086717,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 1.1857101472811633,
+        "google_search_nonbrand_spend": 1.0077909724566423,
+        "ctv_spend": 1.5532598056118676
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": true,
+        "maximumElboDrift": 0.0006345308109257105,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.01232012909626301,
+        "adjudicationUsed": false,
+        "predictiveCoverage": 0.9375,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.7356879983220618
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 5000,
+          "finalLoss": 249.21321380424848,
+          "elboDrift": 0.000197766722165479,
+          "finite": true,
+          "runtimeSeconds": 25.085535958060063
+        },
+        {
+          "seed": 81119,
+          "iterations": 5000,
+          "finalLoss": 249.50686715871637,
+          "elboDrift": 0.0006345308109257105,
+          "finite": true,
+          "runtimeSeconds": 7.213592584012076
+        }
+      ],
+      "runtimeSeconds": 32.650464250007644
+    },
+    {
+      "businessId": "search-demand-harvesting-12001",
+      "family": "search-demand-harvesting",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 3,
+      "layerScores": {
+        "generalization": 72.55212559286845,
+        "structure": 64.87494378767275,
+        "causal": 66.08724161264182,
+        "decision": 28.682969658485263
+      },
+      "diagnostics": {
+        "rolling-oos": 83.17446514117808,
+        "predictive-coverage": 72.07692307692308,
+        "fold-stability": 50.468652569164455,
+        "spend-regimes": 62.64546562814904,
+        "residual-independence": 13.045018647716716,
+        "variance-structure": 72.87665966940588,
+        "likelihood-shape": 97.62442956978106,
+        "multicollinearity": 100,
+        "functional-form": 35.89783033453085,
+        "influence-stability": 99.21338748656517,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 81.7027316606809,
+        "new-data-stability": 62.49225214652476,
+        "confounder-sensitivity": 74.14979204983258,
+        "future-media-placebo": 15.80167004404241,
+        "roi-posterior-plausibility": 4.5319332854820855,
+        "roi-decision-stability": 62.19336111665075,
+        "roi-resolution": 100,
+        "roi-identification": 78.99082085024546,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 48.08621889590838,
+      "decisionLoss": 0.04417960706445961,
+      "cappedRegret": 0.02851038694783207,
+      "roiError": 0.6632882259940082,
+      "contributionError": 0.6826232563213221,
+      "status": "labelled",
+      "inferenceFingerprint": "8542fd570d85f2293358d405ed9841a5cc959c66a2a2c0f9f7a78fd277d6501d",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 128,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 3.1811503483103056,
+      "sviProfitRegret": 0.75,
+      "sviRoiError": 1.0267138479901057,
+      "sviContributionError": 1.1764631496947118,
+      "mapToSviLossShift": 3.136970741245846,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 0.9679842023722034,
+        "google_search_nonbrand_spend": 1.7887664954696931,
+        "ctv_spend": 1.1850590690760718
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": true,
+        "maximumElboDrift": 0.006919388147552682,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.01554315428506503,
+        "adjudicationUsed": false,
+        "predictiveCoverage": 0.9615384615384616,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.8759293154683891
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 5000,
+          "finalLoss": 250.53697870785865,
+          "elboDrift": 0.006919388147552682,
+          "finite": true,
+          "runtimeSeconds": 29.76511312497314
+        },
+        {
+          "seed": 81119,
+          "iterations": 5000,
+          "finalLoss": 250.6055165162828,
+          "elboDrift": 0.004276301198212021,
+          "finite": true,
+          "runtimeSeconds": 10.303131415974349
+        }
+      ],
+      "runtimeSeconds": 40.59733724989928
+    }
+  ]
+}

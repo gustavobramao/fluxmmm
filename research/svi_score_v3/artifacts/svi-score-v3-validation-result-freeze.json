@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "flux-svi-score-v3-validation-result-freeze-v1",
+  "frozenAt": "2026-09-01T21:38:52.396Z",
+  "protocolId": "flux-svi-score-v3-validation-v2-powered-screen",
+  "resultPath": "research/svi_score_v3/artifacts/svi-score-v3-validation-result.json",
+  "resultSha256": "91b51be762514dd75ca2078553b7cab204c5396c3319b33b3ae7445a11559e19",
+  "status": "did-not-pass",
+  "auditAccessed": false,
+  "sourceHashes": {
+    "checkpointSha256": "5ae790280f1f8356abd5fc38ba37961cc8276d38f5449c3c1a1066d62a35cfe1",
+    "featureSha256": "b8fa848cb7eae11e19c174f17d9a3f0f2cb57cd62e0e71ac9cafbad290a7f9a4",
+    "challengerSha256": "4a86efcdc2c9cff5ff1a449aa9aa87197b1178fdb981d33d48475cb97efcf2f6",
+    "comparatorSha256": "a1cd2709d643ed6c296244188f6fc6023b63cf9e46ba49baa080c75a525d1c1c",
+    "protocolFreezeSha256": "58b9b519f88e074ce6e2a3752846ea256a604b6a20c39e9f3d51b417ea3b28e1"
+  }
+}

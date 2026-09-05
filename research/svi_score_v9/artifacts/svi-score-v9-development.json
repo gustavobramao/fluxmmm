@@ -1,0 +1,1084 @@
+{
+  "artifactId": "flux-svi-score-v9-setwise-distributional-development-v1",
+  "version": "flux-svi-score-v9.0.0-setwise-distributional-development",
+  "generatedAt": "2026-09-04T08:32:00Z",
+  "activation": "development-only",
+  "stage": "nested-grouped-development-complete",
+  "contract": {
+    "purpose": "select one MMM candidate by learning the joint candidate set and the distribution of downstream economic loss",
+    "inference": {
+      "engine": "PyMC 6.2 FullRankADVI",
+      "contract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 256,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "mapPosteriorTokensPermitted": false,
+      "nutsPermittedInResearch": false
+    },
+    "cohort": {
+      "developmentBusinesses": 420,
+      "candidatesPerBusiness": 48,
+      "developmentRows": 20160,
+      "outerBusinessFolds": 5,
+      "innerBusinessFolds": 4,
+      "v8SealedAuditPermitted": false,
+      "newSealedAuditRequiredAfterDevelopment": true
+    },
+    "tokens": {
+      "baseCount": 136,
+      "posteriorDecisionCount": 96,
+      "count": 232,
+      "channelOrderInvariant": true,
+      "candidateOrderInvariant": true,
+      "hiddenTruthPermitted": false,
+      "forbidden": [
+        "business-id",
+        "generator-family",
+        "split-label",
+        "candidate-id",
+        "proposal-method",
+        "search-phase",
+        "synthetic-truth",
+        "decision-loss",
+        "scenario-decision-loss",
+        "roi-truth-error",
+        "contribution-truth-error"
+      ]
+    },
+    "targets": {
+      "scenarios": [
+        "budget-reduction",
+        "fixed-budget-mix",
+        "budget-growth",
+        "economic-ceiling"
+      ],
+      "heads": [
+        "mean-decision-loss",
+        "median-decision-loss",
+        "p90-decision-loss",
+        "p95-decision-loss",
+        "cvar90-decision-loss",
+        "budget-reduction-decision-loss",
+        "fixed-budget-mix-decision-loss",
+        "budget-growth-decision-loss",
+        "economic-ceiling-decision-loss",
+        "dangerous-false-champion-probability"
+      ],
+      "dangerousThreshold": 1,
+      "economicScale": 1
+    },
+    "model": {
+      "family": "small permutation-invariant DeepSets multi-head selector",
+      "candidateEncoder": "shared nonlinear encoder",
+      "businessContext": "mean-pooled candidate embedding",
+      "decoderInputs": "candidate, context, difference, and interaction embeddings",
+      "directSelectionObjective": "softmax expected capped normalized regret over all 48 candidates",
+      "theoremRegularizer": "all oracle-versus-candidate exact regret-weighted logistic comparisons"
+    },
+    "evaluation": {
+      "groupedNestedCrossValidation": true,
+      "leaveOneGeneratorFamilyOut": true,
+      "riskCoverageRange": [
+        0.6,
+        1
+      ],
+      "riskCoverageStep": 0.05,
+      "operationalCoverage": 0.7,
+      "comparators": [
+        "V8 cross-fitted selector",
+        "V5D-SVI"
+      ],
+      "requiredEndpoints": [
+        "100%-coverage mean, P90, and P95 promoted excess loss",
+        "matched-coverage mean, P90, and P95 promoted excess loss",
+        "area under the 60%-to-100% selective-risk curve",
+        "dangerous false-champion share",
+        "oracle recall",
+        "theorem violations"
+      ]
+    },
+    "governance": {
+      "activation": "development-only",
+      "v8AuditDereferenced": false,
+      "productionActivationPermitted": false,
+      "sotaClaimPermitted": false
+    }
+  },
+  "provenance": {
+    "datasetSha256": "d90493a7bd024ace4b05d8373264953e303c28e0c9a1ddad9f58e38f533b1b22",
+    "v8PredictionsSha256": "079161bf9bcd9db4e3929859ef8734d7d00b83fd6adcba36fe45116b7d45cb7d",
+    "v8DevelopmentSha256": "f80ffa81f3f02afcd0cc3aeeafcbd83d38103d8177e1cdfbe6b29de0689dc39c",
+    "predictionsSha256": "f6d566986ad24dabd0527626d35fa59fee5208f4bc16d94cf31adfa3e695f06b",
+    "modelSha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+    "python": "3.14.6",
+    "numpy": "2.4.6",
+    "v8AuditDereferenced": false,
+    "nutsUsed": false
+  },
+  "nestedCrossValidation": {
+    "outerFolds": 5,
+    "innerFoldsPerOuter": 4,
+    "modelGrid": [
+      {
+        "id": "deepsets-compact",
+        "candidate_width": 12,
+        "decoder_width": 12,
+        "epochs": 16,
+        "learning_rate": 0.0025,
+        "weight_decay": 0.001,
+        "temperature": 0.35
+      },
+      {
+        "id": "deepsets-balanced",
+        "candidate_width": 20,
+        "decoder_width": 16,
+        "epochs": 20,
+        "learning_rate": 0.002,
+        "weight_decay": 0.001,
+        "temperature": 0.35
+      }
+    ],
+    "policyGrid": [
+      {
+        "danger_penalty": 0.0,
+        "uncertainty_penalty": 0.25
+      },
+      {
+        "danger_penalty": 0.25,
+        "uncertainty_penalty": 0.25
+      },
+      {
+        "danger_penalty": 0.5,
+        "uncertainty_penalty": 0.25
+      }
+    ],
+    "outerReceipts": [
+      {
+        "fold": 0,
+        "selectedModel": "deepsets-balanced",
+        "selectedPolicy": "danger-0-uncertainty-0.25",
+        "innerObjective": 1.8249559915944362,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.4348706422674216,
+          "medianPromotedExcessLoss": 0.5221704998192596,
+          "p90PromotedExcessLoss": 3.984483519740937,
+          "p95PromotedExcessLoss": 6.288088680324846,
+          "meanNormalizedExcessLoss": 0.5286119644541997,
+          "selectionObjective": 2.327235149383152,
+          "dangerousFalseChampionShare": 0.3333333333333333,
+          "oracleRecall": 0.14285714285714285,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "assessmentAt70Percent": {
+          "businesses": 59,
+          "meanPromotedExcessLoss": 1.2504551350872581,
+          "medianPromotedExcessLoss": 0.3341263418489121,
+          "p90PromotedExcessLoss": 3.9735698036390223,
+          "p95PromotedExcessLoss": 6.24611511613107,
+          "meanNormalizedExcessLoss": 0.46781123841343175,
+          "selectionObjective": 2.2035452690803754,
+          "dangerousFalseChampionShare": 0.288135593220339,
+          "oracleRecall": 0.1864406779661017,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7,
+          "promotionCoverage": 0.7023809523809523
+        },
+        "candidateConfigurations": [
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.188215823197085
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.291235291325277
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.2360183365759747
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.8249559915944362
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.8358353528556726
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.8340205521293815
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.2049473306941507,
+            "finalBatchTheoremSurrogateLoss": 1.0100436723485358,
+            "seconds": 2.449244976043701
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.28918033476868593,
+            "finalBatchTheoremSurrogateLoss": 1.0391377628645257,
+            "seconds": 2.4452619552612305
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3764334367493962,
+            "finalBatchTheoremSurrogateLoss": 1.1149232227679542,
+            "seconds": 2.4413061141967773
+          }
+        ]
+      },
+      {
+        "fold": 1,
+        "selectedModel": "deepsets-compact",
+        "selectedPolicy": "danger-0.25-uncertainty-0.25",
+        "innerObjective": 2.0050087230903504,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.3363216611697246,
+          "medianPromotedExcessLoss": 0.46928044577530126,
+          "p90PromotedExcessLoss": 3.538539247981946,
+          "p95PromotedExcessLoss": 6.594575337616968,
+          "meanNormalizedExcessLoss": 0.5281253966884325,
+          "selectionObjective": 2.1070978165540017,
+          "dangerousFalseChampionShare": 0.32142857142857145,
+          "oracleRecall": 0.11904761904761904,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "assessmentAt70Percent": {
+          "businesses": 59,
+          "meanPromotedExcessLoss": 1.348090894005112,
+          "medianPromotedExcessLoss": 0.3856498400320246,
+          "p90PromotedExcessLoss": 4.043626077981485,
+          "p95PromotedExcessLoss": 7.81997905261705,
+          "meanNormalizedExcessLoss": 0.48359870766878044,
+          "selectionObjective": 2.2915282083968425,
+          "dangerousFalseChampionShare": 0.288135593220339,
+          "oracleRecall": 0.11864406779661017,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7,
+          "promotionCoverage": 0.7023809523809523
+        },
+        "candidateConfigurations": [
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.027654013877938
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.0050087230903504
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.0082200842654996
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.2603627083486435
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.225814243148491
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.135719792457186
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 16,
+            "finalBatchDirectSelectionLoss": 0.36640948432003834,
+            "finalBatchTheoremSurrogateLoss": 1.4051818204332398,
+            "seconds": 1.7769749164581299
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 16,
+            "finalBatchDirectSelectionLoss": 0.4274598576329378,
+            "finalBatchTheoremSurrogateLoss": 1.4980310461634214,
+            "seconds": 1.8237228393554688
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 16,
+            "finalBatchDirectSelectionLoss": 0.36619577842504286,
+            "finalBatchTheoremSurrogateLoss": 1.4440690140357986,
+            "seconds": 1.7329537868499756
+          }
+        ]
+      },
+      {
+        "fold": 2,
+        "selectedModel": "deepsets-balanced",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 2.174509015885546,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.5732631367699512,
+          "medianPromotedExcessLoss": 0.4163154210193787,
+          "p90PromotedExcessLoss": 2.382558929764531,
+          "p95PromotedExcessLoss": 4.529408811789285,
+          "meanNormalizedExcessLoss": 0.4938905604267525,
+          "selectionObjective": 1.8565166643180544,
+          "dangerousFalseChampionShare": 0.2976190476190476,
+          "oracleRecall": 0.07142857142857142,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "assessmentAt70Percent": {
+          "businesses": 59,
+          "meanPromotedExcessLoss": 1.287891507161195,
+          "medianPromotedExcessLoss": 0.3196978389991178,
+          "p90PromotedExcessLoss": 2.1428006809537896,
+          "p95PromotedExcessLoss": 2.5892947006415925,
+          "meanNormalizedExcessLoss": 0.45656714384469954,
+          "selectionObjective": 1.5871097179886031,
+          "dangerousFalseChampionShare": 0.2711864406779661,
+          "oracleRecall": 0.05084745762711865,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7,
+          "promotionCoverage": 0.7023809523809523
+        },
+        "candidateConfigurations": [
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.267132129871335
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.199000648683204
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.302269610871778
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.211532678722274
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.228423679038838
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.174509015885546
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3188746260531792,
+            "finalBatchTheoremSurrogateLoss": 1.1743190049597816,
+            "seconds": 2.4096901416778564
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.33755797270144694,
+            "finalBatchTheoremSurrogateLoss": 1.0585285879665427,
+            "seconds": 2.3070409297943115
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3697841288530149,
+            "finalBatchTheoremSurrogateLoss": 1.5793482095666942,
+            "seconds": 2.2591731548309326
+          }
+        ]
+      },
+      {
+        "fold": 3,
+        "selectedModel": "deepsets-balanced",
+        "selectedPolicy": "danger-0-uncertainty-0.25",
+        "innerObjective": 1.7937164089549364,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.4622372349155721,
+          "medianPromotedExcessLoss": 0.4275992109002461,
+          "p90PromotedExcessLoss": 3.5024045432295856,
+          "p95PromotedExcessLoss": 7.298515082587573,
+          "meanNormalizedExcessLoss": 0.514240069242241,
+          "selectionObjective": 2.176295792825477,
+          "dangerousFalseChampionShare": 0.3333333333333333,
+          "oracleRecall": 0.17857142857142858,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "assessmentAt70Percent": {
+          "businesses": 59,
+          "meanPromotedExcessLoss": 0.8864845796581027,
+          "medianPromotedExcessLoss": 0.4153085038497455,
+          "p90PromotedExcessLoss": 1.9689211426853213,
+          "p95PromotedExcessLoss": 3.2058114135868485,
+          "meanNormalizedExcessLoss": 0.4729691093184976,
+          "selectionObjective": 1.2653373767176292,
+          "dangerousFalseChampionShare": 0.2711864406779661,
+          "oracleRecall": 0.22033898305084745,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7,
+          "promotionCoverage": 0.7023809523809523
+        },
+        "candidateConfigurations": [
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.1024095872184665
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.1154542205151836
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.087011135867402
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.7937164089549364
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.8672380621117737
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.8729318699445732
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.28929384688314363,
+            "finalBatchTheoremSurrogateLoss": 1.209308259685994,
+            "seconds": 2.2668650150299072
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.34126607669542336,
+            "finalBatchTheoremSurrogateLoss": 1.1908112203454928,
+            "seconds": 2.2559099197387695
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.2993223631555609,
+            "finalBatchTheoremSurrogateLoss": 1.0444478150498793,
+            "seconds": 2.2544987201690674
+          }
+        ]
+      },
+      {
+        "fold": 4,
+        "selectedModel": "deepsets-balanced",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 2.1245391846638215,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.557113281665501,
+          "medianPromotedExcessLoss": 0.6009988702490157,
+          "p90PromotedExcessLoss": 3.594666218413009,
+          "p95PromotedExcessLoss": 8.870876610582497,
+          "meanNormalizedExcessLoss": 0.5429715198887968,
+          "selectionObjective": 2.2702568095271287,
+          "dangerousFalseChampionShare": 0.38095238095238093,
+          "oracleRecall": 0.17857142857142858,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "assessmentAt70Percent": {
+          "businesses": 59,
+          "meanPromotedExcessLoss": 1.3541933118737666,
+          "medianPromotedExcessLoss": 0.5662690458601736,
+          "p90PromotedExcessLoss": 2.7867945881119676,
+          "p95PromotedExcessLoss": 5.8041966038957,
+          "meanNormalizedExcessLoss": 0.522494659848141,
+          "selectionObjective": 1.855603758557137,
+          "dangerousFalseChampionShare": 0.3728813559322034,
+          "oracleRecall": 0.2033898305084746,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7,
+          "promotionCoverage": 0.7023809523809523
+        },
+        "candidateConfigurations": [
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.666829511414753
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.7451871799489327
+          },
+          {
+            "model": "deepsets-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.6896799311575217
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.2034842923374938
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.153540748238688
+          },
+          {
+            "model": "deepsets-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.1245391846638215
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3333070444983003,
+            "finalBatchTheoremSurrogateLoss": 1.1420403587631756,
+            "seconds": 2.31538987159729
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3429817033526853,
+            "finalBatchTheoremSurrogateLoss": 1.4106556018760124,
+            "seconds": 2.2649130821228027
+          },
+          {
+            "trainingBusinesses": 336,
+            "bootstrap": true,
+            "epochs": 20,
+            "finalBatchDirectSelectionLoss": 0.3539693398884445,
+            "finalBatchTheoremSurrogateLoss": 1.3533829226415839,
+            "seconds": 2.2871217727661133
+          }
+        ]
+      }
+    ]
+  },
+  "v9": {
+    "at100PercentCoverage": {
+      "businesses": 420,
+      "meanPromotedExcessLoss": 1.4727611913576342,
+      "medianPromotedExcessLoss": 0.476769328261379,
+      "p90PromotedExcessLoss": 3.630531015105533,
+      "p95PromotedExcessLoss": 6.727548925533684,
+      "meanNormalizedExcessLoss": 0.5215679021400846,
+      "selectionObjective": 2.227980629669399,
+      "dangerousFalseChampionShare": 0.3333333333333333,
+      "oracleRecall": 0.1380952380952381,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0
+    },
+    "atOperationalCoverage": {
+      "businesses": 294,
+      "meanPromotedExcessLoss": 1.2260051118006485,
+      "medianPromotedExcessLoss": 0.4000574903736187,
+      "p90PromotedExcessLoss": 2.620356220966221,
+      "p95PromotedExcessLoss": 6.216029260423631,
+      "meanNormalizedExcessLoss": 0.4804270393286934,
+      "selectionObjective": 1.7140280000085988,
+      "dangerousFalseChampionShare": 0.2925170068027211,
+      "oracleRecall": 0.15306122448979592,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0,
+      "requestedCoverage": 0.7,
+      "promotionCoverage": 0.7
+    },
+    "riskCoverageCurve": {
+      "range": [
+        0.6,
+        1.0
+      ],
+      "points": [
+        {
+          "businesses": 252,
+          "meanPromotedExcessLoss": 1.0306588711911384,
+          "medianPromotedExcessLoss": 0.3786348903940148,
+          "p90PromotedExcessLoss": 2.174365791401041,
+          "p95PromotedExcessLoss": 3.9065412751153703,
+          "meanNormalizedExcessLoss": 0.4651730526706192,
+          "selectionObjective": 1.4309562932646043,
+          "dangerousFalseChampionShare": 0.26587301587301587,
+          "oracleRecall": 0.15476190476190477,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.6,
+          "promotionCoverage": 0.6
+        },
+        {
+          "businesses": 273,
+          "meanPromotedExcessLoss": 1.0939781403361422,
+          "medianPromotedExcessLoss": 0.371619940756005,
+          "p90PromotedExcessLoss": 2.2210824985090976,
+          "p95PromotedExcessLoss": 4.537785973346521,
+          "meanNormalizedExcessLoss": 0.4674644359080193,
+          "selectionObjective": 1.4884646656966765,
+          "dangerousFalseChampionShare": 0.27472527472527475,
+          "oracleRecall": 0.1575091575091575,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.65,
+          "promotionCoverage": 0.65
+        },
+        {
+          "businesses": 294,
+          "meanPromotedExcessLoss": 1.2260051118006485,
+          "medianPromotedExcessLoss": 0.4000574903736187,
+          "p90PromotedExcessLoss": 2.620356220966221,
+          "p95PromotedExcessLoss": 6.216029260423631,
+          "meanNormalizedExcessLoss": 0.4804270393286934,
+          "selectionObjective": 1.7140280000085988,
+          "dangerousFalseChampionShare": 0.2925170068027211,
+          "oracleRecall": 0.15306122448979592,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7000000000000001,
+          "promotionCoverage": 0.7
+        },
+        {
+          "businesses": 315,
+          "meanPromotedExcessLoss": 1.2938447069290326,
+          "medianPromotedExcessLoss": 0.4069459215181214,
+          "p90PromotedExcessLoss": 2.895648683117797,
+          "p95PromotedExcessLoss": 6.315213878014937,
+          "meanNormalizedExcessLoss": 0.48597109969521457,
+          "selectionObjective": 1.8544760985951,
+          "dangerousFalseChampionShare": 0.2984126984126984,
+          "oracleRecall": 0.15555555555555556,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7500000000000001,
+          "promotionCoverage": 0.75
+        },
+        {
+          "businesses": 336,
+          "meanPromotedExcessLoss": 1.2980889893239524,
+          "medianPromotedExcessLoss": 0.41675589519985523,
+          "p90PromotedExcessLoss": 2.88999191491279,
+          "p95PromotedExcessLoss": 6.299373892083626,
+          "meanNormalizedExcessLoss": 0.4943835169431786,
+          "selectionObjective": 1.8552550132800456,
+          "dangerousFalseChampionShare": 0.30654761904761907,
+          "oracleRecall": 0.15476190476190477,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8000000000000002,
+          "promotionCoverage": 0.8
+        },
+        {
+          "businesses": 357,
+          "meanPromotedExcessLoss": 1.367096437221621,
+          "medianPromotedExcessLoss": 0.4317680037050795,
+          "p90PromotedExcessLoss": 3.109540243664026,
+          "p95PromotedExcessLoss": 6.653295670298378,
+          "meanNormalizedExcessLoss": 0.5004053274595642,
+          "selectionObjective": 1.9769517694764627,
+          "dangerousFalseChampionShare": 0.3137254901960784,
+          "oracleRecall": 0.1484593837535014,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8500000000000002,
+          "promotionCoverage": 0.85
+        },
+        {
+          "businesses": 378,
+          "meanPromotedExcessLoss": 1.4647190612663457,
+          "medianPromotedExcessLoss": 0.4739291233947922,
+          "p90PromotedExcessLoss": 3.5491344794016246,
+          "p95PromotedExcessLoss": 6.753193939369657,
+          "meanNormalizedExcessLoss": 0.515495731788984,
+          "selectionObjective": 2.194264457613693,
+          "dangerousFalseChampionShare": 0.3306878306878307,
+          "oracleRecall": 0.1402116402116402,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9000000000000002,
+          "promotionCoverage": 0.9
+        },
+        {
+          "businesses": 399,
+          "meanPromotedExcessLoss": 1.4484924779543198,
+          "medianPromotedExcessLoss": 0.47617900930056223,
+          "p90PromotedExcessLoss": 3.2369226825529016,
+          "p95PromotedExcessLoss": 6.645616826758709,
+          "meanNormalizedExcessLoss": 0.5210005597456185,
+          "selectionObjective": 2.0744430495638237,
+          "dangerousFalseChampionShare": 0.3358395989974937,
+          "oracleRecall": 0.13784461152882205,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9500000000000003,
+          "promotionCoverage": 0.95
+        },
+        {
+          "businesses": 420,
+          "meanPromotedExcessLoss": 1.4727611913576337,
+          "medianPromotedExcessLoss": 0.476769328261379,
+          "p90PromotedExcessLoss": 3.630531015105533,
+          "p95PromotedExcessLoss": 6.727548925533684,
+          "meanNormalizedExcessLoss": 0.5215679021400844,
+          "selectionObjective": 2.2279806296693985,
+          "dangerousFalseChampionShare": 0.3333333333333333,
+          "oracleRecall": 0.1380952380952381,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 1.0000000000000004,
+          "promotionCoverage": 1.0
+        }
+      ],
+      "areaUnderSelectionRisk": 1.8734189394626755,
+      "areaUnderMeanRisk": 1.305491869513306
+    }
+  },
+  "v8Comparator": {
+    "at100PercentCoverage": {
+      "businesses": 420,
+      "meanPromotedExcessLoss": 2.167873015530219,
+      "medianPromotedExcessLoss": 0.619802432214538,
+      "p90PromotedExcessLoss": 6.349186962845107,
+      "p95PromotedExcessLoss": 9.625040498826975,
+      "meanNormalizedExcessLoss": 0.5941479689703295,
+      "selectionObjective": 3.63133289709043,
+      "dangerousFalseChampionShare": 0.4238095238095238,
+      "oracleRecall": 0.10238095238095238,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0
+    },
+    "atOperationalCoverage": {
+      "businesses": 294,
+      "meanPromotedExcessLoss": 1.7745912308896217,
+      "medianPromotedExcessLoss": 0.5860567906093503,
+      "p90PromotedExcessLoss": 5.009788474596788,
+      "p95PromotedExcessLoss": 8.988592368663605,
+      "meanNormalizedExcessLoss": 0.5599715776316897,
+      "selectionObjective": 2.90691026618713,
+      "dangerousFalseChampionShare": 0.3741496598639456,
+      "oracleRecall": 0.10204081632653061,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0,
+      "requestedCoverage": 0.7,
+      "promotionCoverage": 0.7
+    },
+    "atNativeCoverage": {
+      "businesses": 288,
+      "meanPromotedExcessLoss": 1.796681323202372,
+      "medianPromotedExcessLoss": 0.5898881252784791,
+      "p90PromotedExcessLoss": 5.174606043358533,
+      "p95PromotedExcessLoss": 9.082948137135665,
+      "meanNormalizedExcessLoss": 0.5645098858131481,
+      "selectionObjective": 2.978954975257028,
+      "dangerousFalseChampionShare": 0.3784722222222222,
+      "oracleRecall": 0.10069444444444445,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0,
+      "requestedCoverage": 0.6857142857142857,
+      "promotionCoverage": 0.6857142857142857
+    },
+    "riskCoverageCurve": {
+      "range": [
+        0.6,
+        1.0
+      ],
+      "points": [
+        {
+          "businesses": 252,
+          "meanPromotedExcessLoss": 1.7838049349831147,
+          "medianPromotedExcessLoss": 0.5695696128486278,
+          "p90PromotedExcessLoss": 5.092296210998775,
+          "p95PromotedExcessLoss": 9.23624765209464,
+          "meanNormalizedExcessLoss": 0.5493017426556105,
+          "selectionObjective": 2.941776881588596,
+          "dangerousFalseChampionShare": 0.3611111111111111,
+          "oracleRecall": 0.10714285714285714,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.6,
+          "promotionCoverage": 0.6
+        },
+        {
+          "businesses": 273,
+          "meanPromotedExcessLoss": 1.7709627819848146,
+          "medianPromotedExcessLoss": 0.5826965271533824,
+          "p90PromotedExcessLoss": 5.051042342797787,
+          "p95PromotedExcessLoss": 9.004318330075618,
+          "meanNormalizedExcessLoss": 0.5589253967327743,
+          "selectionObjective": 2.9189906282693547,
+          "dangerousFalseChampionShare": 0.36996336996337,
+          "oracleRecall": 0.10256410256410256,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.65,
+          "promotionCoverage": 0.65
+        },
+        {
+          "businesses": 294,
+          "meanPromotedExcessLoss": 1.7745912308896217,
+          "medianPromotedExcessLoss": 0.5860567906093503,
+          "p90PromotedExcessLoss": 5.009788474596788,
+          "p95PromotedExcessLoss": 8.988592368663605,
+          "meanNormalizedExcessLoss": 0.5599715776316897,
+          "selectionObjective": 2.90691026618713,
+          "dangerousFalseChampionShare": 0.3741496598639456,
+          "oracleRecall": 0.10204081632653061,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7000000000000001,
+          "promotionCoverage": 0.7
+        },
+        {
+          "businesses": 315,
+          "meanPromotedExcessLoss": 1.9411261969993066,
+          "medianPromotedExcessLoss": 0.5924367980922283,
+          "p90PromotedExcessLoss": 5.353878295678223,
+          "p95PromotedExcessLoss": 9.415802988378907,
+          "meanNormalizedExcessLoss": 0.5683074051486313,
+          "selectionObjective": 3.1355894315369275,
+          "dangerousFalseChampionShare": 0.3873015873015873,
+          "oracleRecall": 0.09841269841269841,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7500000000000001,
+          "promotionCoverage": 0.75
+        },
+        {
+          "businesses": 336,
+          "meanPromotedExcessLoss": 2.0570925999009666,
+          "medianPromotedExcessLoss": 0.6003150303397585,
+          "p90PromotedExcessLoss": 5.814389226433466,
+          "p95PromotedExcessLoss": 9.64250619993683,
+          "meanNormalizedExcessLoss": 0.5780824263013462,
+          "selectionObjective": 3.3721464191873416,
+          "dangerousFalseChampionShare": 0.40476190476190477,
+          "oracleRecall": 0.09821428571428571,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8000000000000002,
+          "promotionCoverage": 0.8
+        },
+        {
+          "businesses": 357,
+          "meanPromotedExcessLoss": 2.071303371582219,
+          "medianPromotedExcessLoss": 0.6025007328701698,
+          "p90PromotedExcessLoss": 5.924687029091233,
+          "p95PromotedExcessLoss": 9.638139774659367,
+          "meanNormalizedExcessLoss": 0.5818777993680402,
+          "selectionObjective": 3.4199876517103736,
+          "dangerousFalseChampionShare": 0.4061624649859944,
+          "oracleRecall": 0.09803921568627451,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8500000000000002,
+          "promotionCoverage": 0.85
+        },
+        {
+          "businesses": 378,
+          "meanPromotedExcessLoss": 2.0968915639490207,
+          "medianPromotedExcessLoss": 0.6151329932000399,
+          "p90PromotedExcessLoss": 6.10570543742603,
+          "p95PromotedExcessLoss": 9.633773349381903,
+          "meanNormalizedExcessLoss": 0.58845229585982,
+          "selectionObjective": 3.499976419665974,
+          "dangerousFalseChampionShare": 0.4126984126984127,
+          "oracleRecall": 0.09788359788359788,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9000000000000002,
+          "promotionCoverage": 0.9
+        },
+        {
+          "businesses": 399,
+          "meanPromotedExcessLoss": 2.148381600876531,
+          "medianPromotedExcessLoss": 0.6190070092943136,
+          "p90PromotedExcessLoss": 6.2289897474549525,
+          "p95PromotedExcessLoss": 9.629406924104439,
+          "meanNormalizedExcessLoss": 0.5898851259772236,
+          "selectionObjective": 3.576594452178978,
+          "dangerousFalseChampionShare": 0.41854636591478694,
+          "oracleRecall": 0.10025062656641603,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9500000000000003,
+          "promotionCoverage": 0.95
+        },
+        {
+          "businesses": 420,
+          "meanPromotedExcessLoss": 2.167873015530219,
+          "medianPromotedExcessLoss": 0.619802432214538,
+          "p90PromotedExcessLoss": 6.349186962845107,
+          "p95PromotedExcessLoss": 9.625040498826975,
+          "meanNormalizedExcessLoss": 0.5941479689703295,
+          "selectionObjective": 3.63133289709043,
+          "dangerousFalseChampionShare": 0.4238095238095238,
+          "oracleRecall": 0.10238095238095238,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 1.0000000000000004,
+          "promotionCoverage": 1.0
+        }
+      ],
+      "areaUnderSelectionRisk": 3.2645937697594496,
+      "areaUnderMeanRisk": 1.9795235401798934
+    }
+  },
+  "matchedCoverage": {
+    "coverage": 0.6857142857142857,
+    "v9": {
+      "businesses": 288,
+      "meanPromotedExcessLoss": 1.226722696154201,
+      "medianPromotedExcessLoss": 0.4000574903736187,
+      "p90PromotedExcessLoss": 2.6139457721729005,
+      "p95PromotedExcessLoss": 6.217942199809841,
+      "meanNormalizedExcessLoss": 0.4799548051849839,
+      "selectionObjective": 1.7122507727607457,
+      "dangerousFalseChampionShare": 0.2916666666666667,
+      "oracleRecall": 0.15625,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0,
+      "requestedCoverage": 0.6857142857142857,
+      "promotionCoverage": 0.6857142857142857
+    },
+    "v8": {
+      "businesses": 288,
+      "meanPromotedExcessLoss": 1.796681323202372,
+      "medianPromotedExcessLoss": 0.5898881252784791,
+      "p90PromotedExcessLoss": 5.174606043358533,
+      "p95PromotedExcessLoss": 9.082948137135665,
+      "meanNormalizedExcessLoss": 0.5645098858131481,
+      "selectionObjective": 2.978954975257028,
+      "dangerousFalseChampionShare": 0.3784722222222222,
+      "oracleRecall": 0.10069444444444445,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0,
+      "requestedCoverage": 0.6857142857142857,
+      "promotionCoverage": 0.6857142857142857
+    }
+  },
+  "v5dSviComparatorAt100PercentCoverage": {
+    "businesses": 420,
+    "promotionCoverage": 1.0,
+    "meanPromotedExcessLoss": 2.008335024116155,
+    "medianPromotedExcessLoss": 0.8763572965934896,
+    "p90PromotedExcessLoss": 5.465651335463499,
+    "p95PromotedExcessLoss": 8.173371414647846,
+    "meanPolicyLoss": 2.008335024116155,
+    "p90PolicyLoss": 5.465651335463499,
+    "p95PolicyLoss": 8.173371414647846,
+    "selectionObjective": 3.2183957330877253,
+    "dangerousFalseChampionShare": 0.4738095238095238,
+    "oracleRecall": 0.03571428571428571,
+    "familyMeanPolicyLoss": {
+      "balanced-dtc": 2.0488445545876144,
+      "correlated-planning": 1.9638224066326735,
+      "delayed-tv": 2.0064129668869595,
+      "search-demand-harvesting": 1.3687882222994492,
+      "social-frequency-pressure": 2.635233100289008
+    },
+    "theoremViolations": null,
+    "maximumTheoremSlack": null,
+    "meanIndicatorBound": null,
+    "meanLogisticBound": null
+  },
+  "checks": {
+    "fullCoverageMeanImproved": true,
+    "fullCoverageP90NonInferior": true,
+    "fullCoverageP95NonInferior": true,
+    "matchedCoverageSelectionObjectiveImproved": true,
+    "selectiveRiskAreaImproved": true,
+    "dangerousFalseChampionImprovedAtOperationalCoverage": true,
+    "minimumOperationalCoverage": true,
+    "theoremVerified": true,
+    "v8AuditUntouched": true,
+    "nutsExcluded": true
+  },
+  "conclusion": {
+    "allDevelopmentChecksPassed": true,
+    "eligibleToFreezeForNewAudit": true,
+    "v8AuditReused": false,
+    "newSealedAuditRequired": true,
+    "productionActivationPermitted": false,
+    "sotaClaimPermitted": false
+  },
+  "developmentSelector": {
+    "model": "deepsets-balanced",
+    "policy": "danger-0-uncertainty-0.25",
+    "outerSelectionFrequency": {
+      "deepsets-balanced/danger-0-uncertainty-0.25": 2,
+      "deepsets-compact/danger-0.25-uncertainty-0.25": 1,
+      "deepsets-balanced/danger-0.5-uncertainty-0.25": 2
+    },
+    "path": ".flux-artifacts/svi-score-v9/development-selector.json"
+  },
+  "runtimeSeconds": 117.39161109924316
+}

@@ -196,6 +196,18 @@ export interface NumericalStabilityDiagnostics {
     source: "none" | "experiment" | "industry" | "regularizing";
     sourceLabel?: string;
   }[];
+  evidenceAttribution?: {
+    channel: string;
+    uncertaintyShare: {
+      observational: number;
+      experiment: number;
+      benchmark: number;
+      regularization: number;
+    };
+    conditionalDataInformation: number;
+    conditionalDataShare: number;
+    attributionResidual: number;
+  }[];
   clipping: {
     applied: boolean;
     material: boolean;

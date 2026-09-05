@@ -1,0 +1,336 @@
+{
+  "artifactId": "flux-svi-score-v3-unbiased-design-pilot",
+  "version": "flux-svi-score-v3.1.0-unbiased-500-business-design",
+  "generatedAt": "2026-08-22T07:20:02.368Z",
+  "activation": "research-only",
+  "stage": "smoke",
+  "contract": {
+    "businesses": 500,
+    "candidatesPerBusiness": 48,
+    "targetSviFits": 24000,
+    "splits": {
+      "train": 300,
+      "validation": 120,
+      "audit": 80
+    },
+    "inference": {
+      "method": "fullrank-advi",
+      "iterations": 100,
+      "draws": 33,
+      "primarySeeds": [
+        30071,
+        81119
+      ],
+      "adjudicationSeed": 190081,
+      "learningRate": 0.001,
+      "initialScale": 0.01,
+      "gradientNorm": 10,
+      "elboWindow": 250,
+      "maximumElboDrift": 0.05,
+      "maximumSeedLogRoiDifference": 0.25
+    },
+    "targetMcmcAuditFits": 96
+  },
+  "progress": {
+    "businessesStarted": 1,
+    "businessesComplete": 1,
+    "candidateAttempts": 2,
+    "labelled": 0,
+    "review": 2,
+    "errors": 0,
+    "completionShare": 0.00008333333333333333
+  },
+  "feasibility": {
+    "medianRuntimeSeconds": 20.784019457991235,
+    "p90RuntimeSeconds": 20.784019457991235,
+    "projectedSerialHours": 138.56012971994156,
+    "projectedEightWorkerHours": 17.320016214992695,
+    "observedFits": 2
+  },
+  "learning": {
+    "status": "awaiting-complete-cohort",
+    "labelledCoverage": 0.00008333333333333333,
+    "trainingBusinesses": 1,
+    "baselineWeights": {
+      "rolling-oos": 0.11861068105674424,
+      "predictive-coverage": 0.01334652524798881,
+      "fold-stability": 0.009173311995922808,
+      "spend-regimes": 0.1568540006507321,
+      "residual-independence": 0.16,
+      "variance-structure": 0.011079890556563854,
+      "likelihood-shape": 0.0055912073722024416,
+      "multicollinearity": 0,
+      "functional-form": 0,
+      "influence-stability": 0.0009664050309314794,
+      "non-negative-boundary": 0.0255615813843219,
+      "anchor-recovery": 0.11697231550405406,
+      "new-data-stability": 0,
+      "confounder-sensitivity": 0,
+      "future-media-placebo": 0.04035681459196612,
+      "roi-posterior-plausibility": 0.13076406334837143,
+      "roi-decision-stability": 0.014767296129396508,
+      "roi-resolution": 0,
+      "roi-identification": 0.15716128545693822,
+      "roi-economic-consistency": 0.038794621673865895
+    },
+    "note": "Weights remain frozen until every planned fit has terminated and at least 98% of candidates have finite posterior decision labels; validation and audit outcomes are not inspected early."
+  },
+  "safeguards": [
+    "All 48 candidate/evidence contracts receive SVI; MAP score, gates, and hidden truth cannot shortlist the training labels.",
+    "MAP values are permitted only as numerical initializers and as comparison features.",
+    "Two independent full-rank fits are required; a third predeclared seed adjudicates unstable ELBO or ROI agreement.",
+    "Finite review-labelled fits are retained rather than silently discarded, so approximation difficulty can be modeled instead of creating convergence-selection bias.",
+    "The gold NUTS audit is sampled independently within estimator-family and evidence-arm strata with recorded inclusion probabilities.",
+    "Businesses—not candidate rows—define train, mechanism-held-out validation, and sealed audit splits."
+  ],
+  "goldAuditSelection": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "businessInclusionProbability": 12,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 12,
+      "stratum": "bayesian:experiments-only"
+    },
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "businessInclusionProbability": 12,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 12,
+      "stratum": "advanced:experiments-only"
+    }
+  ],
+  "records": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 1,
+      "layerScores": {
+        "generalization": 84.30621285307545,
+        "structure": 75.68717378948794,
+        "causal": 70.94975496030841,
+        "decision": 59.82750258582091
+      },
+      "diagnostics": {
+        "rolling-oos": 85.64018572921157,
+        "predictive-coverage": 94,
+        "fold-stability": 76.28142177017502,
+        "spend-regimes": 77.35994839165096,
+        "residual-independence": 36.37765356974925,
+        "variance-structure": 64.37077410666356,
+        "likelihood-shape": 89.1452029750936,
+        "multicollinearity": 96.95399589046612,
+        "functional-form": 90.9912179393587,
+        "influence-stability": 92.4951409688417,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 79.45234276432029,
+        "new-data-stability": 54.60590250252645,
+        "confounder-sensitivity": 64.46850323005383,
+        "future-media-placebo": 80.87007697707698,
+        "roi-posterior-plausibility": 63.928493888802805,
+        "roi-decision-stability": 44.64984031733129,
+        "roi-resolution": 55.18853972105029,
+        "roi-identification": 100,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 69.26651444504384,
+      "decisionLoss": 0.48278937550520906,
+      "cappedRegret": 0.2611276792931495,
+      "roiError": 0.5638692951018492,
+      "contributionError": 0.3424565896114185,
+      "status": "review",
+      "inferenceFingerprint": "75b005dcd19a36266186f75e632a2fdef8ae92fc80462684558c1ce70cd1aa15",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 100,
+        "draws": 33,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.47992138548990126,
+      "sviProfitRegret": 0.2570305506998527,
+      "sviRoiError": 0.5845799022577205,
+      "sviContributionError": 0.266446129554681,
+      "mapToSviLossShift": -0.0028679900153077975,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 4.071863614652082,
+        "google_search_nonbrand_spend": 0.4030906955569063,
+        "ctv_spend": 0.39644552203089184
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": false,
+        "maximumElboDrift": 0.6070780365354198,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.00957542421656643,
+        "adjudicationUsed": true,
+        "predictiveCoverage": 0.32051282051282054,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.13046509121769195
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 100,
+          "finalLoss": 775.1637487120468,
+          "elboDrift": 0.6070780365354198,
+          "finite": true,
+          "runtimeSeconds": 5.120868374942802
+        },
+        {
+          "seed": 81119,
+          "iterations": 100,
+          "finalLoss": 792.1764678652669,
+          "elboDrift": 0.5567801407232774,
+          "finite": true,
+          "runtimeSeconds": 4.848319291952066
+        },
+        {
+          "seed": 190081,
+          "iterations": 100,
+          "finalLoss": 767.686550719573,
+          "elboDrift": 0.558243399584312,
+          "finite": true,
+          "runtimeSeconds": 5.214472041931003
+        }
+      ],
+      "runtimeSeconds": 15.38541075005196
+    },
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C02 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "advanced",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 1,
+      "layerScores": {
+        "generalization": 84.5256200539,
+        "structure": 79.75054776295407,
+        "causal": 82.29012989530924,
+        "decision": 73.44155211459547
+      },
+      "diagnostics": {
+        "rolling-oos": 86.92928090539365,
+        "predictive-coverage": 89.00000000000001,
+        "fold-stability": 75.69529511136716,
+        "spend-regimes": 80.15165654134456,
+        "residual-independence": 52.579342126989964,
+        "variance-structure": 67.97164439549746,
+        "likelihood-shape": 86.0632944339305,
+        "multicollinearity": 96.95399589046612,
+        "functional-form": 89.30725168419832,
+        "influence-stability": 92.62681329647194,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 76.95976087731918,
+        "new-data-stability": 90.5742448455541,
+        "confounder-sensitivity": 89.40953535510818,
+        "future-media-placebo": 73.59328490995792,
+        "roi-posterior-plausibility": 63.928493888802805,
+        "roi-decision-stability": 71.19369993963289,
+        "roi-resolution": 100,
+        "roi-identification": 61.45619766203411,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 78.68127699561757,
+      "decisionLoss": 0.49658061671508913,
+      "cappedRegret": 0.28082945245012103,
+      "roiError": 1.3628905478555884,
+      "contributionError": 0.377713950012802,
+      "status": "review",
+      "inferenceFingerprint": "453399f9f428b469264d739a41f2281c4a661d0de0e47206ae4e4022e93583ee",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 100,
+        "draws": 33,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.48779309637487045,
+      "sviProfitRegret": 0.2682758519640944,
+      "sviRoiError": 1.2779764548315058,
+      "sviContributionError": 0.3398507620495444,
+      "mapToSviLossShift": -0.00878752034021868,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 3.7010611529721356,
+        "google_search_nonbrand_spend": 0.2801814598980748,
+        "ctv_spend": 0.023881392849183766
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": false,
+        "maximumElboDrift": 0.7488746868721741,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.007758750267224057,
+        "adjudicationUsed": true,
+        "predictiveCoverage": 0.5961538461538461,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.28467362397546125
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 100,
+          "finalLoss": 660.841294362752,
+          "elboDrift": 0.6612070352799019,
+          "finite": true,
+          "runtimeSeconds": 6.752004791982472
+        },
+        {
+          "seed": 81119,
+          "iterations": 100,
+          "finalLoss": 654.9697097261151,
+          "elboDrift": 0.6474804189154995,
+          "finite": true,
+          "runtimeSeconds": 6.994890125002712
+        },
+        {
+          "seed": 190081,
+          "iterations": 100,
+          "finalLoss": 642.5296150142385,
+          "elboDrift": 0.7488746868721741,
+          "finite": true,
+          "runtimeSeconds": 6.769349084002897
+        }
+      ],
+      "runtimeSeconds": 20.784019457991235
+    }
+  ]
+}

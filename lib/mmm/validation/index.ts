@@ -10,6 +10,10 @@ import type { ValidationModelSpec } from "./adapter";
 import { runCausalValidation } from "./causal";
 import { runDecisionValidation } from "./decision";
 import { assessEvidenceCoherence } from "./evidence";
+import {
+  assessEvidenceDependence,
+  attachEvidenceDependence,
+} from "./evidence-dependence";
 import { runGeneralizationValidation } from "./predictive";
 import { scoreValidation } from "./scoring";
 import { runStructuralValidation } from "./structural";
@@ -102,12 +106,24 @@ export async function runModelValidation(
     await new Promise<void>((resolve) => setTimeout(resolve, 24));
   }
 
-  const assessedCoherence = assessEvidenceCoherence(
+  const baseCoherence = assessEvidenceCoherence(
     dataset,
     model,
     experiments,
     validationOptions,
     config,
+  );
+  const dependence = await assessEvidenceDependence(
+    dataset,
+    model,
+    config,
+    advancedConfig,
+    experiments,
+    validationOptions,
+  );
+  const assessedCoherence = attachEvidenceDependence(
+    baseCoherence,
+    dependence,
   );
   const decision = runDecisionValidation(model, assessedCoherence, causal);
   const evidenceCoherence = {

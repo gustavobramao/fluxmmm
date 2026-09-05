@@ -1,0 +1,169 @@
+{
+  "artifactId": "flux-mcmc-score-v3-local-pilot",
+  "version": "flux-mcmc-score-v3.0.0-posterior-decision-research",
+  "generatedAt": "2026-08-20T07:06:51.654Z",
+  "activation": "research-only",
+  "stage": "pilot-insufficient",
+  "contract": {
+    "targetBusinesses": 5000,
+    "targetCandidatesPerBusiness": 10,
+    "targetMcmcFits": 50000,
+    "pilotBusinesses": 1,
+    "pilotCandidatesPerBusiness": 1,
+    "candidatePoolPerBusiness": 48,
+    "label": "One posterior-expected budget action per candidate, evaluated against hidden simulator truth",
+    "sampler": {
+      "preset": "production",
+      "chains": 4,
+      "tune": 500,
+      "draws": 500,
+      "targetAccept": 0.9,
+      "maxTreeDepth": 10,
+      "seed": 202603
+    },
+    "goldSampler": {
+      "preset": "production",
+      "chains": 4,
+      "tune": 1000,
+      "draws": 1000,
+      "targetAccept": 0.9,
+      "maxTreeDepth": 10,
+      "seed": 202603
+    },
+    "splits": {
+      "train": 3000,
+      "validation": 1000,
+      "audit": 1000
+    }
+  },
+  "progress": {
+    "businessesPrepared": 1,
+    "candidatesPrepared": 1,
+    "candidatesLabelled": 1,
+    "convergedCandidates": 1,
+    "failedCandidates": 0,
+    "completionShare": 1
+  },
+  "comparison": {
+    "baselineVersion": "flux-score-learner-v6.0.0-pilot",
+    "baselineWeights": {
+      "rolling-oos": 0.11861068105674424,
+      "predictive-coverage": 0.01334652524798881,
+      "fold-stability": 0.009173311995922808,
+      "spend-regimes": 0.1568540006507321,
+      "residual-independence": 0.16,
+      "variance-structure": 0.011079890556563854,
+      "likelihood-shape": 0.0055912073722024416,
+      "multicollinearity": 0,
+      "functional-form": 0,
+      "influence-stability": 0.0009664050309314794,
+      "non-negative-boundary": 0.0255615813843219,
+      "anchor-recovery": 0.11697231550405406,
+      "new-data-stability": 0,
+      "confounder-sensitivity": 0,
+      "future-media-placebo": 0.04035681459196612,
+      "roi-posterior-plausibility": 0.13076406334837143,
+      "roi-decision-stability": 0.014767296129396508,
+      "roi-resolution": 0,
+      "roi-identification": 0.15716128545693822,
+      "roi-economic-consistency": 0.038794621673865895
+    },
+    "note": "V6 remains the runtime score. V3 weights are an offline research result until a family-held-out validation and sealed audit are complete."
+  },
+  "safeguards": [
+    "Hidden simulator truth is unavailable to candidate fitting, validation, and MCMC shortlisting.",
+    "MAP is a search accelerator and a visible baseline; it never supplies the V3 training target.",
+    "A label is accepted only after the core NUTS convergence gates pass.",
+    "The posterior action maximizes expected value across aligned joint draws; each draw cannot choose its own action.",
+    "Random audit candidates and recorded selection probabilities protect against learning only from V6's favorite region.",
+    "Businesses are split by generator family before learning; V3 cannot activate from this local pilot."
+  ],
+  "sampleRecords": [
+    {
+      "businessId": "balanced-dtc-8101",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C11 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "eligible": true,
+      "reviewEligible": true,
+      "eligibilityTier": "decision-grade",
+      "failedGateCount": 0,
+      "layerScores": {
+        "generalization": 85.02597342863062,
+        "structure": 85.93102630916208,
+        "causal": 68.76677005498188,
+        "decision": 66.83455006088793
+      },
+      "diagnostics": {
+        "rolling-oos": 88.36935729064633,
+        "predictive-coverage": 91,
+        "fold-stability": 71.96847354163762,
+        "spend-regimes": 79.45166117470401,
+        "residual-independence": 79.1934091090504,
+        "variance-structure": 61.44796771922614,
+        "likelihood-shape": 74.56733675618683,
+        "multicollinearity": 100,
+        "functional-form": 96.56380067668054,
+        "influence-stability": 84.40154553964909,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 88.72207261114052,
+        "new-data-stability": 74.56485293933545,
+        "confounder-sensitivity": 24.941889847162713,
+        "future-media-placebo": 80.86331973911935,
+        "roi-posterior-plausibility": 61.405575815726195,
+        "roi-decision-stability": 62.712060765265804,
+        "roi-resolution": 67.63361741639329,
+        "roi-identification": 87.07333864846521,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 73.34624593944471,
+      "decisionLoss": 1.553874440665206,
+      "cappedRegret": 0.6208038114926578,
+      "roiError": 0.41605558675472853,
+      "contributionError": 0.4242583618150437,
+      "v6Score": 80.69205312661994,
+      "mapDecisionLoss": 1.553874440665206,
+      "selectionReason": "v6-leader",
+      "selectionProbability": 1,
+      "samplingFingerprint": "bcc42a9e2a2084d16ef15fd2bdd6cc227c16d4a9692972c4b4a2d5cde94de68a",
+      "samplingContract": {
+        "preset": "custom",
+        "chains": 4,
+        "tune": 500,
+        "draws": 2000,
+        "targetAccept": 0.9,
+        "maxTreeDepth": 10,
+        "seed": 202603
+      },
+      "status": "labelled",
+      "samplerStatus": "ready",
+      "convergencePassed": true,
+      "mcmcDecisionLoss": 1.6507233357402329,
+      "mcmcProfitRegret": 0.7591593758855533,
+      "mcmcRoiError": 0.6553303482609503,
+      "mcmcContributionError": 0.4596166970575889,
+      "mapToMcmcLossShift": 0.09684889507502681,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 3.1924184440103147,
+        "google_search_nonbrand_spend": 0.2792936288203378,
+        "ctv_spend": 0.7955348429098242
+      },
+      "diagnosticsReceipt": {
+        "maxRhat": 1.0028578960614025,
+        "minBulkEss": 2036.7051044543052,
+        "minTailEss": 1476.9763985676727,
+        "divergences": 0,
+        "treeDepthHits": 0,
+        "minBfmi": 0.8726833557531571,
+        "maxMcseRatio": 0.02061661065150766,
+        "predictiveCoverage": 0.9692307692307692,
+        "maxImplausibleProbability": 0,
+        "maxRelativeRoiWidth": 1.3612662059664904
+      },
+      "runtimeSeconds": 40.68895837501623,
+      "attempts": 2
+    }
+  ]
+}

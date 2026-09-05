@@ -13,6 +13,7 @@ import {
 } from "./math";
 import { responseForChannel, responseTransform } from "./response";
 import { experimentResponseContrast } from "./experiment-window";
+import { channelEvidenceAttribution } from "./evidence-attribution";
 import type { LeastSquaresPenalty } from "./math";
 import {
   activeIndustryPrior,
@@ -142,6 +143,14 @@ function solve(
     (_, index) => diagonalPenalty(parameterCount, index + 1, config.ridge),
   );
   const priorPenalties: LeastSquaresPenalty[] = [];
+  const evidencePenalties: Record<
+    "experiment" | "benchmark" | "regularization",
+    LeastSquaresPenalty[]
+  > = {
+    experiment: [],
+    benchmark: [],
+    regularization: [...ridgePenalties],
+  };
   const priorPrecisions = new Map<string, number>();
   const priorRois = new Map<string, number>();
   const priorSources = new Map<string, "experiment" | "industry">();
@@ -292,14 +301,20 @@ function solve(
 
       const precision =
         likelihoodVariance / Math.max(priorSd ** 2, 1e-9);
-      priorPenalties.push(
-        diagonalPenalty(
-          parameterCount,
-          coefficientIndex,
-          precision,
-          priorMean,
-        ),
+      const penalty = diagonalPenalty(
+        parameterCount,
+        coefficientIndex,
+        precision,
+        priorMean,
       );
+      priorPenalties.push(penalty);
+      evidencePenalties[
+        priorSources.get(channel) === "experiment"
+          ? "experiment"
+          : priorSources.get(channel) === "industry"
+            ? "benchmark"
+            : "regularization"
+      ].push(penalty);
       priorPrecisions.set(channel, precision);
     }
   }
@@ -410,6 +425,29 @@ function solve(
           : undefined,
       };
     });
+  const evidenceAttribution = channelEvidenceAttribution({
+    matrix: design.matrix,
+    posteriorPrecisionInverse: solution.precisionInverse,
+    penalties: evidencePenalties,
+    channels: design.names.slice(design.mediaStart).map((channel, mediaIndex) => {
+      const coefficientIndex = design.mediaStart + mediaIndex;
+      const transformed = design.mediaVectors[mediaIndex].reduce(
+        (total, value) => total + value,
+        0,
+      );
+      const spend = design.spendVectors[mediaIndex].reduce(
+        (total, value) => total + value,
+        0,
+      );
+      const roiGradient = Array(parameterCount).fill(0);
+      roiGradient[coefficientIndex] = transformed / Math.max(spend, 1);
+      return {
+        channel,
+        coefficientIndexes: [coefficientIndex],
+        roiGradient,
+      };
+    }),
+  });
   const numericalStatus =
     solution.diagnostics.status === "rank-deficient"
       ? "rank-deficient"
@@ -438,6 +476,7 @@ function solve(
         : null,
       status: numericalStatus,
       priorInfluence,
+      evidenceAttribution,
       clipping: {
         applied: clippedChannels.length > 0,
         material: clippingMaterial,

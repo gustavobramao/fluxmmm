@@ -1,0 +1,4 @@
+raw.channel,amss.module,frozen.v9.role,interpretation
+paid_social_proxy,DefaultTraditionalMediaModule,meta_acquisition_spend,paid-social exposure stress proxy; not a platform auction
+search,DefaultSearchMediaModule,google_search_nonbrand_spend,paid-search demand-harvesting archetype
+tv,DefaultTraditionalMediaModule,ctv_spend,long-memory reach-media archetype; not literal CTV

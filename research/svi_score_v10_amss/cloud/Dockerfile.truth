@@ -1,0 +1,24 @@
+FROM rocker/r-ver:4.6.1
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    OMP_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --no-cache-dir --break-system-packages google-cloud-storage==3.4.1 \
+    && Rscript -e 'install.packages(c("assertthat", "data.table", "jsonlite"), repos="https://cloud.r-project.org", Ncpus=2L)'
+
+COPY research/svi_score_v10_amss/cloud/amss-1.0.1-cbf5e7f6.tar.gz /tmp/amss.tar.gz
+RUN echo "a440105d5089fc2142aca9b139492507475166dc950354069f771110e1d95505  /tmp/amss.tar.gz" | sha256sum --check \
+    && R CMD INSTALL /tmp/amss.tar.gz \
+    && rm /tmp/amss.tar.gz
+
+WORKDIR /workspace
+COPY research/svi_score_v10_amss/open-truth.R /app/open-truth.R
+COPY research/svi_score_v10_amss/cloud/truth_task.py /app/truth_task.py
+
+ENTRYPOINT ["python3", "/app/truth_task.py"]

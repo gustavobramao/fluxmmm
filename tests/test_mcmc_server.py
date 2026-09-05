@@ -277,6 +277,12 @@ class McmcContractTests(unittest.TestCase):
         )
         self.assertGreater(predictive_width, response_width)
         self.assertFalse(summary["inferenceContract"]["sharedPosterior"])
+        self.assertGreater(len(summary["decisionDraws"]), 0)
+        self.assertEqual(
+            len(summary["decisionDraws"][0]["channels"]),
+            len(contract["media"]),
+        )
+        self.assertIn("response", summary["decisionDraws"][0]["channels"][0])
         parameter_labels = {parameter["label"] for parameter in summary["parameters"]}
         self.assertIn("Geometric decay", parameter_labels)
         self.assertIn("Hill shape", parameter_labels)

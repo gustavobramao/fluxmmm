@@ -32,6 +32,12 @@ export interface ScoreV6CandidateRow {
   layerScores: Record<ValidationLayerId, number>;
   diagnostics: ScoreV6FeatureValues;
   heuristicScore: number;
+  /**
+   * Predeclared candidate-independent scale for the economic loss. The
+   * current simulator already divides opportunity loss by a business/scenario
+   * economic scale, so the frozen V3 cohort uses 1 for every candidate.
+   */
+  economicScale?: number;
   decisionLoss: number;
   cappedRegret: number;
   roiError: number;
@@ -44,7 +50,9 @@ export interface ScoreV6Metrics {
   meanLoss: number;
   medianLoss: number;
   p90Loss: number;
+  p95Loss: number;
   meanExcessLoss: number;
+  meanNormalizedExcessRegret: number;
   lowestLossSelectionRate: number;
   familyMeanLoss: Record<string, number>;
 }

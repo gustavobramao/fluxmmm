@@ -1,0 +1,35 @@
+{
+  "artifactId": "flux-v10-amss-external-audit-acceptance-receipt-v1",
+  "version": "flux-svi-score-v10-amss.0.1.1-external-transport",
+  "status": "confirmatory-result-accepted-after-contract-verification",
+  "businesses": 100,
+  "candidateFits": 4800,
+  "decisionActions": 19200,
+  "primaryLossContract": "scenario excess loss capped at 1; business risk is 65% mean plus 35% P90 across four scenarios",
+  "primaryResult": {
+    "frozenV9MeanRisk": 0.2303255626631651,
+    "originalFluxHeuristicMeanRisk": 0.5604145236067868,
+    "pairedDifference": -0.3300889609436217,
+    "pairedBootstrap95": [-0.4023894133450209, -0.25832874771534087],
+    "v9Wins": 80,
+    "ties": 2,
+    "heuristicWins": 18
+  },
+  "artifacts": {
+    "resultSha256": "8c1ec7583468fa266baf1343dc282f0d8abcdf151ff281f8cd3d47f10715327b",
+    "candidateLossesSha256": "83f97d169f44bf06a5831c5d25bda64cd22248636c76d7898399df2fb2d208dc",
+    "technicalAmendment004Sha256": "cd1b4a44d50c62c844f4281d66bfd79623ed2d56f95071184abd1e7a13fe4397",
+    "cloudExecutionReceiptSha256": "a253befb95011bc61377af804e458e93c8cd609e2498e59db7b79954b3a52e3d",
+    "auditAssemblerSha256": "1e3f03446b44c390e551b1536482eb54ac0f39050a27579a1a299f12a7d76a81",
+    "economicLossModuleSha256": "c4c6a878ebc34a0040004b9675009cccf7a171803768c526dc72b1c14757eb77",
+    "contractTestSha256": "101aab0530ff7f10508967f287d7ea0812c34445a5c9d01a3e0b130ae1a77831"
+  },
+  "verification": {
+    "truthParts": "100/100",
+    "truthRows": "19200/19200",
+    "contractTests": "4/4 passed",
+    "deterministicReassembly": true,
+    "postTruthRetraining": false,
+    "postTruthReselection": false
+  }
+}

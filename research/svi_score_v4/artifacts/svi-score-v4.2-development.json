@@ -1,0 +1,3614 @@
+{
+  "artifactId": "flux-svi-score-v4-development-v2",
+  "version": "flux-svi-score-v4.2.0-top-one-risk-temporal-diagnostic",
+  "generatedAt": "2026-09-02T11:40:51.932Z",
+  "activation": "research-only",
+  "stage": "development-complete-validation-not-generated",
+  "contract": {
+    "development": {
+      "businesses": 420,
+      "sources": {
+        "originalTraining": 300,
+        "retiredV3Validation": 120,
+        "sealedV3Audit": 0
+      },
+      "groupedFolds": 5,
+      "groupingUnit": "business",
+      "stratification": "generator-family"
+    },
+    "target": {
+      "primary": "posterior-expected-budget-decision-loss",
+      "theorem": "capped-normalized-top-one-excess-regret",
+      "economicScale": 1,
+      "cvarProbability": 0.9,
+      "configurationSelectionObjective": {
+        "meanDecisionLoss": 1,
+        "cvar90DecisionLoss": 0.5,
+        "worstFamilyMeanDecisionLoss": 0.5
+      },
+      "reportUncappedP90": true,
+      "reportUncappedP95": true
+    },
+    "model": {
+      "family": "two-expert-monotonic-linear-ranker",
+      "context": "truth-blind-observed-temporal-complexity",
+      "experts": [
+        "ordinary-response",
+        "temporally-complex"
+      ],
+      "featureFloor": 0.01,
+      "featureCap": 0.18
+    },
+    "safety": {
+      "behavior": "non-compensatory-when-a-safe-candidate-exists",
+      "diagnostics": [
+        "roi-posterior-plausibility",
+        "roi-decision-stability"
+      ],
+      "noSafeCandidateBehavior": "return-review-only-selection"
+    },
+    "governance": {
+      "frozenV3FilesMayChange": false,
+      "v3AuditMayOpen": false,
+      "validationRule": "generate-and-freeze-a-fresh-independent-cohort-after-development-freeze"
+    }
+  },
+  "provenance": {
+    "v3TrainingAndRetiredValidationUsed": true,
+    "v3SealedAuditAccessed": false,
+    "temporalFeatureSha256": "626151cb615c98bdb326ee97a5e98897217b86dd4976623ec2637946704832e2",
+    "flightHoldoutFeatureSha256": "32d7f48857b4b6e339ef9ef3452797d429569adf67d45f59bdbe2b1081de7e91",
+    "v3TrainingArtifactSha256": "4a86efcdc2c9cff5ff1a449aa9aa87197b1178fdb981d33d48475cb97efcf2f6",
+    "activeV6ArtifactSha256": "a1cd2709d643ed6c296244188f6fc6023b63cf9e46ba49baa080c75a525d1c1c"
+  },
+  "crossValidation": {
+    "version": "flux-svi-score-v4-grouped-cv-v1",
+    "contract": {
+      "folds": 5,
+      "groupingUnit": "business",
+      "stratification": "generator-family",
+      "auditRowsPermitted": false,
+      "selectionObjective": "mean-loss-plus-0.5-cvar90-loss-plus-0.5-worst-family-mean-loss",
+      "theoremTarget": "capped-normalized-top-one-excess-regret"
+    },
+    "data": {
+      "businesses": 420,
+      "rows": 20160,
+      "families": {
+        "balanced-dtc": 100,
+        "correlated-planning": 60,
+        "delayed-tv": 60,
+        "search-demand-harvesting": 100,
+        "social-frequency-pressure": 100
+      },
+      "assignmentHash": "36ed006f7e56bbf769f1bb2aa980c8a5ccf5b4e6267d09a1cd8f54cd55dd958e"
+    },
+    "assignments": [
+      {
+        "businessId": "balanced-dtc-12001",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12002",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12003",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12004",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12005",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12006",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12007",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12008",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12009",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12010",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12011",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12012",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12013",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12014",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12015",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12016",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12017",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12018",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12019",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12020",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12021",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12022",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12023",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12024",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12025",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12026",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12027",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12028",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12029",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12030",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12031",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12032",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12033",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12034",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12035",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12036",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12037",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12038",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12039",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12040",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12041",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12042",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12043",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12044",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12045",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12046",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12047",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12048",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12049",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12050",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12051",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12052",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12053",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12054",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12055",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12056",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12057",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12058",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12059",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12060",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12061",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12062",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12063",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12064",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12065",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12066",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12067",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12068",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12069",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12070",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12071",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12072",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12073",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12074",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12075",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12076",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12077",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12078",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12079",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12080",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12081",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12082",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12083",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12084",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12085",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12086",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12087",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12088",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12089",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12090",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12091",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12092",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12093",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12094",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12095",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12096",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12097",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12098",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12099",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12100",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12001",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12002",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12003",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12004",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12005",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12006",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12007",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12008",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12009",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12010",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12011",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12012",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12013",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12014",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12015",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12016",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12017",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12018",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12019",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12020",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12021",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12022",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12023",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12024",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12025",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12026",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12027",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12028",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12029",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12030",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12031",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12032",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12033",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12034",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12035",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12036",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12037",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12038",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12039",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12040",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12041",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12042",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12043",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12044",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12045",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12046",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12047",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12048",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12049",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12050",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12051",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12052",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12053",
+        "family": "correlated-planning",
+        "fold": 2
+      },
+      {
+        "businessId": "correlated-planning-12054",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12055",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "correlated-planning-12056",
+        "family": "correlated-planning",
+        "fold": 1
+      },
+      {
+        "businessId": "correlated-planning-12057",
+        "family": "correlated-planning",
+        "fold": 3
+      },
+      {
+        "businessId": "correlated-planning-12058",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12059",
+        "family": "correlated-planning",
+        "fold": 0
+      },
+      {
+        "businessId": "correlated-planning-12060",
+        "family": "correlated-planning",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12001",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12002",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12003",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12004",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12005",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12006",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12007",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12008",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12009",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12010",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12011",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12012",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12013",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12014",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12015",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12016",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12017",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12018",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12019",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12020",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12021",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12022",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12023",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12024",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12025",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12026",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12027",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12028",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12029",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12030",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12031",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12032",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12033",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12034",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12035",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12036",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12037",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12038",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12039",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12040",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12041",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12042",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12043",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12044",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12045",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12046",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12047",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12048",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12049",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12050",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12051",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12052",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12053",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12054",
+        "family": "delayed-tv",
+        "fold": 2
+      },
+      {
+        "businessId": "delayed-tv-12055",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12056",
+        "family": "delayed-tv",
+        "fold": 0
+      },
+      {
+        "businessId": "delayed-tv-12057",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "delayed-tv-12058",
+        "family": "delayed-tv",
+        "fold": 4
+      },
+      {
+        "businessId": "delayed-tv-12059",
+        "family": "delayed-tv",
+        "fold": 3
+      },
+      {
+        "businessId": "delayed-tv-12060",
+        "family": "delayed-tv",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12001",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12002",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12003",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12004",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12005",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12006",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12007",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12008",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12009",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12010",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12011",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12012",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12013",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12014",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12015",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12016",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12017",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12018",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12019",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12020",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12021",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12022",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12023",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12024",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12025",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12026",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12027",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12028",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12029",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12030",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12031",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12032",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12033",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12034",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12035",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12036",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12037",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12038",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12039",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12040",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12041",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12042",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12043",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12044",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12045",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12046",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12047",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12048",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12049",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12050",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12051",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12052",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12053",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12054",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12055",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12056",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12057",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12058",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12059",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12060",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12061",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12062",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12063",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12064",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12065",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12066",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12067",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12068",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12069",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12070",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12071",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12072",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12073",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12074",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12075",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12076",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12077",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12078",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12079",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12080",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12081",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12082",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12083",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12084",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12085",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12086",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12087",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12088",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12089",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12090",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12091",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12092",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12093",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12094",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12095",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12096",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12097",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12098",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12099",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12100",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12001",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12002",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12003",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12004",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12005",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12006",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12007",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12008",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12009",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12010",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12011",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12012",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12013",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12014",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12015",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12016",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12017",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12018",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12019",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12020",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12021",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12022",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12023",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12024",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12025",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12026",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12027",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12028",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12029",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12030",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12031",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12032",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12033",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12034",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12035",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12036",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12037",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12038",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12039",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12040",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12041",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12042",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12043",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12044",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12045",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12046",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12047",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12048",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12049",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12050",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12051",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12052",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12053",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12054",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12055",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12056",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12057",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12058",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12059",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12060",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12061",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12062",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12063",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12064",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12065",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12066",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12067",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12068",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12069",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12070",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12071",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12072",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12073",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12074",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12075",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12076",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12077",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12078",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12079",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12080",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12081",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12082",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12083",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12084",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12085",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12086",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12087",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12088",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12089",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12090",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12091",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12092",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12093",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12094",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12095",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12096",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12097",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12098",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12099",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12100",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      }
+    ],
+    "configurations": [
+      {
+        "configuration": {
+          "id": "balanced-risk",
+          "regularization": 0.01,
+          "epochs": 260,
+          "cvarWeight": 0.5,
+          "familyDroWeight": 0.5,
+          "safety": {
+            "roiPlausibility": 40,
+            "decisionStability": 40
+          }
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.9236031493531156,
+              "medianLoss": 1.1443459737973456,
+              "p90Loss": 10.558503382761137,
+              "p95Loss": 15.913596459270163,
+              "cvar90Loss": 17.806508469893554,
+              "worstFamilyMeanLoss": 5.264318077360566,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.016045316136187,
+                "correlated-planning": 3.657997776230794,
+                "delayed-tv": 5.264318077360566,
+                "search-demand-harvesting": 2.7017426607213606,
+                "social-frequency-pressure": 3.4079557382707337
+              },
+              "meanExcessLoss": 2.5880525086250348,
+              "medianExcessLoss": 0.17734181877418942,
+              "p90ExcessLoss": 8.80335829723045,
+              "p95ExcessLoss": 14.000803576406211,
+              "cvar90ExcessLoss": 16.1078030494969,
+              "worstFamilyMeanExcessLoss": 3.7916386354246163,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 3.7916386354246163,
+                "correlated-planning": 3.0828627398077195,
+                "delayed-tv": 3.391763637167955,
+                "search-demand-harvesting": 1.337808731475383,
+                "social-frequency-pressure": 1.8555973431397412
+              },
+              "oracleSelectionRate": 0.3333333333333333,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.42697360227534936,
+              "meanTopOneHingeBound": 0.808462204420237,
+              "meanSmoothTopOneBound": 0.8696830158870833,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.7531936495536837,
+              "medianLoss": 1.69445456237742,
+              "p90Loss": 10.15598716733086,
+              "p95Loss": 12.241058043786097,
+              "cvar90Loss": 14.491808407006195,
+              "worstFamilyMeanLoss": 5.052981826431254,
+              "familyMeanLoss": {
+                "balanced-dtc": 4.013320197274945,
+                "correlated-planning": 3.394597815198137,
+                "delayed-tv": 3.322742843818355,
+                "search-demand-harvesting": 2.666706909009374,
+                "social-frequency-pressure": 5.052981826431254
+              },
+              "meanExcessLoss": 2.1239597134440293,
+              "medianExcessLoss": 0.14515419189579684,
+              "p90ExcessLoss": 8.15153940141926,
+              "p95ExcessLoss": 10.121116803685899,
+              "cvar90ExcessLoss": 11.74297081850204,
+              "worstFamilyMeanExcessLoss": 3.3707066164465878,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 3.3707066164465878,
+                "correlated-planning": 1.1549751142693812,
+                "delayed-tv": 1.1383153009616993,
+                "search-demand-harvesting": 1.3644014033151883,
+                "social-frequency-pressure": 2.8095485275644965
+              },
+              "oracleSelectionRate": 0.35714285714285715,
+              "safetyAcceptedShare": 0.9523809523809523,
+              "reviewOnlyFallbackShare": 0.047619047619047616
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4105323188883506,
+              "meanTopOneHingeBound": 0.685131605555378,
+              "meanSmoothTopOneBound": 0.7332085133856467,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 4.654786609021668,
+              "medianLoss": 1.7982467816484053,
+              "p90Loss": 10.222094103120742,
+              "p95Loss": 22.67936380540921,
+              "cvar90Loss": 25.660182438526697,
+              "worstFamilyMeanLoss": 6.202989924527937,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.375710917485458,
+                "correlated-planning": 2.7354762646731423,
+                "delayed-tv": 1.9395227303780473,
+                "search-demand-harvesting": 5.166403518846896,
+                "social-frequency-pressure": 6.202989924527937
+              },
+              "meanExcessLoss": 2.469106061241218,
+              "medianExcessLoss": 0.22134304960504667,
+              "p90ExcessLoss": 4.268891660335606,
+              "p95ExcessLoss": 16.510911545267938,
+              "cvar90ExcessLoss": 18.25709100353135,
+              "worstFamilyMeanExcessLoss": 4.524763889167056,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.995795637277976,
+                "correlated-planning": 1.0230729931280227,
+                "delayed-tv": 0.6307294241894694,
+                "search-demand-harvesting": 1.8574044803775895,
+                "social-frequency-pressure": 4.524763889167056
+              },
+              "oracleSelectionRate": 0.38095238095238093,
+              "safetyAcceptedShare": 0.9642857142857143,
+              "reviewOnlyFallbackShare": 0.03571428571428571
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4037588065966103,
+              "meanTopOneHingeBound": 0.6371812980143231,
+              "meanSmoothTopOneBound": 0.6807358330823836,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.740750383870566,
+              "medianLoss": 1.267852957491288,
+              "p90Loss": 9.561358753225505,
+              "p95Loss": 18.156436902517285,
+              "cvar90Loss": 17.55872754842754,
+              "worstFamilyMeanLoss": 4.478670463509281,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.933416817186221,
+                "correlated-planning": 4.478670463509281,
+                "delayed-tv": 1.7439768490646388,
+                "search-demand-harvesting": 3.989454159799076,
+                "social-frequency-pressure": 4.054692247726726
+              },
+              "meanExcessLoss": 1.546480970295141,
+              "medianExcessLoss": 0.118875073778024,
+              "p90ExcessLoss": 3.01282665532481,
+              "p95ExcessLoss": 6.952687714438628,
+              "cvar90ExcessLoss": 10.517720953492493,
+              "worstFamilyMeanExcessLoss": 2.6451194613985094,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.2365112350484273,
+                "correlated-planning": 0.6185705928963535,
+                "delayed-tv": 0.7435037354774655,
+                "search-demand-harvesting": 1.7963447817683658,
+                "social-frequency-pressure": 2.6451194613985094
+              },
+              "oracleSelectionRate": 0.4166666666666667,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.39963116648120317,
+              "meanTopOneHingeBound": 0.6673594211559486,
+              "meanSmoothTopOneBound": 0.7168664820217082,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.08179324466068,
+              "medianLoss": 1.0637124241901297,
+              "p90Loss": 6.620078078685511,
+              "p95Loss": 11.848766779172353,
+              "cvar90Loss": 15.992697883509386,
+              "worstFamilyMeanLoss": 6.940926593669574,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.7680581383660785,
+                "correlated-planning": 1.3742497636325302,
+                "delayed-tv": 6.940926593669574,
+                "search-demand-harvesting": 1.772083472653592,
+                "social-frequency-pressure": 3.4142842021739197
+              },
+              "meanExcessLoss": 1.2594917451641654,
+              "medianExcessLoss": 0.10846807888552248,
+              "p90ExcessLoss": 3.621936825144295,
+              "p95ExcessLoss": 5.439637952123147,
+              "cvar90ExcessLoss": 6.833608340655743,
+              "worstFamilyMeanExcessLoss": 1.8328665498458587,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.2412814910535435,
+                "correlated-planning": 1.0444261461017121,
+                "delayed-tv": 1.8328665498458587,
+                "search-demand-harvesting": 1.0625173802538543,
+                "social-frequency-pressure": 1.2596908408135554
+              },
+              "oracleSelectionRate": 0.40476190476190477,
+              "safetyAcceptedShare": 0.9047619047619048,
+              "reviewOnlyFallbackShare": 0.09523809523809523
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.3934299514524672,
+              "meanTopOneHingeBound": 0.7151258635407564,
+              "meanSmoothTopOneBound": 0.7687757067547577,
+              "maximumNumericalSlack": 0
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 420,
+          "meanLoss": 3.830825407291942,
+          "medianLoss": 1.3740461110367452,
+          "p90Loss": 10.191363864014184,
+          "p95Loss": 16.236026538519287,
+          "cvar90Loss": 19.029125840234606,
+          "worstFamilyMeanLoss": 4.426580787826113,
+          "familyMeanLoss": {
+            "balanced-dtc": 4.221310277289777,
+            "correlated-planning": 3.1281984166487766,
+            "delayed-tv": 3.842297418858236,
+            "search-demand-harvesting": 3.259278144206058,
+            "social-frequency-pressure": 4.426580787826113
+          },
+          "meanExcessLoss": 1.9974181997539169,
+          "medianExcessLoss": 0.1537975234572164,
+          "p90ExcessLoss": 6.249323473492602,
+          "p95ExcessLoss": 10.314500801825618,
+          "cvar90ExcessLoss": 13.833613558258705,
+          "worstFamilyMeanExcessLoss": 2.618944012416672,
+          "familyMeanExcessLoss": {
+            "balanced-dtc": 2.5271867230502307,
+            "correlated-planning": 1.3847815172406375,
+            "delayed-tv": 1.5474357295284897,
+            "search-demand-harvesting": 1.4836953554380765,
+            "social-frequency-pressure": 2.618944012416672
+          },
+          "oracleSelectionRate": 0.37857142857142856,
+          "safetyAcceptedShare": 0.9166666666666666,
+          "reviewOnlyFallbackShare": 0.08333333333333333
+        },
+        "selectionObjective": 15.558678721322302
+      },
+      {
+        "configuration": {
+          "id": "tail-protective",
+          "regularization": 0.01,
+          "epochs": 260,
+          "cvarWeight": 0.85,
+          "familyDroWeight": 0.4,
+          "safety": {
+            "roiPlausibility": 40,
+            "decisionStability": 40
+          }
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.8060263806958172,
+              "medianLoss": 1.2199836640336086,
+              "p90Loss": 10.045119620782181,
+              "p95Loss": 15.6754416689631,
+              "cvar90Loss": 16.983965380590675,
+              "worstFamilyMeanLoss": 5.086288499855127,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.9362740754048575,
+                "correlated-planning": 4.716147205935474,
+                "delayed-tv": 5.086288499855127,
+                "search-demand-harvesting": 2.729569181998607,
+                "social-frequency-pressure": 3.438006118044614
+              },
+              "meanExcessLoss": 2.470475739967735,
+              "medianExcessLoss": 0.2064780331363772,
+              "p90ExcessLoss": 8.384199331363774,
+              "p95ExcessLoss": 13.560509996710891,
+              "cvar90ExcessLoss": 15.136038044919328,
+              "worstFamilyMeanExcessLoss": 4.1410121695124005,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.7118673946932876,
+                "correlated-planning": 4.1410121695124005,
+                "delayed-tv": 3.2137340596625155,
+                "search-demand-harvesting": 1.3656352527526294,
+                "social-frequency-pressure": 1.8856477229136217
+              },
+              "oracleSelectionRate": 0.34523809523809523,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4361167933263058,
+              "meanTopOneHingeBound": 0.8109188965868631,
+              "meanSmoothTopOneBound": 0.8720694406198868,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.7150207239418216,
+              "medianLoss": 1.7482668557668393,
+              "p90Loss": 10.15598716733086,
+              "p95Loss": 12.241058043786097,
+              "cvar90Loss": 14.491808407006195,
+              "worstFamilyMeanLoss": 5.081046551358978,
+              "familyMeanLoss": {
+                "balanced-dtc": 4.0221921494876565,
+                "correlated-planning": 3.5139728942069937,
+                "delayed-tv": 3.355411783367796,
+                "search-demand-harvesting": 2.378217533164141,
+                "social-frequency-pressure": 5.081046551358978
+              },
+              "meanExcessLoss": 2.085786787832167,
+              "medianExcessLoss": 0.20197848368495694,
+              "p90ExcessLoss": 7.406234117633382,
+              "p95ExcessLoss": 10.121116803685899,
+              "cvar90ExcessLoss": 11.563899337161317,
+              "worstFamilyMeanExcessLoss": 3.379578568659298,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 3.379578568659298,
+                "correlated-planning": 1.2743501932782382,
+                "delayed-tv": 1.170984240511141,
+                "search-demand-harvesting": 1.0759120274699554,
+                "social-frequency-pressure": 2.8376132524922206
+              },
+              "oracleSelectionRate": 0.35714285714285715,
+              "safetyAcceptedShare": 0.9523809523809523,
+              "reviewOnlyFallbackShare": 0.047619047619047616
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.44016364515828943,
+              "meanTopOneHingeBound": 0.6859799982858859,
+              "meanSmoothTopOneBound": 0.7337207526959122,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 4.644460436961038,
+              "medianLoss": 1.7982467816484053,
+              "p90Loss": 10.222094103120742,
+              "p95Loss": 22.67936380540921,
+              "cvar90Loss": 25.660182438526697,
+              "worstFamilyMeanLoss": 6.201801217232909,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.333529702125837,
+                "correlated-planning": 2.7354762646731423,
+                "delayed-tv": 1.9395227303780473,
+                "search-demand-harvesting": 5.166403518846896,
+                "social-frequency-pressure": 6.201801217232909
+              },
+              "meanExcessLoss": 2.4587798891805877,
+              "medianExcessLoss": 0.17849545221817478,
+              "p90ExcessLoss": 4.268891660335606,
+              "p95ExcessLoss": 16.510911545267938,
+              "cvar90ExcessLoss": 18.25709100353135,
+              "worstFamilyMeanExcessLoss": 4.523575181872028,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.953614421918355,
+                "correlated-planning": 1.0230729931280227,
+                "delayed-tv": 0.6307294241894694,
+                "search-demand-harvesting": 1.8574044803775895,
+                "social-frequency-pressure": 4.523575181872028
+              },
+              "oracleSelectionRate": 0.39285714285714285,
+              "safetyAcceptedShare": 0.9642857142857143,
+              "reviewOnlyFallbackShare": 0.03571428571428571
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.3934326345359794,
+              "meanTopOneHingeBound": 0.6374070105346141,
+              "meanSmoothTopOneBound": 0.6810901245126153,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.7344421382297344,
+              "medianLoss": 1.267852957491288,
+              "p90Loss": 9.561358753225505,
+              "p95Loss": 18.156436902517285,
+              "cvar90Loss": 17.55872754842754,
+              "worstFamilyMeanLoss": 4.62577664365181,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.9376733606688594,
+                "correlated-planning": 4.62577664365181,
+                "delayed-tv": 1.7439768490646388,
+                "search-demand-harvesting": 3.870439276539428,
+                "social-frequency-pressure": 4.054692247726726
+              },
+              "meanExcessLoss": 1.5401727246543098,
+              "medianExcessLoss": 0.08420145797031128,
+              "p90ExcessLoss": 3.01282665532481,
+              "p95ExcessLoss": 6.952687714438628,
+              "cvar90ExcessLoss": 10.517720953492493,
+              "worstFamilyMeanExcessLoss": 2.6451194613985094,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.2407677785310658,
+                "correlated-planning": 0.7656767730388833,
+                "delayed-tv": 0.7435037354774655,
+                "search-demand-harvesting": 1.6773298985087173,
+                "social-frequency-pressure": 2.6451194613985094
+              },
+              "oracleSelectionRate": 0.4166666666666667,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.396012413836293,
+              "meanTopOneHingeBound": 0.6677532618827692,
+              "meanSmoothTopOneBound": 0.7173404677445043,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.155884557247645,
+              "medianLoss": 1.0637124241901297,
+              "p90Loss": 7.0260512773817245,
+              "p95Loss": 12.363180087652902,
+              "cvar90Loss": 16.099500422050554,
+              "worstFamilyMeanLoss": 6.940926593669574,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.6924501212398724,
+                "correlated-planning": 1.3940289073267387,
+                "delayed-tv": 6.940926593669574,
+                "search-demand-harvesting": 1.772083472653592,
+                "social-frequency-pressure": 3.789208245948854
+              },
+              "meanExcessLoss": 1.3335830577511305,
+              "medianExcessLoss": 0.1749744473456952,
+              "p90ExcessLoss": 4.021747667594145,
+              "p95ExcessLoss": 5.508356179660735,
+              "cvar90ExcessLoss": 7.275693514825311,
+              "worstFamilyMeanExcessLoss": 1.8328665498458587,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.165673473927337,
+                "correlated-planning": 1.0642052897959207,
+                "delayed-tv": 1.8328665498458587,
+                "search-demand-harvesting": 1.0625173802538543,
+                "social-frequency-pressure": 1.6346148845884898
+              },
+              "oracleSelectionRate": 0.38095238095238093,
+              "safetyAcceptedShare": 0.9047619047619048,
+              "reviewOnlyFallbackShare": 0.09523809523809523
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4066836077543468,
+              "meanTopOneHingeBound": 0.7147479441799085,
+              "meanSmoothTopOneBound": 0.7688159812735972,
+              "maximumNumericalSlack": 0
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 420,
+          "meanLoss": 3.81116684741521,
+          "medianLoss": 1.4036495990753115,
+          "p90Loss": 9.801921425878701,
+          "p95Loss": 16.236026538519287,
+          "cvar90Loss": 18.867275943184566,
+          "worstFamilyMeanLoss": 4.5129508760624155,
+          "familyMeanLoss": {
+            "balanced-dtc": 3.984423881785414,
+            "correlated-planning": 3.397080383158831,
+            "delayed-tv": 3.8132252912670364,
+            "search-demand-harvesting": 3.183342596640531,
+            "social-frequency-pressure": 4.5129508760624155
+          },
+          "meanExcessLoss": 1.9777596398771853,
+          "medianExcessLoss": 0.1561184841083288,
+          "p90ExcessLoss": 5.607365950686958,
+          "p95ExcessLoss": 10.314500801825618,
+          "cvar90ExcessLoss": 13.54426458686817,
+          "worstFamilyMeanExcessLoss": 2.7053141006529744,
+          "familyMeanExcessLoss": {
+            "balanced-dtc": 2.290300327545869,
+            "correlated-planning": 1.6536634837506932,
+            "delayed-tv": 1.51836360193729,
+            "search-demand-harvesting": 1.4077598078725493,
+            "social-frequency-pressure": 2.7053141006529744
+          },
+          "oracleSelectionRate": 0.37857142857142856,
+          "safetyAcceptedShare": 0.9166666666666666,
+          "reviewOnlyFallbackShare": 0.08333333333333333
+        },
+        "selectionObjective": 15.501280257038701
+      },
+      {
+        "configuration": {
+          "id": "family-robust",
+          "regularization": 0.01,
+          "epochs": 260,
+          "cvarWeight": 0.4,
+          "familyDroWeight": 0.85,
+          "safety": {
+            "roiPlausibility": 40,
+            "decisionStability": 40
+          }
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.36644433648025,
+              "medianLoss": 1.2199836640336086,
+              "p90Loss": 9.653624359217822,
+              "p95Loss": 12.467369445818338,
+              "cvar90Loss": 13.400249492488417,
+              "worstFamilyMeanLoss": 3.806014761318868,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.806014761318868,
+                "correlated-planning": 3.657997776230794,
+                "delayed-tv": 3.2023217945319993,
+                "search-demand-harvesting": 2.7562681361621184,
+                "social-frequency-pressure": 3.4605915732783843
+              },
+              "meanExcessLoss": 2.030893695752166,
+              "medianExcessLoss": 0.21683610349664098,
+              "p90ExcessLoss": 7.710581133394497,
+              "p95ExcessLoss": 10.549274716901088,
+              "cvar90ExcessLoss": 11.74938164191253,
+              "worstFamilyMeanExcessLoss": 3.0828627398077195,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.5816080806072987,
+                "correlated-planning": 3.0828627398077195,
+                "delayed-tv": 1.3297673543393889,
+                "search-demand-harvesting": 1.3923342069161406,
+                "social-frequency-pressure": 1.9082331781473918
+              },
+              "oracleSelectionRate": 0.30952380952380953,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.449310210016072,
+              "meanTopOneHingeBound": 0.8079872488091049,
+              "meanSmoothTopOneBound": 0.8691282338670177,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.5551218195045493,
+              "medianLoss": 1.69445456237742,
+              "p90Loss": 9.468614581915405,
+              "p95Loss": 12.241058043786097,
+              "cvar90Loss": 14.338695409395488,
+              "worstFamilyMeanLoss": 5.101997487640675,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.3696794124116374,
+                "correlated-planning": 2.614640270615798,
+                "delayed-tv": 3.346909072145312,
+                "search-demand-harvesting": 2.8829051362101223,
+                "social-frequency-pressure": 5.101997487640675
+              },
+              "meanExcessLoss": 1.925887883394894,
+              "medianExcessLoss": 0.19998189436700975,
+              "p90ExcessLoss": 7.266275726732658,
+              "p95ExcessLoss": 9.997440557853183,
+              "cvar90ExcessLoss": 11.219114501854639,
+              "worstFamilyMeanExcessLoss": 2.858564188773918,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.7270658315832796,
+                "correlated-planning": 0.37501756968704275,
+                "delayed-tv": 1.1624815292886566,
+                "search-demand-harvesting": 1.5805996305159362,
+                "social-frequency-pressure": 2.858564188773918
+              },
+              "oracleSelectionRate": 0.34523809523809523,
+              "safetyAcceptedShare": 0.9523809523809523,
+              "reviewOnlyFallbackShare": 0.047619047619047616
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.39281247870586405,
+              "meanTopOneHingeBound": 0.6853875174793097,
+              "meanSmoothTopOneBound": 0.7335631412513213,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 4.693297260326432,
+              "medianLoss": 1.7982467816484053,
+              "p90Loss": 10.222094103120742,
+              "p95Loss": 22.67936380540921,
+              "cvar90Loss": 26.20590672424081,
+              "worstFamilyMeanLoss": 6.4485658530992875,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.291879724394114,
+                "correlated-planning": 2.7354762646731423,
+                "delayed-tv": 1.9395227303780473,
+                "search-demand-harvesting": 5.166403518846896,
+                "social-frequency-pressure": 6.4485658530992875
+              },
+              "meanExcessLoss": 2.507616712545982,
+              "medianExcessLoss": 0.17849545221817478,
+              "p90ExcessLoss": 4.268891660335606,
+              "p95ExcessLoss": 17.247639330982018,
+              "cvar90ExcessLoss": 18.80281528924546,
+              "worstFamilyMeanExcessLoss": 4.770339817738405,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.9119644441866326,
+                "correlated-planning": 1.0230729931280227,
+                "delayed-tv": 0.6307294241894694,
+                "search-demand-harvesting": 1.8574044803775895,
+                "social-frequency-pressure": 4.770339817738405
+              },
+              "oracleSelectionRate": 0.39285714285714285,
+              "safetyAcceptedShare": 0.9642857142857143,
+              "reviewOnlyFallbackShare": 0.03571428571428571
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.3937156600824148,
+              "meanTopOneHingeBound": 0.6368300002658458,
+              "meanSmoothTopOneBound": 0.6803807700430122,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.720807424719005,
+              "medianLoss": 1.333554036341495,
+              "p90Loss": 9.561358753225505,
+              "p95Loss": 18.156436902517285,
+              "cvar90Loss": 17.55872754842754,
+              "worstFamilyMeanLoss": 4.478670463509281,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.7778396963969705,
+                "correlated-planning": 4.478670463509281,
+                "delayed-tv": 1.8576219062252577,
+                "search-demand-harvesting": 3.989454159799076,
+                "social-frequency-pressure": 4.058321905783051
+              },
+              "meanExcessLoss": 1.5265380111435802,
+              "medianExcessLoss": 0.08560594305199828,
+              "p90ExcessLoss": 2.721486635249616,
+              "p95ExcessLoss": 6.952687714438628,
+              "cvar90ExcessLoss": 10.481159560729457,
+              "worstFamilyMeanExcessLoss": 2.648749119454833,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.0809341142591768,
+                "correlated-planning": 0.6185705928963535,
+                "delayed-tv": 0.8571487926380849,
+                "search-demand-harvesting": 1.7963447817683658,
+                "social-frequency-pressure": 2.648749119454833
+              },
+              "oracleSelectionRate": 0.42857142857142855,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.39302856036654904,
+              "meanTopOneHingeBound": 0.667135757962542,
+              "meanSmoothTopOneBound": 0.7166238499003297,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.0802716698941746,
+              "medianLoss": 1.0637124241901297,
+              "p90Loss": 6.620078078685511,
+              "p95Loss": 11.848766779172353,
+              "cvar90Loss": 15.992697883509386,
+              "worstFamilyMeanLoss": 6.940926593669574,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.7680581383660785,
+                "correlated-planning": 1.3321101338650703,
+                "delayed-tv": 6.940926593669574,
+                "search-demand-harvesting": 1.7909766364947448,
+                "social-frequency-pressure": 3.4142842021739197
+              },
+              "meanExcessLoss": 1.25797017039766,
+              "medianExcessLoss": 0.09441285589715673,
+              "p90ExcessLoss": 3.621936825144295,
+              "p95ExcessLoss": 5.439637952123147,
+              "cvar90ExcessLoss": 6.833608340655743,
+              "worstFamilyMeanExcessLoss": 1.8328665498458587,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.2412814910535435,
+                "correlated-planning": 1.0022865163342523,
+                "delayed-tv": 1.8328665498458587,
+                "search-demand-harvesting": 1.0814105440950073,
+                "social-frequency-pressure": 1.2596908408135554
+              },
+              "oracleSelectionRate": 0.4166666666666667,
+              "safetyAcceptedShare": 0.9047619047619048,
+              "reviewOnlyFallbackShare": 0.09523809523809523
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.3897733746562536,
+              "meanTopOneHingeBound": 0.7153835572777403,
+              "meanSmoothTopOneBound": 0.768706224673759,
+              "maximumNumericalSlack": 0
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 420,
+          "meanLoss": 3.683188502184881,
+          "medianLoss": 1.3867927545162915,
+          "p90Loss": 9.556890788678801,
+          "p95Loss": 15.400056296083646,
+          "cvar90Loss": 18.16929593260512,
+          "worstFamilyMeanLoss": 4.4967522043950625,
+          "familyMeanLoss": {
+            "balanced-dtc": 3.8026943465775327,
+            "correlated-planning": 2.9637789817788165,
+            "delayed-tv": 3.457460419390039,
+            "search-demand-harvesting": 3.3172015175025895,
+            "social-frequency-pressure": 4.4967522043950625
+          },
+          "meanExcessLoss": 1.849781294646856,
+          "medianExcessLoss": 0.1537975234572164,
+          "p90ExcessLoss": 5.4408455944690965,
+          "p95ExcessLoss": 10.28536636525038,
+          "cvar90ExcessLoss": 12.699826109596259,
+          "worstFamilyMeanExcessLoss": 2.6891154289856214,
+          "familyMeanExcessLoss": {
+            "balanced-dtc": 2.1085707923379866,
+            "correlated-planning": 1.2203620823706778,
+            "delayed-tv": 1.1625987300602916,
+            "search-demand-harvesting": 1.5416187287346086,
+            "social-frequency-pressure": 2.6891154289856214
+          },
+          "oracleSelectionRate": 0.37857142857142856,
+          "safetyAcceptedShare": 0.9166666666666666,
+          "reviewOnlyFallbackShare": 0.08333333333333333
+        },
+        "selectionObjective": 15.016212570684973
+      },
+      {
+        "configuration": {
+          "id": "conservative-balanced",
+          "regularization": 0.02,
+          "epochs": 300,
+          "cvarWeight": 0.6,
+          "familyDroWeight": 0.6,
+          "safety": {
+            "roiPlausibility": 50,
+            "decisionStability": 50
+          }
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.8419038433158823,
+              "medianLoss": 1.2808043617654157,
+              "p90Loss": 9.3356597152347,
+              "p95Loss": 16.07998774880626,
+              "cvar90Loss": 17.10402194838618,
+              "worstFamilyMeanLoss": 5.404886113559237,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.444350369395445,
+                "correlated-planning": 4.470256653630406,
+                "delayed-tv": 5.404886113559237,
+                "search-demand-harvesting": 2.9733011381657795,
+                "social-frequency-pressure": 3.7932589740516938
+              },
+              "meanExcessLoss": 2.401346245488732,
+              "medianExcessLoss": 0.26804377503398213,
+              "p90ExcessLoss": 6.900578222076557,
+              "p95ExcessLoss": 13.661770368334857,
+              "cvar90ExcessLoss": 14.842660504779158,
+              "worstFamilyMeanExcessLoss": 3.8806308617057894,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.2191169063528355,
+                "correlated-planning": 3.8806308617057894,
+                "delayed-tv": 3.4801059586659338,
+                "search-demand-harvesting": 1.2573540471527804,
+                "social-frequency-pressure": 2.192741185324023
+              },
+              "oracleSelectionRate": 0.2976190476190476,
+              "safetyAcceptedShare": 0.8333333333333334,
+              "reviewOnlyFallbackShare": 0.16666666666666666
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4530240828509957,
+              "meanTopOneHingeBound": 0.7836040237604707,
+              "meanSmoothTopOneBound": 0.8387347351971679,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.670570244369808,
+              "medianLoss": 1.752034027795195,
+              "p90Loss": 9.261581400281893,
+              "p95Loss": 12.165458686991823,
+              "cvar90Loss": 14.089299725269164,
+              "worstFamilyMeanLoss": 5.078058740516975,
+              "familyMeanLoss": {
+                "balanced-dtc": 4.3612534561547305,
+                "correlated-planning": 2.5722230886686646,
+                "delayed-tv": 3.356062405172235,
+                "search-demand-harvesting": 2.4201115333769443,
+                "social-frequency-pressure": 5.078058740516975
+              },
+              "meanExcessLoss": 1.8925416503978905,
+              "medianExcessLoss": 0.13721822882692075,
+              "p90ExcessLoss": 7.576264767350791,
+              "p95ExcessLoss": 10.099134530550558,
+              "cvar90ExcessLoss": 11.569367234595425,
+              "worstFamilyMeanExcessLoss": 3.4295901561193176,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 3.4295901561193176,
+                "correlated-planning": 0.3326003877399095,
+                "delayed-tv": 1.1391987783821602,
+                "search-demand-harvesting": 0.9114172848934097,
+                "social-frequency-pressure": 2.72458799098517
+              },
+              "oracleSelectionRate": 0.36904761904761907,
+              "safetyAcceptedShare": 0.8809523809523809,
+              "reviewOnlyFallbackShare": 0.11904761904761904
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.4117414385392383,
+              "meanTopOneHingeBound": 0.6884702369232132,
+              "meanSmoothTopOneBound": 0.7341834601368399,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 4.724994535555595,
+              "medianLoss": 1.8665202163412005,
+              "p90Loss": 10.222094103120742,
+              "p95Loss": 22.67936380540921,
+              "cvar90Loss": 25.66109209202479,
+              "worstFamilyMeanLoss": 6.077533226117475,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.334060939753736,
+                "correlated-planning": 2.4691528104440112,
+                "delayed-tv": 2.250699368357225,
+                "search-demand-harvesting": 5.601471576181546,
+                "social-frequency-pressure": 6.077533226117475
+              },
+              "meanExcessLoss": 2.1192212515903877,
+              "medianExcessLoss": 0.20426388357989883,
+              "p90ExcessLoss": 4.268891660335606,
+              "p95ExcessLoss": 9.14895693960564,
+              "cvar90ExcessLoss": 14.895898176325375,
+              "worstFamilyMeanExcessLoss": 3.1304361504241918,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 2.7346900483699104,
+                "correlated-planning": 0.4557315026494537,
+                "delayed-tv": 1.2571280957138777,
+                "search-demand-harvesting": 2.0078872988675283,
+                "social-frequency-pressure": 3.1304361504241918
+              },
+              "oracleSelectionRate": 0.39285714285714285,
+              "safetyAcceptedShare": 0.8928571428571429,
+              "reviewOnlyFallbackShare": 0.10714285714285714
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.41263983608031296,
+              "meanTopOneHingeBound": 0.6136487737077244,
+              "meanSmoothTopOneBound": 0.6557258949097949,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.8537721832924166,
+              "medianLoss": 1.597831702624621,
+              "p90Loss": 9.4566883698233,
+              "p95Loss": 18.156436902517285,
+              "cvar90Loss": 17.4881198116372,
+              "worstFamilyMeanLoss": 5.039423716392702,
+              "familyMeanLoss": {
+                "balanced-dtc": 4.05370320015169,
+                "correlated-planning": 5.039423716392702,
+                "delayed-tv": 1.858197941107062,
+                "search-demand-harvesting": 3.888440679089552,
+                "social-frequency-pressure": 4.105126296087048
+              },
+              "meanExcessLoss": 1.4926585103444208,
+              "medianExcessLoss": 0.008561233329725526,
+              "p90ExcessLoss": 2.7558547947725076,
+              "p95ExcessLoss": 6.952687714438628,
+              "cvar90ExcessLoss": 10.950431455868648,
+              "worstFamilyMeanExcessLoss": 2.4797054852832914,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.2028600296973373,
+                "correlated-planning": 1.101490182749686,
+                "delayed-tv": 0.5287097425790908,
+                "search-demand-harvesting": 1.6084802732686736,
+                "social-frequency-pressure": 2.4797054852832914
+              },
+              "oracleSelectionRate": 0.4642857142857143,
+              "safetyAcceptedShare": 0.8452380952380952,
+              "reviewOnlyFallbackShare": 0.15476190476190477
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.34746521819813597,
+              "meanTopOneHingeBound": 0.5887771332914826,
+              "meanSmoothTopOneBound": 0.636088482343442,
+              "maximumNumericalSlack": 0
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 336,
+            "assessmentBusinesses": 84,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "correlated-planning": 12,
+              "delayed-tv": 12,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 84,
+              "meanLoss": 3.3683677111495456,
+              "medianLoss": 1.182559251372712,
+              "p90Loss": 10.278177192448902,
+              "p95Loss": 13.127292956165853,
+              "cvar90Loss": 17.787788394039712,
+              "worstFamilyMeanLoss": 6.904600449662007,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.769459227884375,
+                "correlated-planning": 1.2443073907661102,
+                "delayed-tv": 6.904600449662007,
+                "search-demand-harvesting": 1.8737030263183918,
+                "social-frequency-pressure": 4.6146374283684555
+              },
+              "meanExcessLoss": 1.411143715696332,
+              "medianExcessLoss": 0.19874528266222213,
+              "p90ExcessLoss": 3.42025570132117,
+              "p95ExcessLoss": 9.29278622170243,
+              "cvar90ExcessLoss": 8.350667361431972,
+              "worstFamilyMeanExcessLoss": 2.502193044603085,
+              "familyMeanExcessLoss": {
+                "balanced-dtc": 1.241868980241837,
+                "correlated-planning": 0.9133767909849757,
+                "delayed-tv": 1.6379866739174886,
+                "search-demand-harvesting": 0.6519235021381944,
+                "social-frequency-pressure": 2.502193044603085
+              },
+              "oracleSelectionRate": 0.39285714285714285,
+              "safetyAcceptedShare": 0.8214285714285714,
+              "reviewOnlyFallbackShare": 0.17857142857142858
+            },
+            "theorem": {
+              "businesses": 84,
+              "violations": 0,
+              "meanSelectedNormalizedRegret": 0.42238663895871165,
+              "meanTopOneHingeBound": 0.685749645474578,
+              "meanSmoothTopOneBound": 0.7363695126696469,
+              "maximumNumericalSlack": 0
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 420,
+          "meanLoss": 3.891921703536649,
+          "medianLoss": 1.5192901938153582,
+          "p90Loss": 9.417041504419672,
+          "p95Loss": 16.236026538519287,
+          "cvar90Loss": 19.075466766166816,
+          "worstFamilyMeanLoss": 4.7337229330283295,
+          "familyMeanLoss": {
+            "balanced-dtc": 3.992565438667994,
+            "correlated-planning": 3.159072731980379,
+            "delayed-tv": 3.954889255571554,
+            "search-demand-harvesting": 3.3514055906264404,
+            "social-frequency-pressure": 4.7337229330283295
+          },
+          "meanExcessLoss": 1.8633822747035516,
+          "medianExcessLoss": 0.18662164739449377,
+          "p90ExcessLoss": 5.32639198359674,
+          "p95ExcessLoss": 10.30920830971719,
+          "cvar90ExcessLoss": 12.905240338087099,
+          "worstFamilyMeanExcessLoss": 2.6059327713239524,
+          "familyMeanExcessLoss": {
+            "balanced-dtc": 2.1656252241562477,
+            "correlated-planning": 1.3367659451659626,
+            "delayed-tv": 1.6086258498517105,
+            "search-demand-harvesting": 1.2874124812641177,
+            "social-frequency-pressure": 2.6059327713239524
+          },
+          "oracleSelectionRate": 0.38333333333333336,
+          "safetyAcceptedShare": 0.8547619047619047,
+          "reviewOnlyFallbackShare": 0.14523809523809525
+        },
+        "selectionObjective": 15.796516553134222
+      }
+    ],
+    "selectedConfiguration": {
+      "id": "family-robust",
+      "regularization": 0.01,
+      "epochs": 260,
+      "cvarWeight": 0.4,
+      "familyDroWeight": 0.85,
+      "safety": {
+        "roiPlausibility": 40,
+        "decisionStability": 40
+      }
+    },
+    "finalFit": {
+      "model": {
+        "ordinaryWeights": {
+          "rolling-oos": 0,
+          "predictive-coverage": 0,
+          "fold-stability": 0.006817318425293431,
+          "spend-regimes": 0,
+          "residual-independence": 0.0005576117500112986,
+          "variance-structure": 0,
+          "likelihood-shape": 0.17999999999999997,
+          "multicollinearity": 0.17999999999999997,
+          "functional-form": 0,
+          "influence-stability": 0.17999999999999997,
+          "non-negative-boundary": 0,
+          "anchor-recovery": 0,
+          "new-data-stability": 0,
+          "confounder-sensitivity": 0.00007022630284221774,
+          "future-media-placebo": 0,
+          "roi-posterior-plausibility": 0.03608151237606771,
+          "roi-decision-stability": 0,
+          "roi-resolution": 0.056592472686758585,
+          "roi-identification": 0,
+          "evidence-source-quality": 0.17988085845902685,
+          "evidence-compatibility": 0,
+          "evidence-decision-dependence": 0,
+          "roi-economic-consistency": 0,
+          "whole-flight-generalization": 0,
+          "carryover-support": 0,
+          "post-flight-residual-stability": 0.17999999999999997,
+          "kernel-distinguishability": 0
+        },
+        "temporalWeights": {
+          "rolling-oos": 0,
+          "predictive-coverage": 0,
+          "fold-stability": 0,
+          "spend-regimes": 0,
+          "residual-independence": 0.0008584610545205946,
+          "variance-structure": 0,
+          "likelihood-shape": 0.1799753892603856,
+          "multicollinearity": 0.17999999999999997,
+          "functional-form": 0,
+          "influence-stability": 0.17999999999999997,
+          "non-negative-boundary": 0,
+          "anchor-recovery": 0,
+          "new-data-stability": 0.00006878949965898667,
+          "confounder-sensitivity": 0.0025836429660692746,
+          "future-media-placebo": 0,
+          "roi-posterior-plausibility": 0,
+          "roi-decision-stability": 0,
+          "roi-resolution": 0,
+          "roi-identification": 0.03235666889430827,
+          "evidence-source-quality": 0.17968836770182597,
+          "evidence-compatibility": 0.005432503302214125,
+          "evidence-decision-dependence": 0.01181269352608229,
+          "roi-economic-consistency": 0,
+          "whole-flight-generalization": 0.04722348379493496,
+          "carryover-support": 0,
+          "post-flight-residual-stability": 0.17999999999999997,
+          "kernel-distinguishability": 0
+        },
+        "configuration": {
+          "id": "family-robust",
+          "regularization": 0.01,
+          "epochs": 260,
+          "cvarWeight": 0.4,
+          "familyDroWeight": 0.85,
+          "safety": {
+            "roiPlausibility": 40,
+            "decisionStability": 40
+          }
+        }
+      },
+      "descriptiveDevelopmentMetrics": {
+        "businesses": 420,
+        "meanLoss": 3.6594785668207632,
+        "medianLoss": 1.4036495990753115,
+        "p90Loss": 9.27868493162277,
+        "p95Loss": 16.235444693410074,
+        "cvar90Loss": 18.22614346410762,
+        "worstFamilyMeanLoss": 4.533160837657748,
+        "familyMeanLoss": {
+          "balanced-dtc": 3.937698433403802,
+          "correlated-planning": 2.9440859302529323,
+          "delayed-tv": 3.276484027529806,
+          "search-demand-harvesting": 3.1666087349160073,
+          "social-frequency-pressure": 4.533160837657748
+        },
+        "meanExcessLoss": 1.8260713592827373,
+        "medianExcessLoss": 0.1561184841083288,
+        "p90ExcessLoss": 4.5575586373636225,
+        "p95ExcessLoss": 9.667239539851547,
+        "cvar90ExcessLoss": 12.54787916803723,
+        "worstFamilyMeanExcessLoss": 2.7255240622483052,
+        "familyMeanExcessLoss": {
+          "balanced-dtc": 2.243574879164255,
+          "correlated-planning": 1.2006690308447927,
+          "delayed-tv": 0.9816223382000592,
+          "search-demand-harvesting": 1.3910259461480237,
+          "social-frequency-pressure": 2.7255240622483052
+        },
+        "oracleSelectionRate": 0.3738095238095238,
+        "safetyAcceptedShare": 0.9166666666666666,
+        "reviewOnlyFallbackShare": 0.08333333333333333
+      },
+      "theorem": {
+        "businesses": 420,
+        "violations": 0,
+        "meanSelectedNormalizedRegret": 0.41595188049458187,
+        "meanTopOneHingeBound": 0.7020047984435893,
+        "meanSmoothTopOneBound": 0.7533771684886532,
+        "maximumNumericalSlack": 0
+      }
+    }
+  },
+  "descriptiveComparators": {
+    "failedV3": {
+      "businesses": 420,
+      "meanLoss": 3.744957867236169,
+      "medianLoss": 1.3193005128300448,
+      "p90Loss": 9.131898196548253,
+      "p95Loss": 14.361665845517107,
+      "cvar90Loss": 18.219071132921748,
+      "worstFamilyMeanLoss": 4.525726533836041,
+      "familyMeanLoss": {
+        "balanced-dtc": 3.9430028607627814,
+        "correlated-planning": 2.8294693585435997,
+        "delayed-tv": 4.121996497936717,
+        "search-demand-harvesting": 3.0892141339049037,
+        "social-frequency-pressure": 4.525726533836041
+      },
+      "meanExcessLoss": 2.378864214839868,
+      "medianExcessLoss": 0.4875939452263285,
+      "p90ExcessLoss": 6.905681829074959,
+      "p95ExcessLoss": 11.466771783905122,
+      "cvar90ExcessLoss": 14.135065790016561,
+      "worstFamilyMeanExcessLoss": 3.2607102572029696,
+      "familyMeanExcessLoss": {
+        "balanced-dtc": 2.603985288660698,
+        "correlated-planning": 1.6564999620328729,
+        "delayed-tv": 2.5194256703308398,
+        "search-demand-harvesting": 1.620978777045557,
+        "social-frequency-pressure": 3.2607102572029696
+      },
+      "oracleSelectionRate": 0.2857142857142857,
+      "safetyAcceptedShare": 0,
+      "reviewOnlyFallbackShare": 0
+    },
+    "activeV6": {
+      "businesses": 420,
+      "meanLoss": 3.713793387976728,
+      "medianLoss": 1.4221388951673823,
+      "p90Loss": 9.333829513589587,
+      "p95Loss": 13.08328699838058,
+      "cvar90Loss": 18.05204868806107,
+      "worstFamilyMeanLoss": 4.134949513484018,
+      "familyMeanLoss": {
+        "balanced-dtc": 3.92900916139375,
+        "correlated-planning": 3.0687658358624574,
+        "delayed-tv": 3.401538214396869,
+        "search-demand-harvesting": 3.6517911244688896,
+        "social-frequency-pressure": 4.134949513484018
+      },
+      "meanExcessLoss": 2.347699735580426,
+      "medianExcessLoss": 0.5323792743840472,
+      "p90ExcessLoss": 6.920260589972771,
+      "p95ExcessLoss": 10.624456690529037,
+      "cvar90ExcessLoss": 14.027444745299622,
+      "worstFamilyMeanExcessLoss": 2.8699332368509483,
+      "familyMeanExcessLoss": {
+        "balanced-dtc": 2.589991589291665,
+        "correlated-planning": 1.8957964393517308,
+        "delayed-tv": 1.7989673867909928,
+        "search-demand-harvesting": 2.1835557676095445,
+        "social-frequency-pressure": 2.8699332368509483
+      },
+      "oracleSelectionRate": 0.2857142857142857,
+      "safetyAcceptedShare": 0,
+      "reviewOnlyFallbackShare": 0
+    }
+  },
+  "nextGate": "Freeze this method, then generate a fresh independent validation cohort. Do not open the V3 audit."
+}

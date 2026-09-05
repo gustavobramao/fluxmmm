@@ -1,0 +1,320 @@
+{
+  "artifactId": "flux-svi-score-v9-development-evidence-attribution-v1",
+  "activation": "development-only",
+  "estimand": "local Laplace ROI-uncertainty curvature share among outer-fold selected candidates",
+  "selectedBusinesses": 420,
+  "channelRows": 1260,
+  "overall": {
+    "channels": 1260,
+    "businesses": 420,
+    "equalChannelMean": {
+      "observational": 0.42052536863180406,
+      "experiment": 0.36909308149746545,
+      "benchmark": 0.07046792743810566,
+      "regularization": 0.13991362243262465
+    },
+    "equalChannelMedian": {
+      "observational": 0.40361787231325574,
+      "experiment": 0.19390127858613265,
+      "benchmark": 0.0011380511581244332,
+      "regularization": 0.03117080281511735
+    },
+    "spendWeightedMean": {
+      "observational": 0.4496941191253822,
+      "experiment": 0.34037802956994234,
+      "benchmark": 0.06071598826515499,
+      "regularization": 0.1492118630395209
+    },
+    "conditionalDataShare": {
+      "mean": 0.08537764545532962,
+      "median": 0.03874683213206468
+    },
+    "maximumAttributionResidual": 5.213607323639735e-13
+  },
+  "byChannel": {
+    "ctv_spend": {
+      "channels": 420,
+      "businesses": 420,
+      "equalChannelMean": {
+        "observational": 0.5011397614382803,
+        "experiment": 0.3456267298583772,
+        "benchmark": 0.06224059257946009,
+        "regularization": 0.09099291612388283
+      },
+      "equalChannelMedian": {
+        "observational": 0.5503367329148029,
+        "experiment": 0.16052753994488791,
+        "benchmark": 0.0006379513237294926,
+        "regularization": 0.014215010363461414
+      },
+      "spendWeightedMean": {
+        "observational": 0.569444300802148,
+        "experiment": 0.2819683126736386,
+        "benchmark": 0.05326791803783753,
+        "regularization": 0.09531946848637551
+      },
+      "conditionalDataShare": {
+        "mean": 0.17903832312598433,
+        "median": 0.15480229081135632
+      },
+      "maximumAttributionResidual": 8.881784197001252e-14
+    },
+    "google_search_nonbrand_spend": {
+      "channels": 420,
+      "businesses": 420,
+      "equalChannelMean": {
+        "observational": 0.3288383616485676,
+        "experiment": 0.41646136611302165,
+        "benchmark": 0.08407263047520663,
+        "regularization": 0.17062764176320394
+      },
+      "equalChannelMedian": {
+        "observational": 0.2293591765791566,
+        "experiment": 0.2835161504092632,
+        "benchmark": 0.0005267232166001219,
+        "regularization": 0.03455290723453547
+      },
+      "spendWeightedMean": {
+        "observational": 0.37449665023955836,
+        "experiment": 0.39257883408493227,
+        "benchmark": 0.06833259318321153,
+        "regularization": 0.1645919224922979
+      },
+      "conditionalDataShare": {
+        "mean": 0.03784226496805328,
+        "median": 0.023779223650940172
+      },
+      "maximumAttributionResidual": 1.5631940186722204e-13
+    },
+    "meta_acquisition_spend": {
+      "channels": 420,
+      "businesses": 420,
+      "equalChannelMean": {
+        "observational": 0.4315979828085651,
+        "experiment": 0.34519114852099675,
+        "benchmark": 0.06509055925965047,
+        "regularization": 0.1581203094107876
+      },
+      "equalChannelMedian": {
+        "observational": 0.4219941527021274,
+        "experiment": 0.23309754796749738,
+        "benchmark": 0.0030596511016808426,
+        "regularization": 0.054050239535663305
+      },
+      "spendWeightedMean": {
+        "observational": 0.47266231016685906,
+        "experiment": 0.3112716157259857,
+        "benchmark": 0.055896942536877305,
+        "regularization": 0.1601691315702773
+      },
+      "conditionalDataShare": {
+        "mean": 0.03925234827195139,
+        "median": 0.027406319309674815
+      },
+      "maximumAttributionResidual": 5.213607323639735e-13
+    }
+  },
+  "byEvidenceArm": {
+    "benchmark-gap-fill": {
+      "channels": 1077,
+      "businesses": 359,
+      "equalChannelMean": {
+        "observational": 0.4221868233102074,
+        "experiment": 0.3826171653331129,
+        "benchmark": 0.0824415864178395,
+        "regularization": 0.11275442493884014
+      },
+      "equalChannelMedian": {
+        "observational": 0.41135922252122425,
+        "experiment": 0.24997540880613625,
+        "benchmark": 0.0038703702346233933,
+        "regularization": 0.024803797418002132
+      },
+      "spendWeightedMean": {
+        "observational": 0.4551796243254509,
+        "experiment": 0.34965848474672767,
+        "benchmark": 0.07006180853170198,
+        "regularization": 0.12510008239611997
+      },
+      "conditionalDataShare": {
+        "mean": 0.08762816317814708,
+        "median": 0.04019164019486666
+      },
+      "maximumAttributionResidual": 1.616484723854228e-13
+    },
+    "experiments-only": {
+      "channels": 183,
+      "businesses": 61,
+      "equalChannelMean": {
+        "observational": 0.4107472992949728,
+        "experiment": 0.289500522530293,
+        "benchmark": 0,
+        "regularization": 0.2997521781747341
+      },
+      "equalChannelMedian": {
+        "observational": 0.3018140515508604,
+        "experiment": 0.028364338171883774,
+        "benchmark": 0,
+        "regularization": 0.07152855133171726
+      },
+      "spendWeightedMean": {
+        "observational": 0.4140570257663351,
+        "experiment": 0.28008669167358574,
+        "benchmark": 0,
+        "regularization": 0.30585628256007974
+      },
+      "conditionalDataShare": {
+        "mean": 0.07213279525055173,
+        "median": 0.02903328646676147
+      },
+      "maximumAttributionResidual": 5.213607323639735e-13
+    }
+  },
+  "byGeneratorFamily": {
+    "balanced-dtc": {
+      "channels": 300,
+      "businesses": 100,
+      "equalChannelMean": {
+        "observational": 0.40443515422060033,
+        "experiment": 0.40161730153359626,
+        "benchmark": 0.0625781031923738,
+        "regularization": 0.13136944105342954
+      },
+      "equalChannelMedian": {
+        "observational": 0.3469218523238864,
+        "experiment": 0.3421273550659096,
+        "benchmark": 0.000526619805886261,
+        "regularization": 0.030619755253520398
+      },
+      "spendWeightedMean": {
+        "observational": 0.4341782009218289,
+        "experiment": 0.3595734913633831,
+        "benchmark": 0.05375664024323216,
+        "regularization": 0.15249166747155593
+      },
+      "conditionalDataShare": {
+        "mean": 0.08258845533129412,
+        "median": 0.03147617768285134
+      },
+      "maximumAttributionResidual": 8.459899447643693e-14
+    },
+    "correlated-planning": {
+      "channels": 180,
+      "businesses": 60,
+      "equalChannelMean": {
+        "observational": 0.45620581996847726,
+        "experiment": 0.3863198383357246,
+        "benchmark": 0.0556333848019099,
+        "regularization": 0.10184095689388827
+      },
+      "equalChannelMedian": {
+        "observational": 0.4944169267689104,
+        "experiment": 0.20420917472978134,
+        "benchmark": 0.0022325471585602896,
+        "regularization": 0.021597027427459184
+      },
+      "spendWeightedMean": {
+        "observational": 0.5107399571083798,
+        "experiment": 0.32665772479131683,
+        "benchmark": 0.050947887868868495,
+        "regularization": 0.11165443023143423
+      },
+      "conditionalDataShare": {
+        "mean": 0.08719553260064476,
+        "median": 0.04300047789545138
+      },
+      "maximumAttributionResidual": 1.4444001550373287e-13
+    },
+    "delayed-tv": {
+      "channels": 180,
+      "businesses": 60,
+      "equalChannelMean": {
+        "observational": 0.4167780012317262,
+        "experiment": 0.3647698385758497,
+        "benchmark": 0.06322237569024683,
+        "regularization": 0.1552297845021772
+      },
+      "equalChannelMedian": {
+        "observational": 0.35980059684552734,
+        "experiment": 0.17306028094134007,
+        "benchmark": 0.0008690632416283393,
+        "regularization": 0.04221565878576421
+      },
+      "spendWeightedMean": {
+        "observational": 0.4143019632046097,
+        "experiment": 0.36493001418417587,
+        "benchmark": 0.054111336912098865,
+        "regularization": 0.16665668569911546
+      },
+      "conditionalDataShare": {
+        "mean": 0.08034928880475786,
+        "median": 0.03316293788690306
+      },
+      "maximumAttributionResidual": 5.213607323639735e-13
+    },
+    "search-demand-harvesting": {
+      "channels": 300,
+      "businesses": 100,
+      "equalChannelMean": {
+        "observational": 0.4351698874725772,
+        "experiment": 0.33055942895239565,
+        "benchmark": 0.07793530801555008,
+        "regularization": 0.15633537555947719
+      },
+      "equalChannelMedian": {
+        "observational": 0.4433488333722638,
+        "experiment": 0.10176614694710559,
+        "benchmark": 0.00209602300476026,
+        "regularization": 0.03471091266131096
+      },
+      "spendWeightedMean": {
+        "observational": 0.4526395915003442,
+        "experiment": 0.33287403052067194,
+        "benchmark": 0.061802921995693844,
+        "regularization": 0.15268345598329067
+      },
+      "conditionalDataShare": {
+        "mean": 0.09320301975721647,
+        "median": 0.04975972489734444
+      },
+      "maximumAttributionResidual": 1.616484723854228e-13
+    },
+    "social-frequency-pressure": {
+      "channels": 300,
+      "businesses": 100,
+      "equalChannelMean": {
+        "observational": 0.4028112138402783,
+        "experiment": 0.3673604056564175,
+        "benchmark": 0.0841384277368262,
+        "regularization": 0.1456899527664781
+      },
+      "equalChannelMedian": {
+        "observational": 0.38813750140420644,
+        "experiment": 0.18001431813513152,
+        "benchmark": 0.00039817245687003087,
+        "regularization": 0.024403361404717733
+      },
+      "spendWeightedMean": {
+        "observational": 0.4402672667843113,
+        "experiment": 0.32427608572429334,
+        "benchmark": 0.07753056335849456,
+        "regularization": 0.1579260841329008
+      },
+      "conditionalDataShare": {
+        "mean": 0.08226774298063244,
+        "median": 0.0378959641226987
+      },
+      "maximumAttributionResidual": 1.376676550535194e-13
+    }
+  },
+  "interpretation": {
+    "influenceOnly": true,
+    "causalValidityImplied": false,
+    "note": "Shares describe which fitted source locally supplies ROI precision; they do not score source quality or prove exogeneity."
+  },
+  "provenance": {
+    "selections": "outer-fold cross-fitted development selections",
+    "sealedAuditDereferenced": false,
+    "hiddenCausalTruthUsed": false
+  }
+}

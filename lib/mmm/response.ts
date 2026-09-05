@@ -4,6 +4,20 @@ import type { MediaResponseConfig, ModelConfig } from "./types";
 const clamp = (value: number, low: number, high: number) =>
   Math.min(high, Math.max(low, value));
 
+export function normalizeMediaResponseConfig(
+  response: MediaResponseConfig,
+): MediaResponseConfig {
+  return {
+    adstockType: response.adstockType,
+    adstock: clamp(response.adstock, 0.01, 0.99),
+    weibullShape: clamp(response.weibullShape, 0.2, 12),
+    weibullScale: clamp(response.weibullScale, 0.5, 52),
+    saturation: clamp(response.saturation, 0.25, 5),
+    halfSaturationQuantile: clamp(response.halfSaturationQuantile, 0.1, 0.9),
+    kernelNormalization: response.kernelNormalization,
+  };
+}
+
 function channelOverride(
   config: ModelConfig,
   channel: string,
@@ -22,27 +36,15 @@ export function responseForChannel(
   channel: string,
 ): MediaResponseConfig {
   const override = channelOverride(config, channel);
-  return {
+  return normalizeMediaResponseConfig({
     adstockType: override?.adstockType ?? config.adstockType,
-    adstock: clamp(override?.adstock ?? config.adstock, 0.01, 0.99),
-    weibullShape: clamp(
-      override?.weibullShape ?? config.weibullShape,
-      0.2,
-      12,
-    ),
-    weibullScale: clamp(
-      override?.weibullScale ?? config.weibullScale,
-      0.5,
-      52,
-    ),
-    saturation: clamp(override?.saturation ?? config.saturation, 0.25, 5),
-    halfSaturationQuantile: clamp(
-      override?.halfSaturationQuantile ?? 0.5,
-      0.1,
-      0.9,
-    ),
+    adstock: override?.adstock ?? config.adstock,
+    weibullShape: override?.weibullShape ?? config.weibullShape,
+    weibullScale: override?.weibullScale ?? config.weibullScale,
+    saturation: override?.saturation ?? config.saturation,
+    halfSaturationQuantile: override?.halfSaturationQuantile ?? 0.5,
     kernelNormalization: override?.kernelNormalization ?? "peak",
-  };
+  });
 }
 
 export function positiveQuantile(values: number[], quantile: number): number {

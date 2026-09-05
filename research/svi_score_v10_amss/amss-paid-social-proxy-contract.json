@@ -1,0 +1,57 @@
+{
+  "artifactId": "flux-v10-amss-paid-social-stress-proxy-contract-v1",
+  "status": "predeclared-before-three-channel-smoke-or-cohort-generation",
+  "upstreamAmssRevision": "cbf5e7f6c668de493077ce1d08a2ab963891f0cc",
+  "mechanism": {
+    "rawChannelName": "paid_social_proxy",
+    "amssModule": "DefaultTraditionalMediaModule",
+    "moduleModified": false,
+    "role": "exposure-media stress proxy mapped to V9 paid-social input role",
+    "permittedClaim": "AMSS-generated exposure-media proxy with paid-social-like targeting, pacing, activity, and favorability effects",
+    "forbiddenClaims": [
+      "native AMSS paid-social module",
+      "platform-auction simulator",
+      "literal Meta or paid-social delivery replica"
+    ]
+  },
+  "referenceParameters": {
+    "annualBudgets": [18000000, 22000000, 28000000, 34000000],
+    "unitCostPerExposure": 0.008,
+    "hillEc50Frequency": 2.2,
+    "hillSlope": 1.3,
+    "audienceMembershipByActivity": [0.15, 0.55, 0.45],
+    "audienceMembershipByFavorability": [0.25, 0.35, 0.65, 0.8, 0.9],
+    "latentDemandPlanningCorrelation": 0.55,
+    "pacingAutocorrelation": 0.6,
+    "minimumWeeklyFlightingWeight": 0.05
+  },
+  "moduleOrder": ["paid_social_proxy", "search", "tv"],
+  "frozenV9Mapping": {
+    "paid_social_proxy.spend": "meta_acquisition_spend",
+    "search.spend": "google_search_nonbrand_spend",
+    "tv.spend": "ctv_spend"
+  },
+  "inputBoundary": {
+    "candidateVisible": [
+      "weekly date",
+      "revenue",
+      "three realized spend series",
+      "declared observable controls"
+    ],
+    "candidateForbidden": [
+      "market.rate.seas",
+      "consumer-state tables",
+      "transition matrices",
+      "AMSS response parameters",
+      "CalculateROAS outputs",
+      "counterfactual outcomes",
+      "OptimizeSpend outputs"
+    ]
+  },
+  "researchBoundary": {
+    "tuneProxyAfterFluxOutcomes": false,
+    "dropBusinessesAfterFluxOutcomes": false,
+    "cohortRangesFrozen": false,
+    "threeChannelSmokeProducesResearchLabels": false
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "flux-svi-score-v3-validation-protocol-freeze-v1",
+  "protocolId": "flux-svi-score-v3-validation-v2-powered-screen",
+  "frozenAt": "2026-09-01T13:30:57Z",
+  "status": "predeclared-unopened",
+  "validationOutcomesAccessed": false,
+  "auditOutcomesAccessed": false,
+  "cohort": {
+    "validationBusinesses": 120,
+    "validationRows": 5760,
+    "families": {
+      "delayed-tv": 60,
+      "correlated-planning": 60
+    },
+    "sealedAuditBusinesses": 80
+  },
+  "primary": {
+    "estimand": "paired difference in uncapped excess SVI posterior-expected decision loss",
+    "comparator": "active V6 diagnostic ranker",
+    "bootstrap": "20000 generator-family-stratified paired replicates",
+    "oneSidedConfidence": 0.95,
+    "relativeNonInferiorityMargin": 0.02,
+    "directionRequired": "challenger mean excess loss below comparator and lower regret-weighted oracle-misranking bound",
+    "superiority": "one-sided 95% upper confidence bound below zero"
+  },
+  "prospectivePower": {
+    "source": "300 training businesses only",
+    "validationOutcomesAccessed": false,
+    "pairedStandardDeviation": 3.143829726235399,
+    "activeV6MeanExcessLoss": 2.547826864584052,
+    "absoluteEffectForApproximate80PercentPower": 0.7135961365319005,
+    "relativeEffectForApproximate80PercentPower": 0.2800803094006151,
+    "consequence": "The bootstrap confidence classifications are reported but are not progression gates; the 120-business cohort is a directional and safety screen."
+  },
+  "safetyMargins": {
+    "p90ExcessLossRelative": 0.02,
+    "p95ExcessLossRelative": 0.02,
+    "eachFamilyMeanExcessLossRelative": 0.02,
+    "lowestLossSelectionRateAbsolute": 0.02
+  },
+  "files": [
+    {
+      "role": "executable-protocol",
+      "path": "research/svi_score_v3/validation-protocol.ts",
+      "sha256": "991d118cb3a1d17f9adf777b05c7320bf2c6fc925078a3a6042c2bd1e02b5b50"
+    },
+    {
+      "role": "human-readable-protocol",
+      "path": "research/svi_score_v3/VALIDATION_PROTOCOL.md",
+      "sha256": "fb139e8b4de0eec692b5f256be207ab9802f9581967b800cf5ac7bde59ab7be9"
+    },
+    {
+      "role": "training-freeze",
+      "path": "research/svi_score_v3/artifacts/svi-score-v3-training-freeze.json",
+      "sha256": "7765e31640ce952c5a44df3f9cf8625ba9f59030a26cf9a6451ca4d2dfbd6fd7"
+    },
+    {
+      "role": "challenger",
+      "path": "research/svi_score_v3/artifacts/svi-score-v3-grouped-training.json",
+      "sha256": "4a86efcdc2c9cff5ff1a449aa9aa87197b1178fdb981d33d48475cb97efcf2f6"
+    },
+    {
+      "role": "comparator",
+      "path": "research/score_v6/artifacts/learned-score-v6-pilot.json",
+      "sha256": "a1cd2709d643ed6c296244188f6fc6023b63cf9e46ba49baa080c75a525d1c1c"
+    },
+    {
+      "role": "simulator-population",
+      "path": "research/score_v3/artifacts/simulator-audit-v3-summary.json",
+      "sha256": "381a2d55a560fa588d3a9f01c880e05ba6bdd98a8980adb7fd600ea65c70d50a"
+    }
+  ],
+  "decisionRule": "Proceed to the sealed audit only if cohort integrity, directional mean improvement, theorem misranking-bound improvement, P90 safety, P95 safety, both family safety checks, oracle-selection-rate safety, and immutable eligibility agreement all pass.",
+  "prospectiveAmendment": {
+    "previousProtocolId": "flux-svi-score-v3-validation-v1",
+    "reason": "A training-only power calculation showed that a mandatory 2% confidence-bound gate was severely underpowered at 120 businesses.",
+    "timing": "Made before any validation outcome was evaluated; the previous draft was never executed."
+  },
+  "governance": [
+    "A superiority claim requires the one-sided 95% upper confidence bound to be below zero.",
+    "Passing validation means safe to proceed to adversarial audit, not statistically proven superiority.",
+    "Secondary endpoints cannot rescue a failed primary or safety gate.",
+    "A revision made after validation results requires a new method version and a new independent validation cohort.",
+    "The 80-business audit remains sealed until this frozen protocol permits progression."
+  ]
+}

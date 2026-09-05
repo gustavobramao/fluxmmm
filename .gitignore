@@ -41,7 +41,9 @@ next-env.d.ts
 /.pnpm-store/
 /.wrangler/
 /outputs/
+/output/
 /work/
+/tmp/
 /.venv/
 /.flux-artifacts/
 # Score Lab imports the small deterministic pilot fixtures at build time. Keep
@@ -52,5 +54,8 @@ next-env.d.ts
 # The V6 runtime artifact is versioned; the full 14,400-candidate training
 # cohort is reproducible locally and intentionally excluded from the release.
 /research/score_v6/artifacts/cohort-v6.json
+/research/svi_score_v3/artifacts/svi-score-v3-design-pilot.json
+/research/svi_score_v10_amss/cloud/*.tar.gz
+/research/svi_score_v10_amss/abandoned/
 __pycache__/
 *.pyc

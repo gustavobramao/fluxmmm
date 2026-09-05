@@ -1,6 +1,7 @@
 import type { ModelResult } from "../types";
 import type { IndustryPriorOverrides } from "../benchmarks";
 import type { ValidationScoreContract } from "../score-contract";
+import type { EvidenceDecisionDependence } from "./evidence-dependence";
 
 export type ValidationModelKind = ModelResult["kind"];
 export type ValidationLayerId =
@@ -52,6 +53,7 @@ export interface ChannelEvidenceCoherence {
   status: ChannelEvidenceStatus;
   blocking: boolean;
   detail: string;
+  evidenceDependence?: EvidenceDecisionDependence;
 }
 
 export interface EvidenceCoherenceAssessment {
@@ -180,6 +182,7 @@ export interface DecisionEvidence {
     posteriorMass?: number;
     priorUse: ChannelEvidenceCoherence["priorUse"];
     identification: ChannelEvidenceCoherence["identification"];
+    evidenceDependence?: EvidenceDecisionDependence;
     plausibilityScore: number;
     stabilityScore: number;
     resolutionScore: number;

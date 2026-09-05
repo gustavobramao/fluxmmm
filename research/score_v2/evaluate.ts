@@ -1,7 +1,9 @@
 import {
+  normalizeMediaResponseConfig,
   responseForChannel,
   responseTransform,
 } from "../../lib/mmm/response";
+import type { SamplingDecisionDraw } from "../../lib/mmm/sampling";
 import type { ModelConfig, ModelResult } from "../../lib/mmm/types";
 import {
   DECISION_ALLOCATION_CANDIDATES,
@@ -285,6 +287,153 @@ function modelDecisionValueSurface(
   };
 }
 
+/**
+ * Construct the decision surface directly from one aligned posterior draw.
+ *
+ * The SVI cache retains joint channel contribution and response draws but not
+ * the original screening model object.  Decision value depends only on those
+ * retained quantities, observed channel spend paths, and the declared
+ * business margin.  Reconstructing the surface here is therefore equivalent
+ * to the historical model-for-draw path while allowing scenario labels to be
+ * rebuilt from immutable SVI artifacts without re-fitting a MAP model.
+ */
+function alignedDrawDecisionValueSurface(
+  business: SyntheticBusiness,
+  draw: SamplingDecisionDraw,
+): (allocation: Record<string, number>) => number {
+  const maximumScale = 3;
+  const points = 401;
+  const surfaces = new Map(
+    business.truth.channels.map((truth) => {
+      const sampled = draw.channels.find(
+        (channel) =>
+          channel.channel.toLowerCase() === truth.spendColumn.toLowerCase(),
+      );
+      if (!sampled) {
+        return [truth.channel, Array(points).fill(0)] as const;
+      }
+      // Preserve the historical posterior-label contract exactly. The
+      // coefficient was reconstructed from the raw inference draw, while the
+      // allocation response surface passed through the product's declared
+      // parameter bounds via responseForChannel.
+      const coefficientBaseline = responseTransform(truth.spend, sampled.response);
+      const basis = sum(coefficientBaseline.transformed);
+      const coefficient = sampled.contribution / Math.max(basis, 1e-9);
+      const decisionResponse = normalizeMediaResponseConfig(sampled.response);
+      const surfaceBaseline = responseTransform(truth.spend, decisionResponse);
+      const values = Array.from({ length: points }, (_, index) => {
+        const scale = index / (points - 1) * maximumScale;
+        return coefficient * sum(
+          responseTransform(
+            truth.spend.map((value) => value * scale),
+            decisionResponse,
+            surfaceBaseline.halfSaturation,
+          ).transformed,
+        );
+      });
+      return [truth.channel, values] as const;
+    }),
+  );
+  const currentContribution = business.truth.channels.reduce(
+    (total, channel) =>
+      total + interpolateSurface(surfaces.get(channel.channel)!, 1, maximumScale),
+    0,
+  );
+  const margin = business.truth.allocation.effectiveRevenueMargin;
+  return (allocation) => {
+    const contribution = business.truth.channels.reduce((total, channel) => {
+      const scale = Math.min(
+        maximumScale,
+        Math.max(
+          0,
+          (channel.totalSpend + (allocation[channel.channel] ?? 0)) /
+            Math.max(channel.totalSpend, 1),
+        ),
+      );
+      return total + interpolateSurface(
+        surfaces.get(channel.channel)!,
+        scale,
+        maximumScale,
+      );
+    }, 0);
+    return (contribution - currentContribution) * margin -
+      sum(Object.values(allocation));
+  };
+}
+
+/**
+ * Algebraically equivalent posterior-mean surface used by V8 reconstruction.
+ * Carryover is linear in a common spend multiplier, so a channel's carryover
+ * path is computed once per draw.  Only the Hill response is evaluated over
+ * the fixed 401-point grid. Averaging those grids before allocation search is
+ * identical to averaging the draw-specific decision values afterwards.
+ */
+function alignedPosteriorExpectedDecisionValueSurface(
+  business: SyntheticBusiness,
+  draws: readonly SamplingDecisionDraw[],
+): (allocation: Record<string, number>) => number {
+  const maximumScale = 3;
+  const points = 401;
+  const surfaces = new Map(
+    business.truth.channels.map((truth) => {
+      const expected = Array(points).fill(0) as number[];
+      draws.forEach((draw) => {
+        const sampled = draw.channels.find(
+          (channel) =>
+            channel.channel.toLowerCase() === truth.spendColumn.toLowerCase(),
+        );
+        if (!sampled) return;
+        const coefficientBaseline = responseTransform(truth.spend, sampled.response);
+        const coefficient = sampled.contribution /
+          Math.max(sum(coefficientBaseline.transformed), 1e-9);
+        const decisionResponse = normalizeMediaResponseConfig(sampled.response);
+        const surfaceBaseline = responseTransform(truth.spend, decisionResponse);
+        const carryoverPowers = surfaceBaseline.carryover.map(
+          (value) => Math.max(value, 0) ** decisionResponse.saturation,
+        );
+        const halfPower = surfaceBaseline.halfSaturation **
+          decisionResponse.saturation;
+        for (let index = 0; index < points; index += 1) {
+          const scale = index / (points - 1) * maximumScale;
+          const scalePower = scale ** decisionResponse.saturation;
+          let transformed = 0;
+          for (const carryoverPower of carryoverPowers) {
+            const powered = carryoverPower * scalePower;
+            transformed += powered / (powered + halfPower || 1);
+          }
+          expected[index] += coefficient * transformed / draws.length;
+        }
+      });
+      return [truth.channel, expected] as const;
+    }),
+  );
+  const currentContribution = business.truth.channels.reduce(
+    (total, channel) =>
+      total + interpolateSurface(surfaces.get(channel.channel)!, 1, maximumScale),
+    0,
+  );
+  const margin = business.truth.allocation.effectiveRevenueMargin;
+  return (allocation) => {
+    const contribution = business.truth.channels.reduce((total, channel) => {
+      const scale = Math.min(
+        maximumScale,
+        Math.max(
+          0,
+          (channel.totalSpend + (allocation[channel.channel] ?? 0)) /
+            Math.max(channel.totalSpend, 1),
+        ),
+      );
+      return total + interpolateSurface(
+        surfaces.get(channel.channel)!,
+        scale,
+        maximumScale,
+      );
+    }, 0);
+    return (contribution - currentContribution) * margin -
+      sum(Object.values(allocation));
+  };
+}
+
 function recommendForDecisionScenario(
   business: SyntheticBusiness,
   contract: DecisionScenarioContract,
@@ -373,17 +522,17 @@ export function recommendCandidateAllocation(
   return { allocation: best, spend: bestSpend, predictedProfit: bestValue };
 }
 
-export function evaluateDecisionScenarioRegret(
-  business: SyntheticBusiness,
-  model: ModelResult,
-  config: ModelConfig,
-): {
+export interface DecisionScenarioTruthEvaluation {
   regret: Record<DecisionScenarioId, number>;
   economicLoss: Record<DecisionScenarioId, number>;
   recommendedSpend: Record<DecisionScenarioId, number>;
-} {
+}
+
+function evaluateDecisionSurfaceRegret(
+  business: SyntheticBusiness,
+  predictedValue: (allocation: Record<string, number>) => number,
+): DecisionScenarioTruthEvaluation {
   const trueValue = cachedTrueValue(business);
-  const predictedValue = modelDecisionValueSurface(business, model, config);
   const totalSpend = sum(
     business.truth.channels.map((channel) => channel.totalSpend),
   );
@@ -420,6 +569,135 @@ export function evaluateDecisionScenarioRegret(
     recommendedSpend[contract.id] = recommendation.spend;
   });
   return { regret, economicLoss, recommendedSpend };
+}
+
+export function evaluateDecisionScenarioRegret(
+  business: SyntheticBusiness,
+  model: ModelResult,
+  config: ModelConfig,
+): DecisionScenarioTruthEvaluation {
+  return evaluateDecisionSurfaceRegret(
+    business,
+    modelDecisionValueSurface(business, model, config),
+  );
+}
+
+/**
+ * Evaluate one action chosen from the posterior expected decision surface.
+ * Hidden truth is used only after that action has been selected. This avoids
+ * the optimistic error of letting every posterior draw choose its own action
+ * and then averaging those draw-specific regrets.
+ */
+export function evaluatePosteriorDecisionTruth(
+  business: SyntheticBusiness,
+  posterior: readonly { model: ModelResult; config: ModelConfig }[],
+): {
+  profitRegret: number;
+  decisionLoss: number;
+  scenarioProfitRegret: Record<DecisionScenarioId, number>;
+  scenarioDecisionLoss: Record<DecisionScenarioId, number>;
+  scenarioRecommendedSpend: Record<DecisionScenarioId, number>;
+} {
+  if (!posterior.length) {
+    throw new Error("Posterior decision evaluation requires at least one aligned draw.");
+  }
+  const surfaces = posterior.map(({ model, config }) =>
+    modelDecisionValueSurface(business, model, config)
+  );
+  const evaluation = evaluateDecisionSurfaceRegret(
+    business,
+    (allocation) =>
+      surfaces.reduce((total, surface) => total + surface(allocation), 0) /
+      surfaces.length,
+  );
+  const scenarioRegrets = Object.values(evaluation.regret);
+  const profitRegret = scenarioRegrets.reduce((total, value) => total + value, 0) /
+    Math.max(scenarioRegrets.length, 1);
+  const scenarioLosses = Object.values(evaluation.economicLoss);
+  const meanLoss = scenarioLosses.reduce((total, value) => total + value, 0) /
+    Math.max(scenarioLosses.length, 1);
+  return {
+    profitRegret,
+    decisionLoss: 0.7 * meanLoss + 0.3 * Math.max(...scenarioLosses, 0),
+    scenarioProfitRegret: evaluation.regret,
+    scenarioDecisionLoss: evaluation.economicLoss,
+    scenarioRecommendedSpend: evaluation.recommendedSpend,
+  };
+}
+
+/**
+ * Evaluate one action per decision scenario from aligned SVI posterior draws.
+ * Hidden simulator truth is consulted only after the posterior-expected action
+ * is fixed.  The returned scenario vector is the V8 multi-head target source.
+ */
+export function evaluateAlignedPosteriorDecisionTruth(
+  business: SyntheticBusiness,
+  draws: readonly SamplingDecisionDraw[],
+  maximumDecisionDraws = 64,
+): {
+  profitRegret: number;
+  decisionLoss: number;
+  scenarioProfitRegret: Record<DecisionScenarioId, number>;
+  scenarioDecisionLoss: Record<DecisionScenarioId, number>;
+  scenarioRecommendedSpend: Record<DecisionScenarioId, number>;
+} {
+  if (!draws.length) {
+    throw new Error("Aligned posterior decision evaluation requires at least one draw.");
+  }
+  const selected = draws.length <= maximumDecisionDraws
+    ? [...draws]
+    : Array.from({ length: maximumDecisionDraws }, (_, index) =>
+      draws[Math.floor(((index + 0.5) / maximumDecisionDraws) * draws.length)]
+    );
+  const evaluation = evaluateDecisionSurfaceRegret(
+    business,
+    alignedPosteriorExpectedDecisionValueSurface(business, selected),
+  );
+  const scenarioRegrets = Object.values(evaluation.regret);
+  const scenarioLosses = Object.values(evaluation.economicLoss);
+  const meanRegret = sum(scenarioRegrets) / Math.max(scenarioRegrets.length, 1);
+  const meanLoss = sum(scenarioLosses) / Math.max(scenarioLosses.length, 1);
+  return {
+    profitRegret: meanRegret,
+    decisionLoss: 0.7 * meanLoss + 0.3 * Math.max(...scenarioLosses, 0),
+    scenarioProfitRegret: evaluation.regret,
+    scenarioDecisionLoss: evaluation.economicLoss,
+    scenarioRecommendedSpend: evaluation.recommendedSpend,
+  };
+}
+
+/** Slow exact replay retained as a frozen-label fallback for allocation ties. */
+export function evaluateAlignedPosteriorDecisionTruthExact(
+  business: SyntheticBusiness,
+  draws: readonly SamplingDecisionDraw[],
+  maximumDecisionDraws = 64,
+): ReturnType<typeof evaluateAlignedPosteriorDecisionTruth> {
+  if (!draws.length) {
+    throw new Error("Aligned posterior decision evaluation requires at least one draw.");
+  }
+  const selected = draws.length <= maximumDecisionDraws
+    ? [...draws]
+    : Array.from({ length: maximumDecisionDraws }, (_, index) =>
+      draws[Math.floor(((index + 0.5) / maximumDecisionDraws) * draws.length)]
+    );
+  const surfaces = selected.map((draw) => alignedDrawDecisionValueSurface(business, draw));
+  const evaluation = evaluateDecisionSurfaceRegret(
+    business,
+    (allocation) =>
+      surfaces.reduce((total, surface) => total + surface(allocation), 0) /
+      surfaces.length,
+  );
+  const scenarioRegrets = Object.values(evaluation.regret);
+  const scenarioLosses = Object.values(evaluation.economicLoss);
+  const meanRegret = sum(scenarioRegrets) / Math.max(scenarioRegrets.length, 1);
+  const meanLoss = sum(scenarioLosses) / Math.max(scenarioLosses.length, 1);
+  return {
+    profitRegret: meanRegret,
+    decisionLoss: 0.7 * meanLoss + 0.3 * Math.max(...scenarioLosses, 0),
+    scenarioProfitRegret: evaluation.regret,
+    scenarioDecisionLoss: evaluation.economicLoss,
+    scenarioRecommendedSpend: evaluation.recommendedSpend,
+  };
 }
 
 export function evaluateCandidateTruth(

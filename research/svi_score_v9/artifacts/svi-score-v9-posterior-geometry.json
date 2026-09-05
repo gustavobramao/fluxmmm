@@ -1,0 +1,121 @@
+{
+  "artifactId": "flux-svi-score-v9-development-posterior-geometry-v1",
+  "activation": "development-only",
+  "estimand": "outer-fold economic-loss increase after removing one posterior lens and relearning the selector",
+  "baselineObjective": 2.227980629669399,
+  "businesses": 420,
+  "posteriorTokenCount": 105,
+  "lenses": [
+    {
+      "lens": "Inference reliability",
+      "tokenCount": 7,
+      "dropColumnRefitObjective": 2.0732598122183066,
+      "dropColumnRefitIncrease": -0.15472081745109234,
+      "dropColumnRelativeIncrease": -0.06944441768959668,
+      "dropColumnFoldIncreases": [
+        -0.949260239383398,
+        -0.21749979555491583,
+        0.22150487440737088,
+        0.9401365401998647,
+        -0.038233654623367475
+      ],
+      "dropColumnPositiveFoldShare": 0.4
+    },
+    {
+      "lens": "Predictive and plausibility safety",
+      "tokenCount": 2,
+      "dropColumnRefitObjective": 2.1000627432832113,
+      "dropColumnRefitIncrease": -0.12791788638618762,
+      "dropColumnRelativeIncrease": -0.057414272226042125,
+      "dropColumnFoldIncreases": [
+        -0.5559817717320095,
+        -0.15738745866739645,
+        -0.08087713681999964,
+        0.343492039229222,
+        -0.2782298657563622
+      ],
+      "dropColumnPositiveFoldShare": 0.2
+    },
+    {
+      "lens": "ROI location and uncertainty",
+      "tokenCount": 32,
+      "dropColumnRefitObjective": 2.3157102115764894,
+      "dropColumnRefitIncrease": 0.08772958190709046,
+      "dropColumnRelativeIncrease": 0.03937627676776898,
+      "dropColumnFoldIncreases": [
+        -0.308964900097509,
+        -0.01988962154755347,
+        0.655039291567157,
+        0.14241605287840375,
+        0.3878334969112438
+      ],
+      "dropColumnPositiveFoldShare": 0.6
+    },
+    {
+      "lens": "Tail shape and approximation shift",
+      "tokenCount": 20,
+      "dropColumnRefitObjective": 2.323568164023907,
+      "dropColumnRefitIncrease": 0.09558753435450829,
+      "dropColumnRelativeIncrease": 0.0429032160700123,
+      "dropColumnFoldIncreases": [
+        0.13539821099340354,
+        -0.3411063734156441,
+        0.18255357401020333,
+        0.19760201861054494,
+        0.5595307004930472
+      ],
+      "dropColumnPositiveFoldShare": 0.8
+    },
+    {
+      "lens": "External-evidence presence",
+      "tokenCount": 0,
+      "dropColumnRefitObjective": 2.227980629669399,
+      "dropColumnRefitIncrease": 0.0,
+      "dropColumnRelativeIncrease": 0.0,
+      "dropColumnFoldIncreases": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dropColumnPositiveFoldShare": 0.0
+    },
+    {
+      "lens": "Response-mechanics uncertainty",
+      "tokenCount": 36,
+      "dropColumnRefitObjective": 2.207552226007258,
+      "dropColumnRefitIncrease": -0.020428403662140937,
+      "dropColumnRelativeIncrease": -0.00916902211361336,
+      "dropColumnFoldIncreases": [
+        -0.6271587726706374,
+        -0.359788069022154,
+        -0.31897758417214606,
+        0.3188320885850051,
+        0.692152742924117
+      ],
+      "dropColumnPositiveFoldShare": 0.4
+    },
+    {
+      "lens": "Contribution and channel dependence",
+      "tokenCount": 8,
+      "dropColumnRefitObjective": 1.9977374383715203,
+      "dropColumnRefitIncrease": -0.23024319129787862,
+      "dropColumnRelativeIncrease": -0.10334164859056404,
+      "dropColumnFoldIncreases": [
+        -0.36678029243170784,
+        -0.3371492096300748,
+        -0.09988419909370205,
+        0.5453448629549698,
+        -0.04999096028002903
+      ],
+      "dropColumnPositiveFoldShare": 0.2
+    }
+  ],
+  "provenance": {
+    "datasetSha256": "d90493a7bd024ace4b05d8373264953e303c28e0c9a1ddad9f58e38f533b1b22",
+    "developmentSha256": "10bf6b88f0df411a0cced06542f51e7dd7974211f86a9f9606a9c2138d4e0036",
+    "sealedAuditDereferenced": false
+  },
+  "interpretation": "Positive values indicate incremental predictive value after the selector is relearned; negative values indicate conditional redundancy or finite-sample overfit, not scientific uselessness."
+}

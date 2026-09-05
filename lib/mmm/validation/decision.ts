@@ -130,18 +130,57 @@ function stabilityScore(
 function identificationScore(
   model: ModelResult,
   channel: string,
+  dependence?: DecisionEvidence["channels"][number]["evidenceDependence"],
 ): number {
-  const influence = model.numerical?.priorInfluence.find(
+  const attribution = model.numerical?.evidenceAttribution?.find(
     (item) => item.channel.toLowerCase() === channel.toLowerCase(),
   );
-  if (!influence) return model.kind === "frequentist" ? 70 : 60;
-  if (influence.classification === "data-led") return 100;
-  if (influence.classification === "data-and-prior") return 82;
-  return influence.source === "experiment"
-    ? 72
-    : influence.source === "industry"
-      ? 55
-      : 50;
+  if (!attribution) return 50;
+  const shares = attribution.uncertaintyShare;
+  const experimentQuality = dependence?.source === "experiment"
+    ? dependence.quality
+    : 0;
+  const benchmarkQuality = dependence?.source === "benchmark"
+    ? dependence.quality
+    : 0;
+  return clampScore(
+    100 * (
+      shares.observational * attribution.conditionalDataShare +
+      shares.experiment * experimentQuality +
+      shares.benchmark * benchmarkQuality
+    ),
+  );
+}
+
+function evidenceCompatibilityScore(
+  dependence?: DecisionEvidence["channels"][number]["evidenceDependence"],
+): number {
+  if (!dependence) return 100;
+  return clampScore(100 / (1 + dependence.standardizedConflict ** 2));
+}
+
+function evidenceDependenceScore(
+  dependence?: DecisionEvidence["channels"][number]["evidenceDependence"],
+): number {
+  if (!dependence) return 100;
+  const dependenceMagnitude = Math.min(
+    1,
+    Math.max(
+      dependence.roiLocationShift / Math.log(2),
+      dependence.contributionShift,
+      dependence.allocationProbabilityShift * 2,
+      dependence.marginalProfitIndexShift,
+    ),
+  );
+  const conflictSeverity = Math.min(
+    1,
+    dependence.standardizedConflict / 3,
+  );
+  const qualifiedRisk =
+    dependence.influence *
+    dependenceMagnitude *
+    ((1 - dependence.quality + conflictSeverity) / 2);
+  return clampScore(100 * (1 - qualifiedRisk));
 }
 
 function resolutionScore(
@@ -221,6 +260,7 @@ export function runDecisionValidation(
       const channelIdentificationScore = identificationScore(
         model,
         channel.channel,
+        channel.evidenceDependence,
       );
       const channelEconomicScore = economicScore(model, channel.channel);
       const components =
@@ -255,6 +295,7 @@ export function runDecisionValidation(
         posteriorMass,
         priorUse: channel.priorUse,
         identification: channel.identification,
+        evidenceDependence: channel.evidenceDependence,
         plausibilityScore,
         stabilityScore: channelStabilityScore,
         resolutionScore: channelResolutionScore,
@@ -278,6 +319,9 @@ export function runDecisionValidation(
   const calibratedCount = scoredChannels.filter(
     (channel) => channel.priorUse === "calibration",
   ).length;
+  const externallyInformedChannels = scoredChannels.filter(
+    (channel) => channel.evidenceDependence,
+  );
   const plausibility = portfolioScore(
     scoredChannels.map((channel) => ({
       score: channel.plausibilityScore,
@@ -302,6 +346,30 @@ export function runDecisionValidation(
       spendShare: channel.spendShare,
     })),
   );
+  const sourceQuality = externallyInformedChannels.length
+    ? portfolioScore(
+        externallyInformedChannels.map((channel) => ({
+          score: (channel.evidenceDependence?.quality ?? 0) * 100,
+          spendShare: channel.spendShare,
+        })),
+      )
+    : 50;
+  const evidenceCompatibility = externallyInformedChannels.length
+    ? portfolioScore(
+        externallyInformedChannels.map((channel) => ({
+          score: evidenceCompatibilityScore(channel.evidenceDependence),
+          spendShare: channel.spendShare,
+        })),
+      )
+    : 50;
+  const decisionDependence = externallyInformedChannels.length
+    ? portfolioScore(
+        externallyInformedChannels.map((channel) => ({
+          score: evidenceDependenceScore(channel.evidenceDependence),
+          spendShare: channel.spendShare,
+        })),
+      )
+    : 50;
   const economics = portfolioScore(
     scoredChannels.map((channel) => ({
       score: channel.economicScore,
@@ -342,11 +410,44 @@ export function runDecisionValidation(
     ),
     test(
       "roi-identification",
-      "Data and prior identification",
+      "Evidence attribution and identification",
       identification,
-      `${calibratedCount}/${scoredChannels.length} calibrated`,
-      "Distinguishes data-led estimates from estimates whose usable precision is supplied mainly by experiments or industry priors.",
+      `${calibratedCount}/${scoredChannels.length} externally calibrated`,
+      "Combines conditional observational information with continuous experiment and benchmark attribution. Regularization is reported but receives no identification credit.",
       "critical",
+    ),
+    test(
+      "evidence-source-quality",
+      "External evidence quality",
+      sourceQuality,
+      externallyInformedChannels.length
+        ? `${externallyInformedChannels.length} source-informed channel${externallyInformedChannels.length === 1 ? "" : "s"}`
+        : "Not applicable",
+      "Reports independence, precision, relevance, and transportability separately from how influential the source became.",
+      "critical",
+      externallyInformedChannels.length ? undefined : "incomplete",
+    ),
+    test(
+      "evidence-compatibility",
+      "Evidence compatibility",
+      evidenceCompatibility,
+      externallyInformedChannels.length
+        ? `${Math.round(evidenceCompatibility)}/100 standardized agreement`
+        : "Not applicable",
+      "Compares each external ROI source with the leave-source-out observational estimate on their joint uncertainty scale.",
+      "critical",
+      externallyInformedChannels.length ? undefined : "incomplete",
+    ),
+    test(
+      "evidence-decision-dependence",
+      "Evidence-qualified decision dependence",
+      decisionDependence,
+      externallyInformedChannels.length
+        ? `${Math.round(decisionDependence)}/100 qualified robustness`
+        : "Not applicable",
+      "Measures ROI, contribution, marginal-profit, and incremental-allocation changes after removing a source; dependence is penalized only when influence is paired with weak quality or conflict.",
+      "critical",
+      externallyInformedChannels.length ? undefined : "incomplete",
     ),
     test(
       "roi-economic-consistency",

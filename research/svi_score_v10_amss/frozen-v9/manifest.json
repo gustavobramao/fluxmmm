@@ -1,0 +1,89 @@
+{
+  "snapshotVersion": "flux-svi-score-v10-amss-v9-freeze-v1",
+  "createdAt": "2026-09-05T07:04:39.440Z",
+  "purpose": "immutable V9 selector input to the AMSS external-transport validation",
+  "status": "frozen-before-amss-installation-or-data-generation",
+  "selector": {
+    "version": "flux-svi-score-v9.0.0-setwise-distributional-development",
+    "artifactId": "flux-svi-score-v9-development-selector-v1",
+    "sha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+    "model": "deepsets-balanced",
+    "ensembleMembers": 5,
+    "featureCount": 232
+  },
+  "risk": {
+    "meanWeight": 0.65,
+    "p90Weight": 0.35,
+    "dangerPenalty": 0,
+    "uncertaintyPenalty": 0.25
+  },
+  "gates": [
+    "development-only-cohort",
+    "finite-SVI-posterior",
+    "complete-token-contract",
+    "complete-scenario-label-contract"
+  ],
+  "truthBoundary": {
+    "amssObservedInputsPermitted": true,
+    "amssGroundTruthBeforeSelection": false,
+    "v9RetrainingPermitted": false
+  },
+  "sourceProvenance": {
+    "selector": ".flux-artifacts/svi-score-v9/development-selector.json",
+    "development": "research/svi_score_v9/artifacts/svi-score-v9-development.json",
+    "selectorSha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+    "developmentSha256": "10bf6b88f0df411a0cced06542f51e7dd7974211f86a9f9606a9c2138d4e0036"
+  },
+  "frozenFiles": [
+    {
+      "path": "selector.json",
+      "bytes": 689405,
+      "sha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a"
+    },
+    {
+      "path": "token-registry.json",
+      "bytes": 10877,
+      "sha256": "0edc180cdbf7a3c4e80afa84287d54186a3626523df23e5efd98e14733724d11"
+    },
+    {
+      "path": "scientific-contract.json",
+      "bytes": 3019,
+      "sha256": "8eadde847a308d13dc667472a7cc530a1c202b01a5b706dd2adfe7df29b8462b"
+    },
+    {
+      "path": "development-verification.json",
+      "bytes": 729,
+      "sha256": "92c17e984aedeea2bc46347757f36f89e154a23cd9f9e8ee22ae220a04aaddfe"
+    },
+    {
+      "path": "source/research/svi_score_v3/contract.ts",
+      "bytes": 1675,
+      "sha256": "8a63656f99e0553bc92d4a7241a9e97854471b942ade2bb6914ba87c32846899"
+    },
+    {
+      "path": "source/research/svi_score_v8/contract.ts",
+      "bytes": 3692,
+      "sha256": "d767371e72a50f874f7cbb55c7064d73ebe7c7f46e566a138c44a12269b96b17"
+    },
+    {
+      "path": "source/research/svi_score_v9/contract.ts",
+      "bytes": 4532,
+      "sha256": "defdcc78947f413c423d141e1996e88feb47405f2863cd0f89071e5859a0a0b4"
+    },
+    {
+      "path": "source/research/svi_score_v9/audit-tokens.ts",
+      "bytes": 6943,
+      "sha256": "25ca1556cde4c643d472ca0b1aa1a0856c820209dbf6e5aafdb6cb4f841b97dd"
+    },
+    {
+      "path": "source/research/svi_score_v9/prepare-dataset.ts",
+      "bytes": 11728,
+      "sha256": "82f566e119256ad12ae4cc3e3061f1723c43282ab4a5243b4427efabc465c296"
+    },
+    {
+      "path": "source/research/svi_score_v9/train_selector.py",
+      "bytes": 43931,
+      "sha256": "406c49a08f68c28c7ee4684a24872db92f75f1b9fc672c3b293bd8c02a03e2a6"
+    }
+  ]
+}

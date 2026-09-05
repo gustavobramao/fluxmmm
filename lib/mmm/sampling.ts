@@ -1,5 +1,9 @@
 import { compileAdvancedSamplingDesign } from "./advanced";
-import { activeIndustryPrior, inferIndustryPrior } from "./benchmarks";
+import {
+  activeIndustryPrior,
+  inferIndustryPrior,
+  type IndustryPriorOverrides,
+} from "./benchmarks";
 import { sha256 } from "./csv";
 import { mean, std } from "./math";
 import {
@@ -227,6 +231,23 @@ export interface SamplingChannelPosterior {
   };
 }
 
+/**
+ * A compact, aligned posterior draw used by offline decision research.
+ * Every channel and response value in one item comes from the same NUTS draw.
+ * These draws are intentionally separate from the display-oriented marginal
+ * summaries above so downstream research cannot accidentally pair unrelated
+ * quantiles.
+ */
+export interface SamplingDecisionDraw {
+  channels: {
+    channel: string;
+    roi: number;
+    contribution: number;
+    response: MediaResponseConfig;
+  }[];
+  kernelBandwidth: number;
+}
+
 export interface SamplingResult {
   kind: "mcmc";
   fingerprint: string;
@@ -260,6 +281,7 @@ export interface SamplingResult {
     maxRelativeRoiWidth?: number;
   };
   channels: SamplingChannelPosterior[];
+  decisionDraws?: SamplingDecisionDraw[];
   predictive: {
     dates: string[];
     actual: number[];
@@ -399,6 +421,7 @@ function roiPriorEvidence(
   channel: string,
   experiments: Experiment[],
   industryPriorChannels: string[],
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): {
   mean: number;
   standardDeviation: number;
@@ -424,6 +447,7 @@ function roiPriorEvidence(
     channel,
     experiments,
     industryPriorChannels,
+    industryPriorOverrides,
   );
   if (!benchmark) return undefined;
   return {
@@ -481,6 +505,7 @@ export function compileSamplingModel(
   run: AgenticCandidateRun,
   experiments: Experiment[],
   industryPriorChannels: string[],
+  industryPriorOverrides?: IndustryPriorOverrides,
 ): CompiledSamplingModel {
   if (!run.model || (run.spec.family !== "bayesian" && run.spec.family !== "advanced")) {
     throw new Error(
@@ -574,11 +599,13 @@ export function compileSamplingModel(
       channel,
       useExperimentPrior ? experiments : [],
       industryPriorChannels,
+      industryPriorOverrides,
     );
     const benchmark = activeIndustryPrior(
       channel,
       experiments,
       industryPriorChannels,
+      industryPriorOverrides,
     );
     const estimate = model.channels.find((item) => item.channel === channel);
     indexes.forEach((index) => {

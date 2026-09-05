@@ -8,12 +8,9 @@ import {
 } from "../score-lab-data";
 import { SIMULATOR_AUDIT_V3 } from "../score-audit-v3-data";
 import type { DistributionSummary } from "../../research/score_v3/types";
-import scoreV6Artifact from "../../research/score_v6/artifacts/learned-score-v6-pilot.json";
-import {
-  ACTIVE_SCORE_CONTRACT,
-  LEARNED_SCORE_ARTIFACT,
-  SCORE_LAYER_ORDER,
-} from "../../lib/mmm/score-contract";
+import { RegretSetResearch } from "./regretset-research";
+import v5dSviDevelopment from "../../research/svi_score_v5d_svi/artifacts/svi-score-v5d-svi-development.json";
+import v5dSviImportance from "../../research/svi_score_v5d_svi/artifacts/svi-score-v5d-svi-feature-importance.json";
 
 const layerCopy: Record<ScoreLabLayer, { label: string; weight: number }> = {
   generalization: { label: "Prediction", weight: 20 },
@@ -46,157 +43,202 @@ function rangeLabel(
   return `${format(summary.p10)}–${format(summary.p90)}`;
 }
 
-const scoreLayerLabels = {
-  generalization: "Prediction",
-  structure: "Structure",
-  causal: "Causal",
-  decision: "ROI coherence",
-};
+const V5D_SVI_PILLARS = [
+  {
+    name: "Posterior decision quality",
+    groups: ["posterior-roi", "posterior-decision-safety", "posterior-reliability", "posterior-predictive"],
+    question: "Are ROI levels, uncertainty, predictive coverage, and SVI stability usable for a decision?",
+  },
+  {
+    name: "Model specification fit",
+    groups: ["model-specification-and-interactions"],
+    question: "Which adstock, saturation, likelihood, calibration, and dynamic assumptions fit this context?",
+  },
+  {
+    name: "Temporal identification",
+    groups: ["temporal-evidence"],
+    question: "Can the data distinguish carryover and response across the campaign life cycle?",
+  },
+  {
+    name: "Predictive and structural adequacy",
+    groups: ["generalization", "structure"],
+    question: "Does the model generalize while leaving defensible residual and coefficient behavior?",
+  },
+  {
+    name: "Causal and decision coherence",
+    groups: ["causal-robustness", "decision-coherence"],
+    question: "Do ROI and budget decisions survive anchors, confounder stress, placebos, and evidence deletion?",
+  },
+].map((pillar) => ({
+  ...pillar,
+  importance: v5dSviImportance.risk.groups
+    .filter((group) => pillar.groups.includes(group.group))
+    .reduce((total, group) => total + group.importance, 0),
+}));
 
-function ScoreGovernancePanel() {
-  const challenger = scoreV6Artifact;
-  const validation = challenger.performance.validation;
-  const audit = challenger.performance.audit;
-  const gateEntries = Object.entries(challenger.gates);
-  const passedGates = gateEntries.filter(([, passed]) => passed).length;
-  const validationCoverage =
-    challenger.pipelineReadiness.decisionGradeBusinessShare;
-  const requiredCoverage = challenger.pipelineReadiness.requiredShare;
+function V5dSviOverview() {
+  const baseline = v5dSviDevelopment.comparison.baseline;
+  const current = v5dSviDevelopment.comparison.fullSvi;
   return (
     <>
-      <section className="card learned-score-hero active">
+      <section className="card v5d-score-hero">
         <div>
-          <span className="eyebrow">Active score contract</span>
-          <h2>V6 is now the validation ranker used by Agentic.</h2>
+          <span className="eyebrow">Frozen public research release</span>
+          <h2>V5D-SVI learns decision risk from posterior evidence.</h2>
           <p>
-            V6 learned which of twenty validation diagnostics best predict lower-regret
-            decisions. Immutable gates still decide whether a candidate is eligible;
-            V6 only ranks candidates inside the highest available eligibility tier.
+            Instead of assigning hand-written weights to four validation scores,
+            Flux learns which observable signals predict excess economic loss across
+            synthetic advertisers. The hidden answer key never enters an MMM fit or
+            a deployment token.
           </p>
         </div>
-        <div className="learned-score-activation">
-          <span>Activated</span>
-          <strong>20</strong>
-          <small>learned diagnostic weights</small>
+        <div className="v5d-score-release">
+          <span>V5D-SVI</span>
+          <strong>136</strong>
+          <small>auditable diagnostic tokens</small>
         </div>
       </section>
 
-      <section className="score-version-strip" aria-label="Flux score and sampler versions">
-        <article className="card active">
-          <span>Active runtime score</span>
-          <strong>V6</strong>
-          <small>{ACTIVE_SCORE_CONTRACT.version} · used by Agentic</small>
-        </article>
-        <article className="card baseline">
-          <span>Previous runtime score</span>
-          <strong>V4</strong>
-          <small>Four aggregate layer weights · retained as reference</small>
-        </article>
-        <article className="card sampler">
-          <span>Production inference</span>
-          <strong>PyMC NUTS</strong>
-          <small>Shared sampler v2.2 · runs after promotion</small>
-        </article>
+      <section className="v5d-score-contract" aria-label="V5D-SVI research contract">
+        <article className="card"><span>Development cohort</span><strong>420</strong><p>advertiser worlds kept intact across folds</p></article>
+        <article className="card"><span>Candidate evidence</span><strong>20,160</strong><p>doubly out-of-fold candidate assessments</p></article>
+        <article className="card"><span>Loss heads</span><strong>Mean + P90</strong><p>average opportunity loss and downside protection</p></article>
+        <article className="card"><span>Decision risk</span><strong>65 / 35</strong><p>declared mean-versus-tail business preference</p></article>
       </section>
 
-      <section className="card learned-score-science">
+      <section className="card v5d-score-pillars">
         <div className="card-heading">
-          <div><span className="eyebrow">Nested validation</span><h2>Two holdouts answer two different questions</h2></div>
-          <span className="score-lab-inspect">No synthetic truth enters an MMM fit</span>
+          <div><span className="eyebrow">Readable interpretation</span><h2>Five practitioner pillars summarize the 136-token model</h2></div>
+          <span className="score-lab-inspect">Importance explains the fitted selector; it is not a new score weight</span>
         </div>
-        <div className="score-nested-validation" aria-label="Nested validation used by V6">
-          <article>
-            <span>Inside every synthetic business</span>
-            <h3>Does this candidate MMM generalize?</h3>
-            <div><b>Past periods</b><i>→</i><b>Unseen future periods and spend regimes</b><i>→</i><b>20 diagnostics + immutable gates</b></div>
-            <p>This evaluates each MMM candidate. Causal truth stays hidden until fitting and diagnostics are complete.</p>
-          </article>
-          <article>
-            <span>Across synthetic businesses</span>
-            <h3>Do the learned V6 weights generalize?</h3>
-            <div><b>180 training businesses</b><i>→</i><b>60 unseen validation businesses</b><i>→</i><b>60 sealed audit businesses</b></div>
-            <p>This evaluates the ranker itself. The weights are frozen before validation and the adversarial audit.</p>
-          </article>
+        <div className="v5d-pillar-list">
+          {V5D_SVI_PILLARS.map((pillar, index) => (
+            <article key={pillar.name}>
+              <span>{index + 1}</span>
+              <div><b>{pillar.name}</b><p>{pillar.question}</p></div>
+              <i><em style={{ width: `${pillar.importance * 100}%` }} /></i>
+              <strong>{percentage(pillar.importance)}</strong>
+            </article>
+          ))}
         </div>
-      </section>
-
-      <section className="card learned-score-weights">
-        <div className="card-heading">
-          <div><span className="eyebrow">V6 learned group emphasis</span><h2>Twenty diagnostics, kept in four readable layers</h2></div>
-          <span className="score-lab-inspect">Previous V4 marker shown for comparison</span>
-        </div>
-        <div className="learned-weight-grid simple">
-          {SCORE_LAYER_ORDER.map((layer) => {
-            const learned = challenger.model.groupWeights[layer];
-            const previousWeight = LEARNED_SCORE_ARTIFACT.model.weights[layer];
-            return (
-              <article key={layer}>
-                <span>{scoreLayerLabels[layer]}</span>
-                <strong>{percentage(learned)}</strong>
-                <div>
-                  <i style={{ width: `${learned * 100}%` }} />
-                  <em style={{ left: `${previousWeight * 100}%` }} />
-                </div>
-                <small>Previous V4: {percentage(previousWeight)}</small>
-              </article>
-            );
-          })}
-        </div>
-        <p className="learned-score-plain-language">
-          <b>What changed:</b> V6 learns non-negative weights across twenty granular diagnostics;
-          the four percentages above are their readable group totals. Agentic now uses the
-          underlying twenty-weight formula rather than approximating it with four layer weights.
+        <p className="v5d-score-caption">
+          Importance is the normalized mean absolute standardized risk coefficient
+          across 20 cross-fitted selectors. Correlated tokens can exchange importance,
+          so these are predictive associations rather than causal effects.
         </p>
       </section>
 
-      <section className="card learned-score-proof-simple challenger">
-        <div>
-          <span className="eyebrow">Did V6 improve decisions?</span>
-          <h2>Yes—across unseen families and the sealed audit</h2>
-          <p>V6 reduced mean economic decision loss on unseen and sealed businesses, while passing every tail and family safety check.</p>
+      <section className="card v5d-score-evidence">
+        <div className="card-heading">
+          <div><span className="eyebrow">What the development evidence says</span><h2>Useful ranking signal, but automatic promotion is not yet justified</h2></div>
+          <span className="score-lab-inspect">Lower loss is better</span>
         </div>
-        <div className="learned-proof-metrics">
-          <article><span>Unseen families</span><strong>{percentage(validation.relativeMeanLossReduction)}</strong><small>lower mean decision loss</small></article>
-          <article><span>Sealed audit</span><strong>{percentage(audit.relativeMeanLossReduction)}</strong><small>lower mean decision loss</small></article>
-          <article><span>Ranker activation gates</span><strong>{passedGates}/{gateEntries.length}</strong><small>all score-learning gates passed</small></article>
+        <div className="v5d-score-evidence-grid">
+          <article className="positive"><span>Costly-pair ordering</span><strong>{percentage(current.proxy.economicallyWeightedPairwiseAccuracy)}</strong><small>from {percentage(baseline.proxy.economicallyWeightedPairwiseAccuracy)}</small></article>
+          <article className="positive"><span>Search objective</span><strong>{current.primary.objective.toFixed(2)}</strong><small>from {baseline.primary.objective.toFixed(2)}</small></article>
+          <article className="warning"><span>Champion excess loss</span><strong>{current.proxy.riskChampionMeanExcessLoss.toFixed(2)}</strong><small>baseline {baseline.proxy.riskChampionMeanExcessLoss.toFixed(2)}</small></article>
+          <article className="warning"><span>False champions</span><strong>{percentage(current.proxy.dangerousFalseChampionShare)}</strong><small>current safety pool is too permissive</small></article>
         </div>
-      </section>
-
-      <section className="score-research-gate">
-        <div>
-          <span className="eyebrow">Separate Agentic readiness signal</span>
-          <b>{percentage(validationCoverage)} of validation businesses produced a decision-grade candidate.</b>
-          <p>This remains below the {percentage(requiredCoverage)} search-readiness target, but it no longer blocks V6. The score can rank valid candidates better; improving how often Agentic finds one is a separate optimization problem.</p>
-        </div>
-        <div className="score-research-gate-meter" aria-label={`${percentage(validationCoverage)} coverage against a ${percentage(requiredCoverage)} target`}>
-          <span><i style={{ width: `${validationCoverage * 100}%` }} /><em style={{ left: `${requiredCoverage * 100}%` }} /></span>
-          <small><b>{percentage(validationCoverage)}</b> observed <b>{percentage(requiredCoverage)}</b> target</small>
+        <div className="v5d-score-boundary">
+          <i>!</i>
+          <div><b>Research release, not silent production activation</b><p>V5D-SVI improves the ordering of economically costly mistakes, but its minimum predicted-risk candidate is still vulnerable to winner&apos;s curse. Agentic should continue to require immutable gates, local challenges, manual review, and confirmatory NUTS before production promotion.</p></div>
         </div>
       </section>
 
-      <section className="learned-score-safety">
-        <i>◆</i>
-        <div><b>The production sampler remains a separate shared stage</b><p>Agentic searches quickly with analytic MAP and the active V6 score. After promotion, PyMC NUTS v2.2 performs confirmatory inference without changing the winning specification.</p></div>
+      <details className="card v5d-token-audit">
+        <summary><span><b>Inspect the most influential raw tokens</b><small>Implementation names and conditional directions</small></span><i>＋</i></summary>
+        <div>
+          {v5dSviImportance.top50RiskFeatures.slice(0, 10).map((token) => (
+            <article key={token.feature}>
+              <span>{token.rank}</span>
+              <div><b>{token.description}</b><small>{token.feature}</small></div>
+              <em>{token.direction === "raises-predicted-loss" ? "Higher risk" : "Lower risk"}</em>
+              <strong>{percentage(token.importance)}</strong>
+            </article>
+          ))}
+          <p>All 50 leading raw tokens and the exact five-pillar mapping are documented in the paper appendix.</p>
+        </div>
+      </details>
+    </>
+  );
+}
+
+function V5dSviLearningPanel() {
+  const blocks = [
+    ["Validation diagnostics", "41", "Generalization, structure, causal robustness, and decision coherence"],
+    ["Temporal evidence", "35", "Carryover support, flight behavior, kernel separation, and temporal interactions"],
+    ["Model specification", "39", "Declared assumptions plus truth-blind interactions"],
+    ["SVI posterior", "21", "Convergence, coverage, ROI centers and widths, plausibility, and seed agreement"],
+  ];
+  return (
+    <>
+      <section className="card v5d-learning-flow">
+        <div className="card-heading">
+          <div><span className="eyebrow">Training protocol</span><h2>One candidate becomes one truth-blind token vector</h2></div>
+          <span className="score-lab-inspect">Truth opens only after the budget action is scored</span>
+        </div>
+        <div className="v5d-learning-steps">
+          <article><span>1</span><b>Simulate a business</b><p>Draw channel mechanics, demand, confounding, evidence, and a hidden economic oracle.</p></article>
+          <i>→</i>
+          <article><span>2</span><b>Fit 48 candidates</b><p>Twenty-four model specifications under two evidence contracts use stored FullRankADVI posteriors.</p></article>
+          <i>→</i>
+          <article><span>3</span><b>Create 136 tokens</b><p>Only diagnostics, assumptions, and posterior observables available for a new advertiser are retained.</p></article>
+          <i>→</i>
+          <article><span>4</span><b>Reveal economic loss</b><p>The chosen budget is replayed through hidden truth and converted to excess opportunity loss.</p></article>
+        </div>
       </section>
 
-      <details className="card learned-score-receipt">
-        <summary><span><b>V6 research receipt</b><small>Formula, cohort, gates, and activation decision</small></span><i>＋</i></summary>
+      <section className="card v5d-token-contract">
+        <div className="card-heading">
+          <div><span className="eyebrow">Token contract</span><h2>Named scalars, not embeddings or language-model tokens</h2></div>
+          <span className="score-lab-inspect">115 deployment diagnostics + 21 posterior tokens</span>
+        </div>
+        <div className="v5d-token-blocks">
+          {blocks.map(([label, count, description]) => (
+            <article key={label}><strong>{count}</strong><div><b>{label}</b><p>{description}</p></div></article>
+          ))}
+        </div>
+      </section>
+
+      <section className="v5d-head-grid">
+        <article className="card">
+          <span className="eyebrow">Head 1 · expected loss</span>
+          <h2>Robust mean prediction</h2>
+          <div className="v5d-formula">Huber(mean prediction − excess loss) + L2</div>
+          <p>Huber loss behaves like squared error for ordinary misses but limits the leverage of catastrophic outliers.</p>
+        </article>
+        <article className="card">
+          <span className="eyebrow">Head 2 · downside loss</span>
+          <h2>Conditional P90 prediction</h2>
+          <div className="v5d-formula">Pinball<sub>.90</sub>(P90 prediction − excess loss) + L2</div>
+          <p>Pinball loss teaches the second head to estimate a high-loss boundary rather than another average.</p>
+        </article>
+        <article className="card risk">
+          <span className="eyebrow">Declared business preference</span>
+          <h2>One ranking risk</h2>
+          <div className="v5d-formula">Risk = 0.65 × mean + 0.35 × P90</div>
+          <p>The 65/35 mixture is subjective risk appetite. It is disclosed separately from the learned coefficients.</p>
+        </article>
+      </section>
+
+      <section className="card v5d-crossfit">
         <div>
-          <p className="learned-score-formula">
-            {challenger.model.formula}
-          </p>
-          <p>{challenger.activationReason} {challenger.pipelineReadiness.detail}</p>
-          <div className="learned-receipt-comparison">
-            <span>Validation mean loss <b>{validation.heuristic.meanLoss.toFixed(2)} → {validation.learned.meanLoss.toFixed(2)}</b></span>
-            <span>Audit mean loss <b>{audit.heuristic.meanLoss.toFixed(2)} → {audit.learned.meanLoss.toFixed(2)}</b></span>
-            <span>Cohort <b>{challenger.cohort.businesses} businesses · {challenger.cohort.candidates.toLocaleString()} candidates</b></span>
-          </div>
-          <div className="score-research-gate-list">
-            {gateEntries.map(([gate, passed]) => (
-              <span key={gate} className={passed ? "pass" : "fail"}><i>{passed ? "✓" : "!"}</i>{gate.replace(/([A-Z])/g, " $1")}</span>
-            ))}
-          </div>
-          <small>{challenger.version} · {challenger.artifactId} · train {challenger.cohort.splits.train} / validation {challenger.cohort.splits.validation} / untouched audit {challenger.cohort.splits.audit}</small>
+          <span className="eyebrow">Leakage control</span>
+          <h2>Two-axis grouped cross-fitting</h2>
+          <p>Each assessment is produced by a selector that saw neither that advertiser nor its nearby parameter region during training.</p>
+        </div>
+        <div className="v5d-crossfit-map">
+          <span><b>5</b> advertiser folds</span><i>×</i><span><b>4</b> candidate regions</span><i>=</i><span><b>20</b> fitted selectors</span>
+        </div>
+      </section>
+
+      <details className="card score-lab-method">
+        <summary><span><b>Objective and governance details</b><small>What the learner optimizes and what remains immutable</small></span><i>＋</i></summary>
+        <div>
+          <article><span>1</span><p><b>Mean and tail targets</b><small>Both heads predict uncapped within-business excess economic loss relative to the eligible oracle.</small></p></article>
+          <article><span>2</span><p><b>Cost-sensitive ranking</b><small>Each epoch emphasizes the challenger that most dangerously outranks the oracle, weighted by its economic gap.</small></p></article>
+          <article><span>3</span><p><b>Immutable eligibility</b><small>Temporal integrity, structural validity, evidence coherence, and posterior reliability cannot be traded for a lower predicted risk.</small></p></article>
+          <article><span>4</span><p><b>Claim boundary</b><small>The sealed 80-business audit was not opened for this release. Fresh generalization and automatic production activation are not claimed.</small></p></article>
         </div>
       </details>
     </>
@@ -322,7 +364,7 @@ function SimulatorAuditV3Panel() {
 
       <section className="audit-v3-gate">
         <i>◇</i>
-        <div><b>The simulator is audited independently of the ranker</b><p>This population contract supports score learning across versions. V6 remains conditional on the declared simulator, family-held-out validation, and sealed adversarial audit.</p></div>
+        <div><b>The simulator is audited independently of the selector</b><p>This population contract supports score learning across versions. V5D-SVI remains conditional on the declared generator, grouped cross-fitting, and a future independent audit.</p></div>
       </section>
     </>
   );
@@ -364,7 +406,9 @@ function CandidateBars({
 }
 
 export function ScoreLabView() {
-  const [labMode, setLabMode] = useState<"pilot" | "audit" | "learned">("learned");
+  const [labMode, setLabMode] = useState<
+    "evidence" | "method" | "findings" | "example" | "legacy-release" | "legacy-method" | "legacy-audit"
+  >("evidence");
   const [scenarioId, setScenarioId] = useState("demand-confounded-search");
   const scenario = SCORE_LAB_SCENARIOS.find((item) => item.id === scenarioId) ?? SCORE_LAB_SCENARIOS[0];
   const heuristicRanked = useMemo(
@@ -397,26 +441,29 @@ export function ScoreLabView() {
     <div className="view score-lab-view">
       <section className="page-heading compact-heading score-lab-heading">
         <div>
-          <span className="kicker">Validation score governance · active V6</span>
+          <span className="kicker">RegretSet-MMM · frozen V9 research release</span>
           <h1>Score research</h1>
-          <p>See how V6 learns twenty validation weights from known synthetic decision outcomes while keeping candidate eligibility gates immutable.</p>
+          <p>Learn how posterior and validation evidence predicts economic decision loss across advertisers.</p>
         </div>
-        <span className="score-lab-status active"><i /> Runtime · V6 active</span>
+        <span className="score-lab-status active"><i /> External synthetic audit complete</span>
       </section>
 
       <section className="score-lab-mode-tabs compact" aria-label="Score research views">
-        <button className={labMode === "learned" ? "active" : ""} onClick={() => setLabMode("learned")}>
-          <span>1</span><b>Active V6 method</b><small>Weights, holdouts, and gates</small>
+        <button className={labMode === "evidence" ? "active" : ""} onClick={() => setLabMode("evidence")}>
+          <span>1</span><b>External evidence</b><small>Frozen V9 on Google AMSS</small>
         </button>
-        <button className={labMode === "audit" ? "active" : ""} onClick={() => setLabMode("audit")}>
-          <span>2</span><b>Audit the simulator</b><small>Optional research detail</small>
+        <button className={labMode === "method" ? "active" : ""} onClick={() => setLabMode("method")}>
+          <span>2</span><b>How it learns</b><small>Truth firewall, tokens, and loss</small>
         </button>
-        <button className={labMode === "pilot" ? "active" : ""} onClick={() => setLabMode("pilot")}>
-          <span>3</span><b>See a worked example</b><small>Optional model comparison</small>
+        <button className={labMode === "findings" ? "active" : ""} onClick={() => setLabMode("findings")}>
+          <span>3</span><b>What mattered</b><small>Importance and evidence attribution</small>
+        </button>
+        <button className={labMode === "example" ? "active" : ""} onClick={() => setLabMode("example")}>
+          <span>4</span><b>Worked example</b><small>Why score learning matters</small>
         </button>
       </section>
 
-      {labMode === "learned" ? <ScoreGovernancePanel /> : labMode === "audit" ? <SimulatorAuditV3Panel /> : <>
+      {labMode === "evidence" ? <RegretSetResearch view="evidence" /> : labMode === "method" ? <RegretSetResearch view="method" /> : labMode === "findings" ? <RegretSetResearch view="findings" /> : labMode === "legacy-release" ? <V5dSviOverview /> : labMode === "legacy-method" ? <V5dSviLearningPanel /> : labMode === "legacy-audit" ? <SimulatorAuditV3Panel /> : <>
 
       <section className="score-lab-scenario-card card">
         <div className="score-lab-scenario-intro">
@@ -500,7 +547,7 @@ export function ScoreLabView() {
 
       <section className="score-lab-metric-grid">
         <article><span>Heuristic winner regret</span><strong className={heuristicWinner.profitRegret > 0.1 ? "warning" : "good"}>{percentage(heuristicWinner.profitRegret)}</strong><small>Mean across four decisions</small></article>
-        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.profitRegret)}</strong><small>Four-decision mean · fourteen fitted arms</small></article>
+        <article><span>Best available regret</span><strong className="good">{percentage(truthWinner.profitRegret)}</strong><small>Four-decision mean · {scenario.candidates.length} fitted candidates</small></article>
         <article><span>Winner ROI error</span><strong>{percentage(heuristicWinner.roiError)}</strong><small>Spend-weighted log error</small></article>
         <article><span>Benchmark vs truth</span><strong>{percentage(scenario.benchmarkError)}</strong><small>Benchmarks remain fallible</small></article>
       </section>
@@ -561,17 +608,17 @@ export function ScoreLabView() {
 
       <section className="score-lab-explainer">
         <article className="card">
-          <span className="eyebrow">Current V1 heuristic</span>
-          <h2>A transparent rule chosen by us</h2>
+          <span className="eyebrow">Earlier heuristic</span>
+          <h2>A transparent rule chosen by hand</h2>
           <div className="score-lab-formula">100 × G<sup>.20</sup> × S<sup>.15</sup> × C<sup>.25</sup> × D<sup>.40</sup></div>
           <p>Useful and interpretable—but its weights were not learned from known decision outcomes.</p>
         </article>
         <div className="score-lab-arrow">→</div>
         <article className="card future">
-          <span className="eyebrow">Proposed learned target</span>
-          <h2>Predict whether the decision works</h2>
-          <div className="score-lab-formula">P(regret &lt; 10% | validation evidence)</div>
-          <p>Simulation supplies labels such as true ROI error and profit regret. No learned score is displayed until held-out tests justify it.</p>
+          <span className="eyebrow">V5D-SVI learned target</span>
+          <h2>Predict the economic loss distribution</h2>
+          <div className="score-lab-formula">Risk = 0.65 × mean loss + 0.35 × P90 loss</div>
+          <p>Simulation supplies excess-loss labels only after fitting; the selector sees validation, specification, and posterior tokens.</p>
         </article>
       </section>
 
@@ -586,7 +633,7 @@ export function ScoreLabView() {
       </details>
 
       <section className="score-lab-pilot-note">
-        <i>◇</i><div><b>What this pilot establishes</b><p>This small audited matrix now separates model assumptions, evidence arms, channel delivery, and profit decisions. Its percentages are conditional on the declared simulator—not claims about your real business. Scale-up and held-out simulator families are still required before learning a replacement score.</p></div>
+        <i>◇</i><div><b>How to read this example</b><p>It shows why a plausible-looking validation score can select the wrong economic decision. It explains the learning problem; its percentages are conditional on one declared simulator world and are not claims about a real advertiser.</p></div>
       </section>
       </>}
     </div>

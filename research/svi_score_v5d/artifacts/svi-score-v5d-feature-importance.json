@@ -1,0 +1,3009 @@
+{
+  "artifactId": "flux-svi-score-v5d-standardized-coefficient-importance-v1",
+  "generatedAt": "2026-09-02T18:31:57.606Z",
+  "activation": "research-only",
+  "provenance": {
+    "v5aSha256": "ef80fec76ba648bc721a4413f987478a4a1cc4e8254a0942cfff7acd6f667b73",
+    "v5dSha256": "f147c7ab62d85b8243cbc933d85cb779bd765d650ddb4d47f39fdcb50a3054cb",
+    "freshValidationAccessed": false,
+    "auditAccessed": false
+  },
+  "method": {
+    "models": 20,
+    "folds": 5,
+    "candidateRegions": 4,
+    "importance": "mean absolute standardized coefficient across 20 cross-fitted models, normalized to sum to one",
+    "riskApproximation": "0.65 mean-loss coefficient + 0.35 P90-loss coefficient before output clamping",
+    "limitation": "correlated transformed features share or exchange coefficient importance; these are predictive, not causal, effects"
+  },
+  "modelReceipts": [
+    {
+      "fold": 0,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 0,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 1,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 2,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 3,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 0,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 1,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 2,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    },
+    {
+      "fold": 4,
+      "region": 3,
+      "trainingRows": 12096,
+      "trainingBusinesses": 336
+    }
+  ],
+  "meanLoss": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.3512876265395852,
+        "meanCoefficient": 0.005999139681473532
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.3220796010154696,
+        "meanCoefficient": 0.020164300554250524
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.1211594160914406,
+        "meanCoefficient": -0.01768460649481599
+      },
+      {
+        "group": "structure",
+        "importance": 0.1019080161916078,
+        "meanCoefficient": 0.026653925657748222
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.06624427620323974,
+        "meanCoefficient": -0.013299252701539144
+      },
+      {
+        "group": "generalization",
+        "importance": 0.037321063958656975,
+        "meanCoefficient": -0.03140927837264579
+      }
+    ],
+    "features": [
+      {
+        "feature": "diagnostic:functional-form",
+        "group": "structure",
+        "meanCoefficient": 0.48953055320092115,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.038041705912918555
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.3679498723904908,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.028593600020773175
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.30919788975378115,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.024027949050364244
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.2988758956832651,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.023225820847542357
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.29887589568318074,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0232258208475358
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.296382437862239,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02303205278033285
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.2827413844290581,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.021971998531105045
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.28172293723553554,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02189285440338822
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.27136202017795336,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.021087701472451727
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.25398213458147645,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.019737100386700946
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.24289737204498102,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.018875696999781352
+      },
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.24289737204495182,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.018875696999779083
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.24102157948530198,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.018729928061678603
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.18749214334203507,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01602043765946776
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.19643203501920245,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01576180267403361
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "group": "structure",
+        "meanCoefficient": -0.19484180096624126,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.015141270434368494
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1805871103273214,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014033530078593695
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.17805600287972878,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01383683623685958
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.15053771113841416,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01338634721943193
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.1165635951009045,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01322434397220529
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.16479485135176503,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012806304387121506
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.1503507442080944,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012191981958173805
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.15406395233892956,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011972399941815176
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.15364475434544447,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011939823820297997
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.09363646342589595,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011868422551213922
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.14884808836324626,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011567072098338793
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.13919642202884697,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011482655414631435
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "group": "structure",
+        "meanCoefficient": 0.14598593852673586,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011344652758734166
+      },
+      {
+        "feature": "spec:family:advanced",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.14398058269814115,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011188815383143749
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.14398058269810352,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011188815383140824
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.13645849928057177,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010668063418504275
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.12812092694511118,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010650057625854295
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.1303340059657005,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010513193032120874
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "group": "generalization",
+        "meanCoefficient": -0.1289321506468257,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010363427054840267
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "group": "structure",
+        "meanCoefficient": -0.126732507918818,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009848457393170171
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.08123708380376163,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00928744908334858
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.11541226169522752,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009223916481138931
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.10715898241752968,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008658277364955974
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.022613706676303746,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008475920796688687
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.10831060049317817,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008416880180963836
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.10146313720760414,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008350063082204066
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.10251639708792475,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008262061538830858
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0981619990333901,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008253814599496334
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.09243504238269559,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008226103049625356
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.08612393310953771,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007847028045571395
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.09131890573512783,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007679879032176934
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0550326860406037,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007467007038804907
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.06740895750435258,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007433169994146315
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "group": "generalization",
+        "meanCoefficient": -0.025636395498243515,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007424247772621476
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.018418306992996743,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007333864563738681
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.09033241706531711,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0072482509299226314
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.011328888702774589,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0070574119929395175
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.08993209011624718,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006988676605170028
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.08993209800682707,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00698867599200353
+      },
+      {
+        "feature": "spec:planning:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.08770827514040755,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006956361840320004
+      },
+      {
+        "feature": "spec:planning:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0877082751403269,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0069563618403142725
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0186258806300946,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006951398682761161
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "group": "structure",
+        "meanCoefficient": -0.021619901886601175,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00674711713360666
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.008188721162923176,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00663552234711678
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.049166868896575476,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0063189432072058805
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.004528206337175799,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0063070394583589675
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "group": "generalization",
+        "meanCoefficient": 0.01132003673313514,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006302653148291299
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.08079660720958778,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0062787516532542146
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.032965273314993444,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006154237486004027
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.0020207735540185264,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00614267905569188
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.06764894073562708,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006118800986016032
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.07227068555777143,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005972750946130053
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.02796271055862414,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005907128672997828
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.06912006063584229,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0058613865187015154
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.06852315285931486,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005842313692218533
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.051558890259815374,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00546758512774851
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.010881091058086104,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005325380216334785
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.06426572113589367,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005132897323912629
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.06426572113584825,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005132897323909485
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.06463892128833565,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0051037701387365185
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "group": "structure",
+        "meanCoefficient": -0.004657725112833883,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005078019919124182
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.041143209090711896,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0050006540217847496
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.057038259850664665,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004881849581889271
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02575156114389714,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0048591400203787695
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025751561143861484,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004859140020378057
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.06139560883415422,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00484012789059639
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.059832037143670434,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004708777408842402
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "group": "generalization",
+        "meanCoefficient": 0.04610726693045192,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004701657076455482
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025435078837162967,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004699136527692034
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.043469886170133865,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004594877339660728
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.058946616684322294,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004580776096208549
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.007300319995304959,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004539101609148869
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "group": "generalization",
+        "meanCoefficient": -0.056480516419458435,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004487756263882682
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "group": "structure",
+        "meanCoefficient": -0.018676015781567194,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004483440288357325
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "group": "structure",
+        "meanCoefficient": 0.02557736273624629,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004463764680739904
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.002430480331645293,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0043703300417944286
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.05606795201475014,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00435707337925714
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.05606795201471102,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0043570733792541
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.05476213109021938,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004298537200113639
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.03633970970514033,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004057516539921064
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.04523939035606259,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004043163856136804
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "group": "generalization",
+        "meanCoefficient": -0.034833911334934145,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004041322642565772
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.030833193446392265,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003896437914916514
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.01288476583250377,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0035163385016244624
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.014325207809324562,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003513394768249465
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.03216059256011647,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003364523423112075
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.015277204067791563,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0031521530366164013
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.016314400731740293,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0031048717482605463
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03632100064993294,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0029630908736108428
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02932740803088376,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0029289210638213208
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.02770563389954085,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002853795810267594
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.013785617271882104,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002773113123595458
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "group": "structure",
+        "meanCoefficient": 0.02455734277817807,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0027216088876135295
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.023428849171103057,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0025781274307740834
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.023428857061678385,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0025781268176012224
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "group": "structure",
+        "meanCoefficient": -0.01947214067211005,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002276024405412019
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.02282318971040425,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002163114742186418
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "group": "structure",
+        "meanCoefficient": -0.0064579226686793875,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0017619543775627827
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.016187827483155948,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0017519469808057336
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.001375530205541848,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0012439085553944205
+      }
+    ]
+  },
+  "p90Loss": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.36718805839135943,
+        "meanCoefficient": -0.004921733607489231
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.34357604381290524,
+        "meanCoefficient": -0.0039104774989046735
+      },
+      {
+        "group": "structure",
+        "importance": 0.10712851289372331,
+        "meanCoefficient": -0.006333521275982815
+      },
+      {
+        "group": "generalization",
+        "importance": 0.06562243839222547,
+        "meanCoefficient": -0.02201050335697109
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.06131286177256954,
+        "meanCoefficient": -0.0017552238415106545
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.05517208473721718,
+        "meanCoefficient": 0.006361355690895845
+      }
+    ],
+    "features": [
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04791400277503312,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.023669127809096687
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.04791400277502287,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.023669127809091625
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.047042525318934755,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.023238625031276446
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.04627659237044674,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.022860260382092767
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "group": "structure",
+        "meanCoefficient": -0.04550946308303398,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.022481304751207028
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.04247695764750213,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.020983271721647972
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "group": "generalization",
+        "meanCoefficient": -0.03878876054847026,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.019161332341379515
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.038241181824764305,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01889083290392296
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "group": "structure",
+        "meanCoefficient": -0.03743010946769881,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.018490169753905116
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.036974895464066064,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.018265297737199208
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "group": "structure",
+        "meanCoefficient": -0.03338154694927817,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01649021278638686
+      },
+      {
+        "feature": "diagnostic:functional-form",
+        "group": "structure",
+        "meanCoefficient": 0.03232669002029174,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01596912203991512
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.032219498690429116,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.015916170394475314
+      },
+      {
+        "feature": "spec:planning:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0321427025244594,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.015878233712872645
+      },
+      {
+        "feature": "spec:planning:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.032142702524438155,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01587823371286215
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03146692514959397,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.015544405184054335
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.030951257226217044,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.015289669422511577
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.030816103595409417,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.015222904627750656
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.030550639028383127,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.015091767289982544
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "group": "generalization",
+        "meanCoefficient": -0.030141567963058512,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.014889689509638614
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.0293948591872707,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.014520821445467917
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.028468058630425445,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.014062989505679682
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02846805863041898,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014062989505676486
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.027833190090045323,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013749369608490422
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.027378954313590075,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013524980828056785
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.026112827190741077,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013037322894115726
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025829000665224266,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012759316327564201
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0255922817874303,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012642379126561848
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.02546093759331497,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01257749616255454
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.025403377472281045,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012549061930752706
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.025302191694560307,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012499076979243228
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.025302189448441224,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012499075869678664
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.024895435815990394,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01229814288233264
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.024703864281628348,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012203508101918035
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.024401760947699698,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012054271511189336
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.02440176094768467,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012054271511181911
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "group": "generalization",
+        "meanCoefficient": -0.024153871188838587,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011931815985763955
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.023684242203612052,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011835261876723445
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.022333412256532535,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011765156119939913
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.02361024120024443,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011739102182336682
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.022452832032103957,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011091516472528345
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "group": "generalization",
+        "meanCoefficient": -0.02193246798358812,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010834460863348513
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.021170455234513004,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010458032760801875
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.019240542592900124,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009504671606877804
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.019165324445212354,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00946751445347644
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.01906386119082578,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009417392430750045
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.018971251245624845,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009371643870780088
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.01883321046586798,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009303452847912026
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.018721153286203697,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.009248097512231684
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.01789303403506793,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008839013335141819
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.01736209681225296,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008576734663822739
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.016690898925031807,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008245168364667469
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.015793227745592,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007801726100482963
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.015658097408832554,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0077349728127924545
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "group": "structure",
+        "meanCoefficient": 0.013791867237477672,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006813070281409538
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.013630743255662903,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006733476344401387
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.013495545429114585,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006666689717303898
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.013476278699500046,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006657172109521242
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.013341598387827527,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0065906411305647755
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "group": "structure",
+        "meanCoefficient": 0.013269260084141346,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006554906596685806
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.012977149296122184,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0064106062423926295
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012718767857824123,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006282967912627333
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012495206977124997,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006172530655209568
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0119276474060491,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005892160841605277
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.011906685887336376,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005881806021787494
+      },
+      {
+        "feature": "spec:family:advanced",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.01190668588732645,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00588180602178259
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.01177490003252446,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005816704880986966
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "group": "structure",
+        "meanCoefficient": 0.011737210619807687,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005798086617536268
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.01166683651756904,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005763322383202564
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "group": "structure",
+        "meanCoefficient": -0.011059731111847248,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005548319785687863
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "group": "generalization",
+        "meanCoefficient": -0.010439297805998202,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005434406044469691
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.010868166210242933,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005368785744921896
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.01086816621023272,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0053687857449168505
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.010770258788873376,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005320420274795433
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "group": "structure",
+        "meanCoefficient": -0.010426648037477946,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005204650911560685
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.01015704564829283,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0050174979690393055
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0015356048322782486,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004520290551630939
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.003365122308512982,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004347601909139074
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.008090648444048162,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00423693926473936
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.008569440622401968,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0042332339941714885
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.003637902733151545,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004217022493630201
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.007829738496242345,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0038678271579499963
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.007683099604248518,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003795388737543284
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.007678100659383619,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0037929215185360976
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.00767810290551454,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003792920408994042
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.007611614808250465,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003760075829522859
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.006840326714142983,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0035525949618634735
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0030775567309403065,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0035246784287521617
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.00023427061224979987,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003433043396110916
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "group": "generalization",
+        "meanCoefficient": -0.0066070546518728485,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0033707336476251825
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.006822765772494068,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033703908195464004
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.0011942078512102716,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033696348371225794
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.001932355495435828,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0033620775829354766
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.0038659248536823385,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003313779828566726
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.004267098713768533,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00331040206084865
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.006603879728616364,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.003283234163029817
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.004212482855070825,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0030698893558636976
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.002854658444483121,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00281324100293687
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.004072302407379344,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002808349698429708
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.005684086626865992,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0028078925795649193
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0018025054140265034,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002731930902594129
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.004324641378070096,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002731584190317483
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.003474046443472322,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002658133240845147
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.000050839879317196495,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002471891568452938
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.004644816187387666,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0022945014321852147
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.004644816187378559,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0022945014321807166
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0035079340303048705,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0022743632071960057
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.004544315059983954,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0022448546923658423
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "group": "structure",
+        "meanCoefficient": -0.004074834510877334,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0021542577811217117
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.002072929408583965,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0021357155265504155
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.0034732190720820322,
+        "signStability": 0.95,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0017498221517237035
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "group": "structure",
+        "meanCoefficient": 0.0010885711626840789,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0016244115883073265
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0016837012778526627,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0014676059775970006
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0011851085624625223,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0011589588533867667
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.001485695750924236,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0007339216216012192
+      }
+    ]
+  },
+  "risk": {
+    "groups": [
+      {
+        "group": "model-specification-and-interactions",
+        "importance": 0.3519086583268604,
+        "meanCoefficient": 0.002176834030336563
+      },
+      {
+        "group": "temporal-evidence",
+        "importance": 0.3216112803628371,
+        "meanCoefficient": 0.0117381282356462
+      },
+      {
+        "group": "decision-coherence",
+        "importance": 0.11960996287241764,
+        "meanCoefficient": -0.012109322566159115
+      },
+      {
+        "group": "structure",
+        "importance": 0.10355131494390654,
+        "meanCoefficient": 0.015108319230942363
+      },
+      {
+        "group": "causal-robustness",
+        "importance": 0.06481242805380528,
+        "meanCoefficient": -0.0064180397641869
+      },
+      {
+        "group": "generalization",
+        "importance": 0.03850635544017264,
+        "meanCoefficient": -0.028119707117159637
+      }
+    ],
+    "features": [
+      {
+        "feature": "diagnostic:functional-form",
+        "group": "structure",
+        "meanCoefficient": 0.3295092010877009,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.038091797713532716
+      },
+      {
+        "feature": "diagnostic:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.24575904071687282,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.028410143432587714
+      },
+      {
+        "feature": "interaction:saturation:spend-regimes",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.2075155197870811,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.023989130428088475
+      },
+      {
+        "feature": "context:temporal:kernel-distinguishability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.20724119025223153,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.023957417489227154
+      },
+      {
+        "feature": "spec:prior:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.20423315271476894,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0236096834744758
+      },
+      {
+        "feature": "spec:prior:half-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.20423315271471637,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02360968347446972
+      },
+      {
+        "feature": "context:temporal:spec:prior:half-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.19352351641040366,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.022371632159536005
+      },
+      {
+        "feature": "context:temporal:spec:prior:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1853426117412703,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.021425906320191743
+      },
+      {
+        "feature": "diagnostic:evidence-decision-dependence",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.18433582545831345,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02130952019408492
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.18155327133958682,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.02098785242800247
+      },
+      {
+        "feature": "spec:ctv-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.17465319280049563,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.020190192165251284
+      },
+      {
+        "feature": "spec:ctv-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.1746531928004803,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.02019019216524951
+      },
+      {
+        "feature": "context:temporal:spec:ctv-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.17286083399510266,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.019982992582296615
+      },
+      {
+        "feature": "diagnostic:residual-independence",
+        "group": "structure",
+        "meanCoefficient": -0.14257548270711873,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.016481956886974354
+      },
+      {
+        "feature": "interaction:student-t:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.12766302880472052,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.015214054255758887
+      },
+      {
+        "feature": "deficit:carryover-support:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.1105930686306726,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014859153362002204
+      },
+      {
+        "feature": "context:temporal:spec:family:advanced",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.12146501449390808,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.014041552545726362
+      },
+      {
+        "feature": "context:temporal:spec:family:bayesian",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.12018797062206217,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013893924204311053
+      },
+      {
+        "feature": "diagnostic:evidence-compatibility",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.09743153949204561,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.013001766952204834
+      },
+      {
+        "feature": "deficit:roi-decision-stability:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.11188741351812932,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.012934366349571564
+      },
+      {
+        "feature": "diagnostic:future-media-placebo",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.06912639887961924,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012549359600461192
+      },
+      {
+        "feature": "diagnostic:roi-identification",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.10598338364406534,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.012251850926891024
+      },
+      {
+        "feature": "interaction:benchmark:compatibility",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.10072728795310207,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01205048137449996
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.1034591209919344,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011960042072985285
+      },
+      {
+        "feature": "interaction:benchmark:dependence",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.10185852064394199,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.01177501007850781
+      },
+      {
+        "feature": "interaction:student-t:variance",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.06209147813743906,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.01161582195152079
+      },
+      {
+        "feature": "spec:family:advanced",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.09775471881435602,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011300603935574617
+      },
+      {
+        "feature": "spec:family:bayesian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.09775471881433502,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011300603935572189
+      },
+      {
+        "feature": "diagnostic:roi-resolution",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.08975214902574617,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.011049043699904271
+      },
+      {
+        "feature": "deficit:residual-independence:50",
+        "group": "structure",
+        "meanCoefficient": -0.09547666846092627,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.011037257622459093
+      },
+      {
+        "feature": "diagnostic:spend-regimes",
+        "group": "generalization",
+        "meanCoefficient": -0.09435544670750717,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010952733742729539
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:50",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.09109213888232172,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.010601544154465252
+      },
+      {
+        "feature": "diagnostic:variance-structure",
+        "group": "structure",
+        "meanCoefficient": 0.0910199541532318,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.010522054225056782
+      },
+      {
+        "feature": "interaction:ctv-long:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0722651787119644,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009853755991197956
+      },
+      {
+        "feature": "interaction:weibull:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.08017510162406258,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009765916623242929
+      },
+      {
+        "feature": "context:temporal:spec:calibration:likelihood",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.08390915221719626,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.009700033996078803
+      },
+      {
+        "feature": "diagnostic:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.07250344283511398,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008769074889923578
+      },
+      {
+        "feature": "deficit:carryover-support:70",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.043664614955685674,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008730059201351097
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:log-normal",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.025391632999531528,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008593877328415944
+      },
+      {
+        "feature": "interaction:ctv-long:whole-flight",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.07053948927921863,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008503852697691227
+      },
+      {
+        "feature": "diagnostic:roi-decision-stability",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.07278985834093878,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.008414625601856175
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:student-t",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.06838007261479126,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008356845987993593
+      },
+      {
+        "feature": "spec:likelihood:student-t",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.05890498474077258,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.008079028165061381
+      },
+      {
+        "feature": "spec:planning:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.06826032472481824,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007891004174374433
+      },
+      {
+        "feature": "spec:planning:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.0682603247247733,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007891004174369238
+      },
+      {
+        "feature": "context:temporal:spec:calibration:prior",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.06653276538224252,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007845013202114367
+      },
+      {
+        "feature": "spec:calibration:prior",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.06731162566865677,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007781334029874052
+      },
+      {
+        "feature": "spec:calibration:likelihood",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.06731163001139201,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007781333527860038
+      },
+      {
+        "feature": "deficit:future-media-placebo:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.05167431358906558,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007629742310533239
+      },
+      {
+        "feature": "diagnostic:roi-economic-consistency",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.0563953445180614,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007594160557617423
+      },
+      {
+        "feature": "diagnostic:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.05987728224065656,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007431184734841637
+      },
+      {
+        "feature": "spec:likelihood:gaussian",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.027507661506306846,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007365652956586997
+      },
+      {
+        "feature": "diagnostic:fold-stability",
+        "group": "generalization",
+        "meanCoefficient": -0.030239723265822877,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007244366213123827
+      },
+      {
+        "feature": "diagnostic:evidence-source-quality",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.017452233638539278,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.007035803039344247
+      },
+      {
+        "feature": "interaction:weibull:carryover",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.05325124446848358,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.007019681944604569
+      },
+      {
+        "feature": "interaction:ridge:identification",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.006732900761894206,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006902512557006197
+      },
+      {
+        "feature": "interaction:time-varying:fold",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.02504803582198461,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0065481006397266886
+      },
+      {
+        "feature": "diagnostic:influence-stability",
+        "group": "structure",
+        "meanCoefficient": -0.017702263039408046,
+        "signStability": 0.55,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006484827682486152
+      },
+      {
+        "feature": "spec:likelihood:log-normal",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.03221306391313904,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006468346057696367
+      },
+      {
+        "feature": "deficit:future-media-placebo:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.007985854226901068,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006362006073793569
+      },
+      {
+        "feature": "deficit:whole-flight-generalization:50",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.036331787224767806,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.006360636207069145
+      },
+      {
+        "feature": "interaction:log-normal:shape",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.05004854536244613,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0063576345895788675
+      },
+      {
+        "feature": "interaction:benchmark:quality",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.053107090133480486,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006139265695286211
+      },
+      {
+        "feature": "diagnostic:predictive-coverage",
+        "group": "generalization",
+        "meanCoefficient": 0.005045554748382343,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.006084778273627919
+      },
+      {
+        "feature": "context:temporal:spec:planning:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.016155608785076034,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005903125395509203
+      },
+      {
+        "feature": "diagnostic:confounder-sensitivity",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.019689386345430226,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005822482439778403
+      },
+      {
+        "feature": "deficit:roi-identification:70",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.03822997621370501,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005667529859640648
+      },
+      {
+        "feature": "context:temporal:spec:planning:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.013231534834709013,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005651030729910725
+      },
+      {
+        "feature": "deficit:confounder-sensitivity:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.04555063976996867,
+        "signStability": 0.85,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005607551695678565
+      },
+      {
+        "feature": "context:temporal:spec:likelihood:gaussian",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.03625056458729044,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005494238947194144
+      },
+      {
+        "feature": "context:temporal:rolling-oos",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.04572496017688903,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005285879507364105
+      },
+      {
+        "feature": "context:temporal:whole-flight-generalization",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.04260249861388922,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005229919685702388
+      },
+      {
+        "feature": "diagnostic:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.035345405403540954,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.005153907044856571
+      },
+      {
+        "feature": "diagnostic:rolling-oos",
+        "group": "generalization",
+        "meanCoefficient": -0.04438869946690381,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005139338021761068
+      },
+      {
+        "feature": "deficit:roi-identification:50",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.029574812864379595,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.005109634445203706
+      },
+      {
+        "feature": "interaction:saturation:roi-resolution",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0047613512827402405,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0050517549147307845
+      },
+      {
+        "feature": "diagnostic:likelihood-shape",
+        "group": "structure",
+        "meanCoefficient": -0.004453713402149095,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004925738524790909
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.041260219440989065,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004769748241852021
+      },
+      {
+        "feature": "interaction:planning:placebo",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.013785358229776718,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004759735861709393
+      },
+      {
+        "feature": "interaction:planning:confounder",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.019196866427043584,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004754937810490717
+      },
+      {
+        "feature": "spec:global-adstock:geometric",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.012934656569948114,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004711176325540831
+      },
+      {
+        "feature": "spec:global-adstock:weibull",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.012934656569928513,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0047111763255405755
+      },
+      {
+        "feature": "deficit:rolling-oos:70",
+        "group": "generalization",
+        "meanCoefficient": -0.0310958972838007,
+        "signStability": 0.85,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004643277062189619
+      },
+      {
+        "feature": "deficit:multicollinearity:70",
+        "group": "structure",
+        "meanCoefficient": 0.021269526808009562,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004487645147505379
+      },
+      {
+        "feature": "diagnostic:anchor-recovery",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.0016618069298568732,
+        "signStability": 0.6,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004465631073249513
+      },
+      {
+        "feature": "deficit:rolling-oos:50",
+        "group": "generalization",
+        "meanCoefficient": 0.026315969272694372,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004441862126740661
+      },
+      {
+        "feature": "diagnostic:new-data-stability",
+        "group": "causal-robustness",
+        "meanCoefficient": -0.03734573940167855,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00443985763060234
+      },
+      {
+        "feature": "spec:evidence:experiments-only",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.0380698544751701,
+        "signStability": 1,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00440093688086677
+      },
+      {
+        "feature": "spec:evidence:benchmark-gap-fill",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.038069854475147845,
+        "signStability": 1,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004400936880864198
+      },
+      {
+        "feature": "diagnostic:non-negative-boundary",
+        "group": "structure",
+        "meanCoefficient": -0.011758410351079246,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004293584132919704
+      },
+      {
+        "feature": "spec:ctv-normalization:peak",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.033232102406636,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004207728203210264
+      },
+      {
+        "feature": "spec:ctv-normalization:sum",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.03323210240661173,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004207728203207712
+      },
+      {
+        "feature": "context:temporal:carryover-support",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.01934409785292678,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004162564191118113
+      },
+      {
+        "feature": "interaction:time-varying:new-data",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.034716147551268596,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.004108070516921791
+      },
+      {
+        "feature": "deficit:roi-decision-stability:50",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.0321460122051255,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.004097008125792622
+      },
+      {
+        "feature": "deficit:anchor-recovery:70",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.02461994176391031,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0040348259790072664
+      },
+      {
+        "feature": "deficit:roi-posterior-plausibility:70",
+        "group": "decision-coherence",
+        "meanCoefficient": 0.021535060289973956,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.003712987717636211
+      },
+      {
+        "feature": "context:temporal:new-data-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.030871944308452498,
+        "signStability": 0.95,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0036608605685129686
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:geometric",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.012496312802511012,
+        "signStability": 0.7,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0036575577713052255
+      },
+      {
+        "feature": "context:temporal:spec:global-adstock:weibull",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.013080975652166643,
+        "signStability": 0.7,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0036032314849973614
+      },
+      {
+        "feature": "deficit:anchor-recovery:50",
+        "group": "causal-robustness",
+        "meanCoefficient": 0.021580709587478243,
+        "signStability": 0.75,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00329942709623594
+      },
+      {
+        "feature": "deficit:multicollinearity:50",
+        "group": "structure",
+        "meanCoefficient": 0.020070296522748436,
+        "signStability": 0.8,
+        "direction": "raises-predicted-loss",
+        "importance": 0.00292633490041125
+      },
+      {
+        "feature": "context:temporal:spec:evidence:experiments-only",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.020278441895303156,
+        "signStability": 0.9,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002907498960781316
+      },
+      {
+        "feature": "context:temporal:spec:evidence:benchmark-gap-fill",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.01959917230569594,
+        "signStability": 0.9,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00288152379605447
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:sum",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.001283830145494598,
+        "signStability": 0.6,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002743989861339319
+      },
+      {
+        "feature": "diagnostic:roi-posterior-plausibility",
+        "group": "decision-coherence",
+        "meanCoefficient": -0.009498112918020753,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.00266191716081798
+      },
+      {
+        "feature": "context:temporal:spec:ctv-normalization:peak",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.001890957940034551,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002635995335715839
+      },
+      {
+        "feature": "interaction:ridge:collinearity",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.020053684445553926,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0026131907448875167
+      },
+      {
+        "feature": "spec:time-varying:on",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": -0.012541416730432728,
+        "signStability": 0.5,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0023937025488917833
+      },
+      {
+        "feature": "spec:time-varying:off",
+        "group": "model-specification-and-interactions",
+        "meanCoefficient": 0.01254142107316086,
+        "signStability": 0.5,
+        "direction": "raises-predicted-loss",
+        "importance": 0.002393702046871901
+      },
+      {
+        "feature": "deficit:residual-independence:70",
+        "group": "structure",
+        "meanCoefficient": -0.015881191166888964,
+        "signStability": 0.8,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.002289684377502526
+      },
+      {
+        "feature": "diagnostic:multicollinearity",
+        "group": "structure",
+        "meanCoefficient": -0.007829737903754347,
+        "signStability": 0.65,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0020104337302676695
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:off",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.012145988450275782,
+        "signStability": 0.55,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0019496655913057038
+      },
+      {
+        "feature": "context:temporal:spec:time-varying:on",
+        "group": "temporal-evidence",
+        "meanCoefficient": -0.009047718864776576,
+        "signStability": 0.75,
+        "direction": "reduces-predicted-loss",
+        "importance": 0.0016532404338405232
+      },
+      {
+        "feature": "context:temporal:post-flight-residual-stability",
+        "group": "temporal-evidence",
+        "meanCoefficient": 0.00018305022222690602,
+        "signStability": 0.65,
+        "direction": "raises-predicted-loss",
+        "importance": 0.0013597089126743472
+      }
+    ]
+  }
+}

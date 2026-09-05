@@ -27,6 +27,9 @@ export const SCORE_DIAGNOSTIC_GROUPS = {
     "roi-decision-stability",
     "roi-resolution",
     "roi-identification",
+    "evidence-source-quality",
+    "evidence-compatibility",
+    "evidence-decision-dependence",
     "roi-economic-consistency",
   ],
 } as const satisfies Record<ValidationLayerId, readonly string[]>;
@@ -34,15 +37,17 @@ export const SCORE_DIAGNOSTIC_GROUPS = {
 export type ValidationScoreDiagnostic =
   (typeof SCORE_DIAGNOSTIC_GROUPS)[ValidationLayerId][number];
 
-export type ValidationDiagnosticValues = Record<
+/** Partial so immutable historical candidates can coexist with later features. */
+export type ValidationDiagnosticValues = Partial<Record<
   ValidationScoreDiagnostic,
   number | null
->;
+>>;
 
-export type ValidationDiagnosticWeights = Record<
+/** Partial so frozen artifacts remain readable when new diagnostics are added. */
+export type ValidationDiagnosticWeights = Partial<Record<
   ValidationScoreDiagnostic,
   number
->;
+>>;
 
 export function validationDiagnosticValues(
   layers: Record<ValidationLayerId, ValidationLayerResult>,

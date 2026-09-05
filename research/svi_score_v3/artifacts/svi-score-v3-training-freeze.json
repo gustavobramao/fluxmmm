@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "flux-svi-score-v3-training-freeze-v1",
+  "frozenAt": "2026-09-01T13:17:25Z",
+  "status": "frozen-before-held-out-validation",
+  "activation": "research-only",
+  "cohort": {
+    "businesses": 500,
+    "trainingBusinesses": 300,
+    "validationBusinesses": 120,
+    "auditBusinesses": 80,
+    "candidateFits": 24000,
+    "trainingRows": 14400
+  },
+  "splitPolicy": {
+    "training": "Five-fold grouped cross-validation and final fitting are restricted to the 300 declared training businesses.",
+    "validation": "The 120 declared validation businesses were not used to fit weights or select regularization and remain held out for the next evaluation stage.",
+    "audit": "The 80 declared audit businesses were not used to fit weights or select regularization and remain sealed until validation is accepted."
+  },
+  "release": {
+    "artifactPath": "research/svi_score_v3/artifacts/svi-score-v3-grouped-training.json",
+    "artifactSha256": "4a86efcdc2c9cff5ff1a449aa9aa87197b1178fdb981d33d48475cb97efcf2f6",
+    "weightsSha256": "f939e756c4579c0a931198ec82b7a612afee168a52c9cdbb547ba489b951fd67",
+    "selectedConfiguration": {
+      "id": "ridge-strong",
+      "regularization": 0.05,
+      "epochs": 180
+    },
+    "theoremViolations": 0
+  },
+  "localSources": [
+    {
+      "path": ".flux-artifacts/svi-score-v3/design-pilot-records.json",
+      "sha256": "5ae790280f1f8356abd5fc38ba37961cc8276d38f5449c3c1a1066d62a35cfe1",
+      "purpose": "Frozen 24,000-fit SVI checkpoint; intentionally not versioned because of size."
+    },
+    {
+      "path": ".flux-artifacts/svi-score-v3/train-features-v2.json",
+      "sha256": "bd184e41d973e3553e735f735e4a3a68ad58b41cc2f5e877739bca1a3a2159d0",
+      "purpose": "Train-only refreshed diagnostic features; intentionally not versioned because of size."
+    }
+  ],
+  "implementation": [
+    {
+      "path": "research/svi_score_v3/contract.ts",
+      "sha256": "8a63656f99e0553bc92d4a7241a9e97854471b942ade2bb6914ba87c32846899"
+    },
+    {
+      "path": "research/svi_score_v3/cross-validation.ts",
+      "sha256": "e9149ecdea61ede816091d5dec523818002dc39bef9d512753a195625a2edb54"
+    },
+    {
+      "path": "research/svi_score_v3/run-cross-validation.ts",
+      "sha256": "6482c17a4ff44acb07aad703d55aa022b26baf6310b36e89528691f8f90514b1"
+    },
+    {
+      "path": "research/score_v6/learn.ts",
+      "sha256": "dcb79c891b55875bbebce5e2d46df9249408b16d7b3479a71b8e7a4c32997aa1"
+    },
+    {
+      "path": "research/svi_score_v3/training-rows.ts",
+      "sha256": "896e2928b2f5e005398417c8f17dc1c3186a4387d3b7cb7f6298e515da431c4e"
+    },
+    {
+      "path": "lib/mmm/evidence-attribution.ts",
+      "sha256": "2520645ab7f1a482fcb49133aabed318f32fc09f805f85896724ec2a3d8f4d13"
+    },
+    {
+      "path": "lib/mmm/validation/evidence-dependence.ts",
+      "sha256": "72488a3d3744e9cd54344bd3f0f7bd8fac311af71e6733f2f9400f8a6183e7f0"
+    }
+  ],
+  "claims": [
+    "The release is a frozen research artifact, not an activated production score.",
+    "No validation or audit row was admitted to grouped cross-validation or final weight fitting.",
+    "The finite-candidate capped-regret inequality had zero numerical violations on the training cohort.",
+    "Held-out performance remains unknown until the separately governed validation stage."
+  ]
+}

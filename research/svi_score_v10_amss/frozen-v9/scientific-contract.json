@@ -1,0 +1,108 @@
+{
+  "snapshotVersion": "flux-svi-score-v10-amss-v9-freeze-v1",
+  "selectorVersion": "flux-svi-score-v9.0.0-setwise-distributional-development",
+  "candidateContract": {
+    "candidatesPerBusiness": 48,
+    "candidateOrderInvariant": true,
+    "channelOrderInvariant": true
+  },
+  "inference": {
+    "method": "fullrank-advi",
+    "iterations": 5000,
+    "draws": 256,
+    "primarySeeds": [
+      30071,
+      81119
+    ],
+    "adjudicationSeed": 190081,
+    "learningRate": 0.001,
+    "initialScale": 0.01,
+    "gradientNorm": 10,
+    "elboWindow": 250,
+    "maximumElboDrift": 0.05,
+    "maximumSeedLogRoiDifference": 0.25
+  },
+  "tokens": {
+    "baseCount": 136,
+    "posteriorDecisionCount": 96,
+    "count": 232,
+    "channelOrderInvariant": true,
+    "candidateOrderInvariant": true,
+    "hiddenTruthPermitted": false,
+    "forbidden": [
+      "business-id",
+      "generator-family",
+      "split-label",
+      "candidate-id",
+      "proposal-method",
+      "search-phase",
+      "synthetic-truth",
+      "decision-loss",
+      "scenario-decision-loss",
+      "roi-truth-error",
+      "contribution-truth-error"
+    ]
+  },
+  "targets": {
+    "scenarios": [
+      "budget-reduction",
+      "fixed-budget-mix",
+      "budget-growth",
+      "economic-ceiling"
+    ],
+    "heads": [
+      "mean-decision-loss",
+      "median-decision-loss",
+      "p90-decision-loss",
+      "p95-decision-loss",
+      "cvar90-decision-loss",
+      "budget-reduction-decision-loss",
+      "fixed-budget-mix-decision-loss",
+      "budget-growth-decision-loss",
+      "economic-ceiling-decision-loss",
+      "dangerous-false-champion-probability"
+    ],
+    "dangerousThreshold": 1,
+    "economicScale": 1
+  },
+  "model": {
+    "family": "small permutation-invariant DeepSets multi-head selector",
+    "candidateEncoder": "shared nonlinear encoder",
+    "businessContext": "mean-pooled candidate embedding",
+    "decoderInputs": "candidate, context, difference, and interaction embeddings",
+    "directSelectionObjective": "softmax expected capped normalized regret over all 48 candidates",
+    "theoremRegularizer": "all oracle-versus-candidate exact regret-weighted logistic comparisons"
+  },
+  "promotion": {
+    "riskPreference": {
+      "mean": 0.65,
+      "p90": 0.35
+    },
+    "selectorPolicy": {
+      "danger_penalty": 0,
+      "uncertainty_penalty": 0.25
+    },
+    "hardGates": [
+      "development-only-cohort",
+      "finite-SVI-posterior",
+      "complete-token-contract",
+      "complete-scenario-label-contract"
+    ],
+    "softRiskSignals": [
+      "ELBO stability",
+      "seed agreement",
+      "predictive coverage",
+      "identification",
+      "evidence availability",
+      "evidence conflict",
+      "ROI plausibility"
+    ]
+  },
+  "externalAuditBoundary": {
+    "selectorRetrainingPermitted": false,
+    "tokenAdditionOrRemovalPermitted": false,
+    "thresholdTuningPermitted": false,
+    "hiddenAmssTruthPermittedBeforeSelection": false,
+    "technicalAdapterRepairsPermittedBeforeOutcomeOpening": true
+  }
+}

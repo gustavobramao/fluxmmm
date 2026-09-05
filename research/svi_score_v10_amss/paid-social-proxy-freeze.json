@@ -1,0 +1,19 @@
+{
+  "artifactId": "flux-v10-amss-paid-social-proxy-pre-smoke-freeze-v1",
+  "frozenOn": "2026-09-05",
+  "status": "frozen-before-three-channel-smoke-and-before-external-cohort",
+  "upstreamAmssRevision": "cbf5e7f6c668de493077ce1d08a2ab963891f0cc",
+  "inputs": {
+    "amss-three-channel-scenario.R": "97a1206dbe4f08b34d19a4e0a5cd6ef059630d8f503511f881d71d5401f0c18e",
+    "amss-paid-social-proxy-contract.json": "3cc1d62802bb3c8721a579b4a1ed7a56b354bff0a992b1a6ad8d70c1b9068dea",
+    "smoke-paid-social-proxy.R": "a9c4294bba1d07002c990d8839ab8e191af6201d0be777f8487026b0d8112d68",
+    "frozen-v9/manifest.json": "e6adfa7f13a08452c76610a59e4717c0391aa707dcd3566868bd27619fdc4ad9"
+  },
+  "prohibitions": {
+    "truthBeforeFrozenV9Selection": true,
+    "postOutcomeProxyTuning": true,
+    "postOutcomeBusinessDeletion": true,
+    "nativePaidSocialClaim": true
+  },
+  "researchLabelsCreatedAtFreeze": false
+}

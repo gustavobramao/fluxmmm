@@ -1214,6 +1214,116 @@ def sampling_summary(
             }
         )
 
+    def aligned_posterior_value(
+        variable_name: str,
+        draw_index: int,
+        fallback: float,
+    ) -> float:
+        if variable_name not in idata.posterior:
+            return fallback
+        values = np.asarray(
+            idata.posterior[variable_name].values,
+            dtype=float,
+        ).reshape(-1)
+        source_index = int(posterior_indexes[draw_index])
+        if source_index < 0 or source_index >= values.size:
+            return fallback
+        return safe_number(values[source_index], fallback)
+
+    # This payload is the offline decision-research contract. Values within a
+    # draw stay aligned: channel ROI, contribution and response parameters all
+    # come from the same retained NUTS state. Marginal medians must not be
+    # combined and presented as though they formed a joint posterior draw.
+    decision_draws: list[dict[str, Any]] = []
+    channel_specific = bool(compiled.get("response", {}).get("channelSpecific"))
+    for draw_index in range(len(posterior_indexes)):
+        draw_channels = []
+        for media_index, media in enumerate(compiled["media"]):
+            media_response = media.get("response", {})
+            global_response = compiled.get("response", {})
+            suffix = f"_{media_index:03d}"
+            adstock_type = str(
+                media_response.get(
+                    "adstockType",
+                    global_response.get("adstockType", "geometric"),
+                )
+            )
+            if channel_specific:
+                adstock = aligned_posterior_value(
+                    f"adstock_decay{suffix}",
+                    draw_index,
+                    safe_number(media_response.get("adstock"), 0.35),
+                )
+                weibull_shape = aligned_posterior_value(
+                    f"weibull_shape{suffix}",
+                    draw_index,
+                    safe_number(media_response.get("weibullShape"), 2.5),
+                )
+                weibull_scale = aligned_posterior_value(
+                    f"weibull_scale{suffix}",
+                    draw_index,
+                    safe_number(media_response.get("weibullScale"), 4.0),
+                )
+                saturation = aligned_posterior_value(
+                    f"hill_shape{suffix}",
+                    draw_index,
+                    safe_number(media_response.get("saturation"), 1.2),
+                )
+            else:
+                adstock = aligned_posterior_value(
+                    "adstock_decay",
+                    draw_index,
+                    safe_number(global_response.get("adstockDecay"), 0.35),
+                )
+                weibull_shape = aligned_posterior_value(
+                    "weibull_shape",
+                    draw_index,
+                    safe_number(global_response.get("weibullShape"), 2.5),
+                )
+                weibull_scale = aligned_posterior_value(
+                    "weibull_scale",
+                    draw_index,
+                    safe_number(global_response.get("weibullScale"), 4.0),
+                )
+                saturation = aligned_posterior_value(
+                    "hill_shape",
+                    draw_index,
+                    safe_number(global_response.get("hillShape"), 1.2),
+                )
+            draw_channels.append(
+                {
+                    "channel": str(media.get("channel", f"channel_{media_index}")),
+                    "roi": safe_number(posterior_roi_by_channel[media_index][draw_index]),
+                    "contribution": safe_number(
+                        np.sum(contribution_draws_by_channel[media_index][draw_index])
+                    ),
+                    "response": {
+                        "adstockType": adstock_type,
+                        "adstock": adstock,
+                        "weibullShape": weibull_shape,
+                        "weibullScale": weibull_scale,
+                        "saturation": saturation,
+                        "halfSaturationQuantile": safe_number(
+                            media_response.get("halfSaturationQuantile"),
+                            0.5,
+                        ),
+                        "kernelNormalization": str(
+                            media_response.get("kernelNormalization", "peak")
+                        ),
+                    },
+                }
+            )
+        decision_draws.append(
+            {
+                "channels": draw_channels,
+                "kernelBandwidth": aligned_posterior_value(
+                    "kernel_bandwidth",
+                    draw_index,
+                    safe_number(compiled.get("response", {}).get("kernelBandwidth"), 0.18),
+                ),
+            }
+        )
+
     predictive_low, predictive_high = hdi_by_column(observation_draws)
     predictive_median = np.median(observation_draws, axis=0)
     mean_low, mean_high = hdi_by_column(mean_draws)
@@ -1307,6 +1417,7 @@ def sampling_summary(
         "gates": gates,
         "diagnostics": diagnostics,
         "channels": channels,
+        "decisionDraws": decision_draws,
         "predictive": {
             "dates": compiled["dates"],
             "actual": [float(value) for value in outcome],

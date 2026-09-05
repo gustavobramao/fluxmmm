@@ -1,0 +1,2121 @@
+{
+  "artifactId": "flux-svi-score-v3-grouped-training",
+  "version": "flux-svi-score-v3.1.0-unbiased-500-business-design",
+  "generatedAt": "2026-09-01T12:46:23.463Z",
+  "activation": "research-only",
+  "source": {
+    "checkpoint": "design-pilot-records.json",
+    "checkpointSha256": "5ae790280f1f8356abd5fc38ba37961cc8276d38f5449c3c1a1066d62a35cfe1",
+    "featureCheckpoint": "train-features-v2.json",
+    "featureCheckpointSha256": "bd184e41d973e3553e735f735e4a3a68ad58b41cc2f5e877739bca1a3a2159d0",
+    "terminalFits": 24000,
+    "labelledTrainingRows": 14400,
+    "trainingBusinesses": 300,
+    "refreshedDiagnosticRows": 14400
+  },
+  "crossValidation": {
+    "version": "flux-svi-score-v3-grouped-cv-v2-regret-bound",
+    "contract": {
+      "folds": 5,
+      "groupingUnit": "business",
+      "stratification": "generator-family",
+      "selectionMetric": "out-of-fold-mean-excess-decision-loss",
+      "selectionRule": "paired-one-standard-error-with-economic-non-inferiority",
+      "maximumRelativeMeanExcessLossIncrease": 0.01,
+      "tieBreakers": [
+        "stronger-regularization",
+        "configuration-id"
+      ],
+      "heldOutSplitsPermitted": false,
+      "theoremTarget": "capped-normalized-selected-model-excess-regret",
+      "pairConstruction": "every-in-pool-oracle-versus-candidate-comparison",
+      "economicScale": "predeclared-normalized-opportunity-loss-1"
+    },
+    "data": {
+      "businesses": 300,
+      "rows": 14400,
+      "families": {
+        "balanced-dtc": 100,
+        "search-demand-harvesting": 100,
+        "social-frequency-pressure": 100
+      },
+      "foldBusinesses": {
+        "fold-0": 60,
+        "fold-1": 60,
+        "fold-2": 60,
+        "fold-3": 60,
+        "fold-4": 60
+      },
+      "assignmentHash": "d2faa1f496a294b27446a368644e6863b02d82bea50de88bd940fd7df5250999"
+    },
+    "assignments": [
+      {
+        "businessId": "balanced-dtc-12001",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12002",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12003",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12004",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12005",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12006",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12007",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12008",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12009",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12010",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12011",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12012",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12013",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12014",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12015",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12016",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12017",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12018",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12019",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12020",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12021",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12022",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12023",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12024",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12025",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12026",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12027",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12028",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12029",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12030",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12031",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12032",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12033",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12034",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12035",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12036",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12037",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12038",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12039",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12040",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12041",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12042",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12043",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12044",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12045",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12046",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12047",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12048",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12049",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12050",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12051",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12052",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12053",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12054",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12055",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12056",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12057",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12058",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12059",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12060",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12061",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12062",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12063",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12064",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12065",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12066",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12067",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12068",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12069",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12070",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12071",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12072",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12073",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12074",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12075",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12076",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12077",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12078",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12079",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12080",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12081",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12082",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12083",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12084",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12085",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12086",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12087",
+        "family": "balanced-dtc",
+        "fold": 1
+      },
+      {
+        "businessId": "balanced-dtc-12088",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12089",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12090",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12091",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12092",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12093",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12094",
+        "family": "balanced-dtc",
+        "fold": 4
+      },
+      {
+        "businessId": "balanced-dtc-12095",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12096",
+        "family": "balanced-dtc",
+        "fold": 0
+      },
+      {
+        "businessId": "balanced-dtc-12097",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12098",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "balanced-dtc-12099",
+        "family": "balanced-dtc",
+        "fold": 3
+      },
+      {
+        "businessId": "balanced-dtc-12100",
+        "family": "balanced-dtc",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12001",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12002",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12003",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12004",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12005",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12006",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12007",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12008",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12009",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12010",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12011",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12012",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12013",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12014",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12015",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12016",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12017",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12018",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12019",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12020",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12021",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12022",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12023",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12024",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12025",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12026",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12027",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12028",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12029",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12030",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12031",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12032",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12033",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12034",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12035",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12036",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12037",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12038",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12039",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12040",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12041",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12042",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12043",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12044",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12045",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12046",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12047",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12048",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12049",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12050",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12051",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12052",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12053",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12054",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12055",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12056",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12057",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12058",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12059",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12060",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12061",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12062",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12063",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12064",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12065",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12066",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12067",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12068",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12069",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12070",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12071",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12072",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12073",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12074",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12075",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12076",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12077",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12078",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12079",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12080",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12081",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12082",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12083",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12084",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12085",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12086",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12087",
+        "family": "search-demand-harvesting",
+        "fold": 4
+      },
+      {
+        "businessId": "search-demand-harvesting-12088",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12089",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12090",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12091",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12092",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12093",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12094",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12095",
+        "family": "search-demand-harvesting",
+        "fold": 0
+      },
+      {
+        "businessId": "search-demand-harvesting-12096",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "search-demand-harvesting-12097",
+        "family": "search-demand-harvesting",
+        "fold": 1
+      },
+      {
+        "businessId": "search-demand-harvesting-12098",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12099",
+        "family": "search-demand-harvesting",
+        "fold": 3
+      },
+      {
+        "businessId": "search-demand-harvesting-12100",
+        "family": "search-demand-harvesting",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12001",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12002",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12003",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12004",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12005",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12006",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12007",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12008",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12009",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12010",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12011",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12012",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12013",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12014",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12015",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12016",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12017",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12018",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12019",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12020",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12021",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12022",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12023",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12024",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12025",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12026",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12027",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12028",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12029",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12030",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12031",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12032",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12033",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12034",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12035",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12036",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12037",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12038",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12039",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12040",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12041",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12042",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12043",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12044",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12045",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12046",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12047",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12048",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12049",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12050",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12051",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12052",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12053",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12054",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12055",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12056",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12057",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12058",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12059",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12060",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12061",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12062",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12063",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12064",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12065",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12066",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12067",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12068",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12069",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12070",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12071",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12072",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12073",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12074",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12075",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12076",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12077",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12078",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12079",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12080",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12081",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12082",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12083",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12084",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12085",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12086",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12087",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12088",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12089",
+        "family": "social-frequency-pressure",
+        "fold": 4
+      },
+      {
+        "businessId": "social-frequency-pressure-12090",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12091",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12092",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12093",
+        "family": "social-frequency-pressure",
+        "fold": 2
+      },
+      {
+        "businessId": "social-frequency-pressure-12094",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12095",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12096",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12097",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      },
+      {
+        "businessId": "social-frequency-pressure-12098",
+        "family": "social-frequency-pressure",
+        "fold": 3
+      },
+      {
+        "businessId": "social-frequency-pressure-12099",
+        "family": "social-frequency-pressure",
+        "fold": 0
+      },
+      {
+        "businessId": "social-frequency-pressure-12100",
+        "family": "social-frequency-pressure",
+        "fold": 1
+      }
+    ],
+    "configurations": [
+      {
+        "configuration": {
+          "id": "ridge-light",
+          "regularization": 0.005,
+          "epochs": 180
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.23333333333333334,
+              "meanLoss": 4.329273196893988,
+              "medianLoss": 1.5397551641038287,
+              "p90Loss": 12.748243888763213,
+              "p95Loss": 16.990773089639017,
+              "meanExcessLoss": 2.7462990446436084,
+              "meanNormalizedExcessRegret": 0.48666995173873795,
+              "lowestLossSelectionRate": 0.23333333333333334,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.5286312452869946,
+                "search-demand-harvesting": 4.9447774773591595,
+                "social-frequency-pressure": 5.514410868035809
+              }
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 4.063702808577092,
+              "medianLoss": 1.5354963857657755,
+              "p90Loss": 7.1501756401418906,
+              "p95Loss": 11.005857226387763,
+              "meanExcessLoss": 2.7736586012598377,
+              "meanNormalizedExcessRegret": 0.5127886506543073,
+              "lowestLossSelectionRate": 0.3,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.412704871836786,
+                "search-demand-harvesting": 2.3004677593387965,
+                "social-frequency-pressure": 4.477935794555696
+              }
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.2,
+              "meanLoss": 3.677445447920996,
+              "medianLoss": 1.5003957849505323,
+              "p90Loss": 9.712886218313335,
+              "p95Loss": 13.22686789646776,
+              "meanExcessLoss": 2.475619097215241,
+              "meanNormalizedExcessRegret": 0.5311613024486163,
+              "lowestLossSelectionRate": 0.26666666666666666,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.552344534319701,
+                "search-demand-harvesting": 2.330333024924117,
+                "social-frequency-pressure": 5.14965878451917
+              }
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 5.232564781461558,
+              "medianLoss": 1.2452558523171673,
+              "p90Loss": 9.726278131970695,
+              "p95Loss": 21.691519936035245,
+              "meanExcessLoss": 4.015197904613262,
+              "meanNormalizedExcessRegret": 0.5124398404682811,
+              "lowestLossSelectionRate": 0.31666666666666665,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.494061390891075,
+                "search-demand-harvesting": 3.8679244835138773,
+                "social-frequency-pressure": 6.335708469979726
+              }
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.4,
+              "meanLoss": 3.8107910380623715,
+              "medianLoss": 1.360575150637502,
+              "p90Loss": 10.76240345761368,
+              "p95Loss": 16.303444186030053,
+              "meanExcessLoss": 2.3158872825265546,
+              "meanNormalizedExcessRegret": 0.45107730813513414,
+              "lowestLossSelectionRate": 0.2833333333333333,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.950573721001139,
+                "search-demand-harvesting": 2.3860436113626964,
+                "social-frequency-pressure": 5.095755781823282
+              }
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 300,
+          "decisionGradeBusinessShare": 0.30666666666666664,
+          "meanLoss": 4.222755454583202,
+          "medianLoss": 1.3915361135641597,
+          "p90Loss": 10.27210585280206,
+          "p95Loss": 18.28276344941814,
+          "meanExcessLoss": 2.8653323860517004,
+          "meanNormalizedExcessRegret": 0.4988274106890152,
+          "lowestLossSelectionRate": 0.28,
+          "familyMeanLoss": {
+            "balanced-dtc": 4.187663152667139,
+            "search-demand-harvesting": 3.1659092712997303,
+            "social-frequency-pressure": 5.314693939782737
+          }
+        },
+        "selection": {
+          "meanLossDifferenceFromBest": 0.06112419210388971,
+          "standardErrorOfPairedDifference": 0.058784026996398064,
+          "withinOneStandardError": false,
+          "withinEconomicNonInferiorityMargin": false,
+          "selectable": false
+        }
+      },
+      {
+        "configuration": {
+          "id": "ridge-balanced",
+          "regularization": 0.015,
+          "epochs": 180
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.23333333333333334,
+              "meanLoss": 4.329273196893988,
+              "medianLoss": 1.5397551641038287,
+              "p90Loss": 12.748243888763213,
+              "p95Loss": 16.990773089639017,
+              "meanExcessLoss": 2.7462990446436084,
+              "meanNormalizedExcessRegret": 0.48666995173873795,
+              "lowestLossSelectionRate": 0.23333333333333334,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.5286312452869946,
+                "search-demand-harvesting": 4.9447774773591595,
+                "social-frequency-pressure": 5.514410868035809
+              }
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 4.064800287686796,
+              "medianLoss": 1.5354963857657755,
+              "p90Loss": 7.1501756401418906,
+              "p95Loss": 11.005857226387763,
+              "meanExcessLoss": 2.774756080369542,
+              "meanNormalizedExcessRegret": 0.5138861297640118,
+              "lowestLossSelectionRate": 0.3,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.4159973091659,
+                "search-demand-harvesting": 2.3004677593387965,
+                "social-frequency-pressure": 4.477935794555696
+              }
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.2,
+              "meanLoss": 3.677445447920996,
+              "medianLoss": 1.5003957849505323,
+              "p90Loss": 9.712886218313335,
+              "p95Loss": 13.22686789646776,
+              "meanExcessLoss": 2.475619097215241,
+              "meanNormalizedExcessRegret": 0.5311613024486163,
+              "lowestLossSelectionRate": 0.26666666666666666,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.552344534319701,
+                "search-demand-harvesting": 2.330333024924117,
+                "social-frequency-pressure": 5.14965878451917
+              }
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 5.232564781461558,
+              "medianLoss": 1.2452558523171673,
+              "p90Loss": 9.726278131970695,
+              "p95Loss": 21.691519936035245,
+              "meanExcessLoss": 4.015197904613262,
+              "meanNormalizedExcessRegret": 0.5124398404682811,
+              "lowestLossSelectionRate": 0.31666666666666665,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.494061390891075,
+                "search-demand-harvesting": 3.8679244835138773,
+                "social-frequency-pressure": 6.335708469979726
+              }
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.4,
+              "meanLoss": 3.8107910380623715,
+              "medianLoss": 1.360575150637502,
+              "p90Loss": 10.76240345761368,
+              "p95Loss": 16.303444186030053,
+              "meanExcessLoss": 2.3158872825265546,
+              "meanNormalizedExcessRegret": 0.45107730813513414,
+              "lowestLossSelectionRate": 0.2833333333333333,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.950573721001139,
+                "search-demand-harvesting": 2.3860436113626964,
+                "social-frequency-pressure": 5.095755781823282
+              }
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 300,
+          "decisionGradeBusinessShare": 0.30666666666666664,
+          "meanLoss": 4.222974950405143,
+          "medianLoss": 1.3915361135641597,
+          "p90Loss": 10.27210585280206,
+          "p95Loss": 18.28276344941814,
+          "meanExcessLoss": 2.8655518818736407,
+          "meanNormalizedExcessRegret": 0.4990469065109561,
+          "lowestLossSelectionRate": 0.28,
+          "familyMeanLoss": {
+            "balanced-dtc": 4.188321640132962,
+            "search-demand-harvesting": 3.1659092712997303,
+            "social-frequency-pressure": 5.314693939782737
+          }
+        },
+        "selection": {
+          "meanLossDifferenceFromBest": 0.06134368792583059,
+          "standardErrorOfPairedDifference": 0.05878399000972104,
+          "withinOneStandardError": false,
+          "withinEconomicNonInferiorityMargin": false,
+          "selectable": false
+        }
+      },
+      {
+        "configuration": {
+          "id": "ridge-strong",
+          "regularization": 0.05,
+          "epochs": 180
+        },
+        "folds": [
+          {
+            "fold": 0,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.23333333333333334,
+              "meanLoss": 4.329273196893988,
+              "medianLoss": 1.5397551641038287,
+              "p90Loss": 12.748243888763213,
+              "p95Loss": 16.990773089639017,
+              "meanExcessLoss": 2.7462990446436084,
+              "meanNormalizedExcessRegret": 0.48666995173873795,
+              "lowestLossSelectionRate": 0.23333333333333334,
+              "familyMeanLoss": {
+                "balanced-dtc": 2.5286312452869946,
+                "search-demand-harvesting": 4.9447774773591595,
+                "social-frequency-pressure": 5.514410868035809
+              }
+            }
+          },
+          {
+            "fold": 1,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 4.060494340146222,
+              "medianLoss": 1.5354963857657755,
+              "p90Loss": 7.1501756401418906,
+              "p95Loss": 11.005857226387763,
+              "meanExcessLoss": 2.7704501328289677,
+              "meanNormalizedExcessRegret": 0.5095801822234377,
+              "lowestLossSelectionRate": 0.3333333333333333,
+              "familyMeanLoss": {
+                "balanced-dtc": 5.411437481360723,
+                "search-demand-harvesting": 2.2921097445222505,
+                "social-frequency-pressure": 4.477935794555696
+              }
+            }
+          },
+          {
+            "fold": 2,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.2,
+              "meanLoss": 3.677445447920996,
+              "medianLoss": 1.5003957849505323,
+              "p90Loss": 9.712886218313335,
+              "p95Loss": 13.22686789646776,
+              "meanExcessLoss": 2.475619097215241,
+              "meanNormalizedExcessRegret": 0.5311613024486163,
+              "lowestLossSelectionRate": 0.26666666666666666,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.552344534319701,
+                "search-demand-harvesting": 2.330333024924117,
+                "social-frequency-pressure": 5.14965878451917
+              }
+            }
+          },
+          {
+            "fold": 3,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.35,
+              "meanLoss": 4.93015228937298,
+              "medianLoss": 1.2452558523171673,
+              "p90Loss": 9.355968409452856,
+              "p95Loss": 15.952299474022198,
+              "meanExcessLoss": 3.7127854125246835,
+              "meanNormalizedExcessRegret": 0.5124398404682811,
+              "lowestLossSelectionRate": 0.31666666666666665,
+              "familyMeanLoss": {
+                "balanced-dtc": 4.612598940847819,
+                "search-demand-harvesting": 3.8421494572913972,
+                "social-frequency-pressure": 6.335708469979726
+              }
+            }
+          },
+          {
+            "fold": 4,
+            "trainingBusinesses": 240,
+            "assessmentBusinesses": 60,
+            "assessmentRows": 2880,
+            "assessmentFamilies": {
+              "balanced-dtc": 20,
+              "search-demand-harvesting": 20,
+              "social-frequency-pressure": 20
+            },
+            "metrics": {
+              "businesses": 60,
+              "decisionGradeBusinessShare": 0.4,
+              "meanLoss": 3.8107910380623715,
+              "medianLoss": 1.360575150637502,
+              "p90Loss": 10.76240345761368,
+              "p95Loss": 16.303444186030053,
+              "meanExcessLoss": 2.3158872825265546,
+              "meanNormalizedExcessRegret": 0.45107730813513414,
+              "lowestLossSelectionRate": 0.2833333333333333,
+              "familyMeanLoss": {
+                "balanced-dtc": 3.950573721001139,
+                "search-demand-harvesting": 2.3860436113626964,
+                "social-frequency-pressure": 5.095755781823282
+              }
+            }
+          }
+        ],
+        "outOfFoldMetrics": {
+          "businesses": 300,
+          "decisionGradeBusinessShare": 0.30666666666666664,
+          "meanLoss": 4.161631262479313,
+          "medianLoss": 1.3915361135641597,
+          "p90Loss": 9.63027583115524,
+          "p95Loss": 16.968206353413258,
+          "meanExcessLoss": 2.8042081939478103,
+          "meanNormalizedExcessRegret": 0.4981857170028412,
+          "lowestLossSelectionRate": 0.2866666666666667,
+          "familyMeanLoss": {
+            "balanced-dtc": 4.011117184563275,
+            "search-demand-harvesting": 3.1590826630919246,
+            "social-frequency-pressure": 5.314693939782737
+          }
+        },
+        "selection": {
+          "meanLossDifferenceFromBest": 0,
+          "standardErrorOfPairedDifference": 0,
+          "withinOneStandardError": true,
+          "withinEconomicNonInferiorityMargin": true,
+          "selectable": true
+        }
+      }
+    ],
+    "selectedConfiguration": {
+      "id": "ridge-strong",
+      "regularization": 0.05,
+      "epochs": 180
+    },
+    "finalFit": {
+      "weights": {
+        "rolling-oos": 0.0550335864300267,
+        "predictive-coverage": 0,
+        "fold-stability": 0,
+        "spend-regimes": 0.09766044330685786,
+        "residual-independence": 0.09047443660233825,
+        "variance-structure": 0,
+        "likelihood-shape": 0.017419583274178616,
+        "multicollinearity": 0.07072344021207745,
+        "functional-form": 0,
+        "influence-stability": 0.021419019811211838,
+        "non-negative-boundary": 0.038193314539000614,
+        "anchor-recovery": 0,
+        "new-data-stability": 0.15937409882514803,
+        "confounder-sensitivity": 0.1540056318976759,
+        "future-media-placebo": 0,
+        "roi-posterior-plausibility": 0.014188395814867272,
+        "roi-decision-stability": 0.010693733849566874,
+        "roi-resolution": 0.06292715838302063,
+        "roi-identification": 0.10703834167292703,
+        "evidence-source-quality": 0,
+        "evidence-compatibility": 0,
+        "evidence-decision-dependence": 0.056013397261986064,
+        "roi-economic-consistency": 0.044835418119116836
+      },
+      "pairCount": 9498,
+      "descriptiveFullTrainingMetrics": {
+        "businesses": 300,
+        "decisionGradeBusinessShare": 0.30666666666666664,
+        "meanLoss": 3.8526478428345747,
+        "medianLoss": 1.3805629156920651,
+        "p90Loss": 9.344203854769475,
+        "p95Loss": 15.267118906632476,
+        "meanExcessLoss": 2.4952247743030735,
+        "meanNormalizedExcessRegret": 0.4994438338577109,
+        "lowestLossSelectionRate": 0.28,
+        "familyMeanLoss": {
+          "balanced-dtc": 3.9430028607627814,
+          "search-demand-harvesting": 3.0892141339049037,
+          "social-frequency-pressure": 4.525726533836041
+        }
+      },
+      "theoremAudit": {
+        "businesses": 300,
+        "violations": 0,
+        "meanSelectedNormalizedRegret": 0.4994438338577109,
+        "meanMisrankingUpperBound": 8.734621885586238,
+        "meanLogisticSurrogateUpperBound": 21.551854532990443,
+        "maximumNumericalSlack": 0
+      }
+    }
+  },
+  "safeguards": [
+    "Only rows declared as training are converted into score-learning labels.",
+    "All candidates from a synthetic business remain in one grouped fold.",
+    "Generator families are balanced across five deterministic folds.",
+    "Tuning uses out-of-fold economic decision loss; validation and audit outcomes are not evaluated.",
+    "After configuration selection, score weights are refit once on all 300 training businesses."
+  ]
+}

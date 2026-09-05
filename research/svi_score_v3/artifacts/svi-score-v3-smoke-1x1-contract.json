@@ -1,0 +1,177 @@
+{
+  "artifactId": "flux-svi-score-v3-unbiased-design-pilot",
+  "version": "flux-svi-score-v3.1.0-unbiased-500-business-design",
+  "generatedAt": "2026-08-22T06:54:23.542Z",
+  "activation": "research-only",
+  "stage": "smoke",
+  "contract": {
+    "businesses": 500,
+    "candidatesPerBusiness": 48,
+    "targetSviFits": 24000,
+    "splits": {
+      "train": 300,
+      "validation": 120,
+      "audit": 80
+    },
+    "inference": {
+      "method": "fullrank-advi",
+      "iterations": 5000,
+      "draws": 128,
+      "primarySeeds": [
+        30071,
+        81119
+      ],
+      "adjudicationSeed": 190081,
+      "learningRate": 0.001,
+      "initialScale": 0.01,
+      "gradientNorm": 10,
+      "elboWindow": 250,
+      "maximumElboDrift": 0.05,
+      "maximumSeedLogRoiDifference": 0.25
+    },
+    "targetMcmcAuditFits": 96
+  },
+  "progress": {
+    "businessesStarted": 1,
+    "businessesComplete": 1,
+    "candidateAttempts": 1,
+    "labelled": 1,
+    "review": 0,
+    "errors": 0,
+    "completionShare": 0.000041666666666666665
+  },
+  "feasibility": {
+    "medianRuntimeSeconds": 13.585144374985248,
+    "p90RuntimeSeconds": 13.585144374985248,
+    "projectedSerialHours": 90.56762916656832,
+    "projectedEightWorkerHours": 11.32095364582104,
+    "observedFits": 1
+  },
+  "safeguards": [
+    "All 48 candidate/evidence contracts receive SVI; MAP score, gates, and hidden truth cannot shortlist the training labels.",
+    "MAP values are permitted only as numerical initializers and as comparison features.",
+    "Two independent full-rank fits are required; a third predeclared seed adjudicates unstable ELBO or ROI agreement.",
+    "Finite review-labelled fits are retained rather than silently discarded, so approximation difficulty can be modeled instead of creating convergence-selection bias.",
+    "The gold NUTS audit is sampled independently within estimator-family and evidence-arm strata with recorded inclusion probabilities.",
+    "Businesses—not candidate rows—define train, mechanism-held-out validation, and sealed audit splits."
+  ],
+  "goldAuditSelection": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "businessInclusionProbability": 12,
+      "candidateInclusionProbability": 1,
+      "jointInclusionProbability": 12,
+      "stratum": "bayesian:experiments-only"
+    }
+  ],
+  "records": [
+    {
+      "businessId": "balanced-dtc-12001",
+      "family": "balanced-dtc",
+      "split": "train",
+      "candidateId": "V6-C01 · experiments-only",
+      "evidenceArm": "experiments-only",
+      "modelFamily": "bayesian",
+      "eligible": false,
+      "reviewEligible": false,
+      "eligibilityTier": "review",
+      "failedGateCount": 1,
+      "layerScores": {
+        "generalization": 84.30621285307545,
+        "structure": 75.68717378948794,
+        "causal": 70.94975496030841,
+        "decision": 59.82750258582091
+      },
+      "diagnostics": {
+        "rolling-oos": 85.64018572921157,
+        "predictive-coverage": 94,
+        "fold-stability": 76.28142177017502,
+        "spend-regimes": 77.35994839165096,
+        "residual-independence": 36.37765356974925,
+        "variance-structure": 64.37077410666356,
+        "likelihood-shape": 89.1452029750936,
+        "multicollinearity": 96.95399589046612,
+        "functional-form": 90.9912179393587,
+        "influence-stability": 92.4951409688417,
+        "non-negative-boundary": 100,
+        "anchor-recovery": 79.45234276432029,
+        "new-data-stability": 54.60590250252645,
+        "confounder-sensitivity": 64.46850323005383,
+        "future-media-placebo": 80.87007697707698,
+        "roi-posterior-plausibility": 63.928493888802805,
+        "roi-decision-stability": 44.64984031733129,
+        "roi-resolution": 55.18853972105029,
+        "roi-identification": 100,
+        "roi-economic-consistency": 100
+      },
+      "heuristicScore": 69.26651444504384,
+      "decisionLoss": 0.48278937550520906,
+      "cappedRegret": 0.2611276792931495,
+      "roiError": 0.5638692951018492,
+      "contributionError": 0.3424565896114185,
+      "status": "labelled",
+      "inferenceFingerprint": "8293179936420ec8872695dc8c2bb0ab5c2de21986dae1077774993a868d044f",
+      "inferenceContract": {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 128,
+        "primarySeeds": [
+          30071,
+          81119
+        ],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25
+      },
+      "sviDecisionLoss": 0.4757266149983175,
+      "sviProfitRegret": 0.2510380214261616,
+      "sviRoiError": 0.6343734617468914,
+      "sviContributionError": 0.45078914519849267,
+      "mapToSviLossShift": -0.0070627605068915855,
+      "posteriorRoi": {
+        "meta_acquisition_spend": 2.561553323821533,
+        "google_search_nonbrand_spend": 0.4883423761512269,
+        "ctv_spend": 0.45395187526705516
+      },
+      "diagnosticsReceipt": {
+        "finite": true,
+        "elboStable": true,
+        "maximumElboDrift": 0.00014493672394536248,
+        "seedAgreement": true,
+        "maximumSeedLogRoiDifference": 0.010298358210123482,
+        "adjudicationUsed": false,
+        "predictiveCoverage": 0.9615384615384616,
+        "maximumImplausibleProbability": 0,
+        "maximumRelativeRoiWidth": 0.6880562453830219
+      },
+      "seedDiagnostics": [
+        {
+          "seed": 30071,
+          "iterations": 5000,
+          "finalLoss": 140.02140165440375,
+          "elboDrift": 0.000007817372011075245,
+          "finite": true,
+          "runtimeSeconds": 6.941739000030793
+        },
+        {
+          "seed": 81119,
+          "iterations": 5000,
+          "finalLoss": 140.0528821284176,
+          "elboDrift": 0.00014493672394536248,
+          "finite": true,
+          "runtimeSeconds": 6.232221749960445
+        }
+      ],
+      "runtimeSeconds": 13.585144374985248
+    }
+  ]
+}

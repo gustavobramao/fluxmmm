@@ -1,0 +1,99 @@
+{
+  "artifactId": "flux-v10-amss-external-transport-protocol-freeze-v1",
+  "version": "flux-svi-score-v10-amss.0.1.1-external-transport",
+  "status": "frozen-before-cohort-generation",
+  "frozenAt": "2026-09-05T09:05:08.805Z",
+  "contractSha256": "519000be272c70e447cce6c7eddf4cd1945ac330b2b076ac80eaa0cd162d48a4",
+  "candidateSpecificationsSha256": "0142e371fef155465ba3acf32d30564ff4008e1c8ab0905c51171504f73e2403",
+  "candidateSpecificationsFileSha256": "ec40ca53b0f94243694a16ae5e1b4d1779bad284e42aa8cc38f7d4d529ef6270",
+  "cohortDesignSha256": "5c5fe85871eb8d60b5c34de857715a254f2653035673884802df2cc464f354bd",
+  "businesses": 100,
+  "evidenceGroupCounts": {
+    "paid-social-experiment": 25,
+    "search-experiment": 25,
+    "tv-experiment": 25,
+    "no-experiment": 25
+  },
+  "moduleOrderCounts": {
+    "paid_social_proxy|search|tv": 17,
+    "paid_social_proxy|tv|search": 17,
+    "search|paid_social_proxy|tv": 17,
+    "search|tv|paid_social_proxy": 17,
+    "tv|paid_social_proxy|search": 16,
+    "tv|search|paid_social_proxy": 16
+  },
+  "evidenceByModuleOrderCounts": {
+    "paid-social-experiment": {
+      "paid_social_proxy|search|tv": 5,
+      "paid_social_proxy|tv|search": 4,
+      "search|paid_social_proxy|tv": 4,
+      "search|tv|paid_social_proxy": 4,
+      "tv|paid_social_proxy|search": 4,
+      "tv|search|paid_social_proxy": 4
+    },
+    "search-experiment": {
+      "paid_social_proxy|search|tv": 4,
+      "paid_social_proxy|tv|search": 5,
+      "search|paid_social_proxy|tv": 4,
+      "search|tv|paid_social_proxy": 4,
+      "tv|paid_social_proxy|search": 4,
+      "tv|search|paid_social_proxy": 4
+    },
+    "tv-experiment": {
+      "paid_social_proxy|search|tv": 4,
+      "paid_social_proxy|tv|search": 4,
+      "search|paid_social_proxy|tv": 5,
+      "search|tv|paid_social_proxy": 4,
+      "tv|paid_social_proxy|search": 4,
+      "tv|search|paid_social_proxy": 4
+    },
+    "no-experiment": {
+      "paid_social_proxy|search|tv": 4,
+      "paid_social_proxy|tv|search": 4,
+      "search|paid_social_proxy|tv": 4,
+      "search|tv|paid_social_proxy": 5,
+      "tv|paid_social_proxy|search": 4,
+      "tv|search|paid_social_proxy": 4
+    }
+  },
+  "frozenV9ManifestSha256": "e6adfa7f13a08452c76610a59e4717c0391aa707dcd3566868bd27619fdc4ad9",
+  "frozenV9SelectorSha256": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+  "cloudImageDigest": "sha256:3276faca285998efdf40db81ec8b881d4102ab5b3eb528e4dba529e53c9e893e",
+  "sourceSha256": {
+    "research/svi_score_v10_amss/freeze-protocol.ts": "cb447bc8167b5aea1fa1fbaa6d3166405c5c6511956d2db432087bab34a4257e",
+    "research/svi_score_v10_amss/contract.ts": "134cf11f303322575c95333c1023d2e12fe0ccc9ab131eff2491e4fa1e49acf8",
+    "research/svi_score_v10_amss/amss-cohort-scenario.R": "3272871198c8b17abc54a097b6bc1b4f6633211e613dad8b1353b8d5bceac8f5",
+    "research/svi_score_v10_amss/generate-cohort.R": "171eecbd3e3aef85dea2ffd4321a81dcf6921d6237c4c3bca65f22672523c4bd",
+    "research/svi_score_v10_amss/seal-cohort.ts": "93d791a50284014f24c409fe94932c9bbb156fa5b7efc720b6fbfcb3b6eda955",
+    "research/svi_score_v10_amss/prepare-inference.ts": "47fb99181b3a09d2b8c80bfc631c7bbd05e5a89d665387dacd173a2715f48d78",
+    "research/svi_score_v10_amss/smoke-inference.ts": "d01842072764896651fc8417724fe46eae8d6461221664be9e83292b8734b70e",
+    "research/svi_score_v10_amss/verify-inference-results.ts": "a5529454f70d9c1217cff3560f97c38f189a146ec633036d4fd47df734419bf8",
+    "research/svi_score_v10_amss/actions.ts": "cfd829f85f32085e40410b22f11fa3af7874e1dab0cf6c75508cc37476bb49ba",
+    "research/svi_score_v10_amss/freeze-actions.ts": "e73ddd9a3ee0d9ac7453157c584d968c633cff0453aa73603ff39455475f4273",
+    "research/svi_score_v10_amss/open-truth.ts": "1121257a6a98c6ee8d7928dfc4055f1cc261af9f1843e8efb91bcee04910d8a1",
+    "research/svi_score_v10_amss/open-truth.R": "83df4e9245eabe57fafc1423dfe2efc0a773fbb5652ac1eed0b2455efdf800d4",
+    "research/svi_score_v10_amss/build-external-audit.ts": "d663bfa1853b8e98b1ff7471fc6178f75b5ef60d744b3b6f3a30d07d7387665f",
+    "research/svi_score_v10_amss/score-external-audit.py": "9a5475fb0b6137b3f9ebd85943d2c3506188fae49ac38dd76a635660e16157ad",
+    "research/svi_score_v10_amss/cloud/inference-cloud-run.yaml": "2dc1f4f408b690c22874c2cf90d11d97f0a6c249a644ba340ba651657196bd74",
+    "tests/svi-score-v10-amss.test.ts": "48961c14417cbf5ee2acfdf732a258c3bfaa561eb0b97b372ca2ea52954fa401",
+    "scripts/build_cloud_svi_shards.py": "1ebc781a5f84ec284391ed88f8b52432ca46716a739657a55dec777f24b56f9a",
+    "scripts/cloud_svi_shard_task.py": "993f8ee796aedafec0485ae75ae24678ea9fb23896937087184606a24e8bf328",
+    "research/score_v6/cohort.ts": "97282cfc330eef50663867c4ee0682354ccc52cd35d2f76a05dab6cd77498638",
+    "lib/mmm/agentic-search.ts": "bd338a9f2315575c07345177b80f7aeafabdbb3ffb84f1c8482d59ab1b58f605",
+    "lib/mmm/advanced.ts": "02838fa44225ddd4c7ded24fcfcce60aad84a195f599a56d6ea4153f50367f58",
+    "lib/mmm/models.ts": "b29eca32908930d4f9a30f349e3a82efde641512a56ff0cb13b5ec317435fd26",
+    "lib/mmm/response.ts": "2bfc5b86b3c69551dd943f74ec16ee1b78ee22ec8d901df0e6e9a8c5cdf679db",
+    "lib/mmm/sampling.ts": "9772772ded8983cce5c01ed1da60f77a03b9420e6386145617ba9945203912b5",
+    "lib/mmm/score-diagnostics.ts": "46dbaa64bb7d84067e33fabd3fdde230c6f99887a42ae368f75e059720e8effb",
+    "lib/mmm/schema.ts": "0f4f33aabf2b1df0761899f012a5667440fd26b549ec201c7f8bc980c81ca7fe",
+    "lib/mmm/validation/index.ts": "73ad00388e748599bdd63a96ab1c06aca69306f02491568927d2c43a786c03ab",
+    "lib/mmm/validation/adapter.ts": "5b95130529f528a45e6d49f2d53d1f9f3f2c5ca6c01fc79daa32c308cb008b7f",
+    "lib/mmm/validation/decision.ts": "0c94f2ebe0f3939588d7463faa18569bb64c8ea793f34918b1f4a6d6ec0fd6c1",
+    "lib/mmm/validation/evidence.ts": "6ec5e19c805874ca79893b9ce973a80fa83ab1e4badc7d952c57d776ccbfbbe1",
+    "lib/mmm/validation/evidence-dependence.ts": "72488a3d3744e9cd54344bd3f0f7bd8fac311af71e6733f2f9400f8a6183e7f0",
+    "scripts/mcmc_server.py": "71177f64e3fc92a92cf1672b62535dd26d5206b93d7243766f1d275ed6da29e6",
+    "scripts/svi_batch.py": "c157a0b6d3560413b747395cce7b4a22b588f6189e1eae4622f1af0dd8fa2654",
+    "research/svi_score_v3/cloud/requirements.lock": "06ddabac4486413c337fd64b45237862dd51112f80039eb4c78e285c37a5e968"
+  },
+  "truthOpened": false
+}

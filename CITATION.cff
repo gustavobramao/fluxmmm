@@ -1,23 +1,25 @@
 cff-version: 1.2.0
 message: "If you use FluxMMM in research or industry work, please cite the software and working paper."
-title: "FluxMMM: An Open-Source, Evidence-Gated Bayesian Workflow for Marketing Mix Modeling and Budget Decisions"
+title: "FluxMMM and RegretSet-MMM: Decision-Focused Selection of Bayesian Marketing Mix Models"
 type: software
 authors:
   - family-names: Bramao
     given-names: Gustavo
-version: 2.0.0
-date-released: 2026-08-18
+version: 3.0.0
+date-released: 2026-09-05
 license: MIT
 repository-code: "https://github.com/gustavobramao/fluxmmm"
 url: "https://fluxmmm-web.web.app/"
 abstract: >-
-  A local-first marketing mix modeling workflow connecting data validation,
-  evidence calibration, a simulator-learned four-layer validation ranker,
-  bounded specification search, production posterior sampling, and
-  uncertainty-aware budget decisions.
+  A local-first marketing mix modeling workflow and frozen set-wise research
+  selector that learns from truth-blind posterior, evidence, validation, and
+  model-contract tokens to reduce downstream economic decision regret.
 keywords:
   - marketing mix modeling
   - Bayesian calibration
   - causal inference
   - posterior sampling
   - media optimization
+  - decision-focused learning
+  - economic regret
+  - variational inference

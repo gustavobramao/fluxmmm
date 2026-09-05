@@ -1,0 +1,40 @@
+{
+  "artifactId": "flux-v10-amss-three-channel-interface-smoke-v1",
+  "status": "passed",
+  "researchLabels": false,
+  "truthCalculated": false,
+  "upstreamRevision": "cbf5e7f6c668de493077ce1d08a2ab963891f0cc",
+  "runtime": {
+    "amssVersion": "1.0.1",
+    "rVersion": "4.6.1",
+    "wallSeconds": 11.9
+  },
+  "observedInterface": {
+    "cadence": "weekly",
+    "rowsAfterBurnIn": 156,
+    "rawChannels": ["paid_social_proxy", "search", "tv"],
+    "frozenV9Roles": [
+      "meta_acquisition_spend",
+      "google_search_nonbrand_spend",
+      "ctv_spend"
+    ],
+    "perfectMarketRateExposed": false
+  },
+  "visibleSpendDiagnostics": {
+    "paidSocialProxySearchCorrelation": 0.5231728,
+    "paidSocialProxyZeroShare": 0,
+    "searchZeroShare": 0.1538462,
+    "tvZeroShare": 0.5833333
+  },
+  "inputs": {
+    "amss-three-channel-scenario.R": "97a1206dbe4f08b34d19a4e0a5cd6ef059630d8f503511f881d71d5401f0c18e",
+    "amss-paid-social-proxy-contract.json": "3cc1d62802bb3c8721a579b4a1ed7a56b354bff0a992b1a6ad8d70c1b9068dea",
+    "smoke-paid-social-proxy.R": "a9c4294bba1d07002c990d8839ab8e191af6201d0be777f8487026b0d8112d68",
+    "paid-social-proxy-freeze.json": "340c40c4a029ce3b5748c1d25ab0adb6068f3b88f1646e7b665dff2468bebf92"
+  },
+  "outputs": {
+    "three-channel-flux-input-smoke.csv": "2c91a573db9c91ebdcb8c566cab48a3b2742fb187d58d1ea033cf04745f9aead",
+    "channel-role-map.csv": "8b824e8b0b87d1b00f41e31a644eb731d3b4e8dad1ccda2e9aaee24e8e1c563e"
+  },
+  "limitation": "The paid-social role is an AMSS exposure-media stress proxy, not a native platform-auction module."
+}

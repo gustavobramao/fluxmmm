@@ -1,66 +1,60 @@
-# FluxMMM V2.0.0
+# FluxMMM 3.0.0 — RegretSet-MMM V9
 
-Released 18 August 2026.
+Released 5 September 2026.
 
-FluxMMM V2 keeps the same local-first workflow and adds a versioned research
-contract for model selection. It is a scientific-method release, not a claim
-that synthetic validation makes observational MMM automatically causal.
+This release publishes the frozen RegretSet-MMM V9 research selector alongside
+the local-first FluxMMM product. It is a scientific-method release, not a claim
+that simulation makes observational MMM automatically causal.
 
 ## Main changes
 
-- Learned validation ranker: twenty visible diagnostics are weighted by a
-  constrained monotonic pairwise model trained on hidden synthetic budget
-  decision loss. Generator families define train, validation, and sealed audit
-  partitions. Immutable eligibility gates remain outside the learner.
-- Same-period experiment estimand: campaign-window spend is contrasted with a
-  zero-spend counterfactual through the same adstock and saturation response.
-  Outcomes may extend through a declared post-test carryover window while the
-  denominator remains tested spend in the campaign window.
-- Consistent evidence contract: static MAP, advanced prior and likelihood
-  calibration, causal anchor recovery, ROI coherence, and PyMC NUTS sampling
-  use the same experiment-window definition.
-- Channel-specific response contracts: media channels may use separate
-  geometric or Weibull carryover and saturation settings during search and
-  production sampling.
-- Stronger numerical and evidence transparency: QR/SVD solving, rank and
-  conditioning receipts, prior-influence labels, non-negative-boundary
-  disclosure, evidence-rescue comparisons, and local workspace checkpoints.
-- Agentic search uses the active learned score within the highest immutable
-  eligibility tier and retains bounded multi-start, family coverage, local
-  challenges, and explicit forced-promotion audit trails.
+- A permutation-invariant DeepSets selector learns from complete 48-candidate
+  advertiser sets rather than scoring candidates in isolation.
+- Each candidate is represented by 232 truth-blind tokens spanning validation,
+  posterior decision geometry, evidence attribution, and model specification.
+- Multi-head prediction covers mean, median, P90, P95, CVaR90, four decision
+  scenarios, and dangerous-false-champion probability.
+- The selection target is downstream economic regret under a declared 65% mean
+  / 35% P90 business-risk preference.
+- A finite-candidate theorem connects selected-model capped excess regret to
+  regret-weighted oracle misranking.
+- Evidence influence is continuously attributed to observational data,
+  experiments, benchmarks, and regularization using local curvature and
+  conditional information for correlated media.
+- The frozen method passed all 9 predeclared checks on a new 140-business
+  internal sealed audit with zero observed theorem violations.
+- Without retraining, it was challenged on 100 businesses from Google AMSS
+  1.0.1: 4,800 SVI fits and 19,200 frozen budget actions.
+- Mean capped AMSS decision risk was 0.230 for RegretSet-MMM versus 0.400 for
+  uniform random valid-candidate selection, a 42.5% reduction. The in-pool
+  oracle lower bound was 0.012.
+
+## Product changes
+
+- A Score Research surface explains the V9 target, scientific firewall,
+  development design, evidence attribution, internal audit, and AMSS external
+  validation without relabeling the fast Agentic runtime as V9.
+- Evidence-attribution and leave-source-out decision-dependence diagnostics are
+  available in the shared MMM library.
+- The PyMC sampler preserves channel-specific response contracts and remains
+  contract-matched to promoted specifications.
 
 ## Reproducibility
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm test
-pnpm research:score-v3:audit
-pnpm research:score-v6:pilot
-
-# optional full posterior checks
-pnpm mcmc:setup
-pnpm mcmc:test
+pnpm test:svi-score-v9
+pnpm test:svi-score-v10-amss
 ```
 
-The learned-score artifact records its simulator version, cohort split,
-diagnostic weights, activation gates, held-out performance, and limitations.
-Cached V1 artifacts are intentionally invalidated when the model, validation,
-or sampling contract changes.
+The compact frozen selector, token registry, protocols, result summaries,
+candidate-level AMSS losses, acceptance hashes, and publication-format paper
+are versioned. Multi-gigabyte posterior checkpoints and generated cohorts
+remain excluded from Git and are reproducible from the declared contracts.
 
-## Predeclared score audit
+## Claim boundary
 
-- Held-out validation (60 businesses): mean decision loss fell from 3.57 to
-  2.97, a 16.6% reduction; P90 loss also improved.
-- Sealed adversarial audit (60 businesses): mean decision loss fell from 3.02
-  to 2.83, a 6.2% reduction. P90 loss increased from 8.97 to 9.12, remaining
-  inside the predeclared 2% non-inferiority margin.
-- Search readiness remains incomplete: 36.7% of validation businesses produced
-  a decision-grade candidate, below the 50% target. This is reported separately
-  because score weights cannot override eligibility gates.
-
-## Compatibility
-
-- Existing daily, weekly, and monthly CSV contracts remain supported.
-- Existing experiment files remain valid; `outcomeEndDate` is optional and
-  defaults to the campaign end date.
-- V1 remains available from the `v1.0.0` Git tag.
+The result supports external synthetic transport under the declared AMSS
+adapter, candidate pool, FullRankADVI contract, and utility. It does not
+establish real-advertiser effectiveness, universal SOTA performance, or causal
+validity for an observational dataset. V2 remains available from tag `v2.0.0`.

@@ -629,8 +629,8 @@ function Sidebar({
         <div className="open-badge">
           <i>◎</i>
           <span>
-            <b>Open source V2</b>
-            <small>Transparent by design</small>
+            <b>RegretSet-MMM</b>
+            <small>V9 · externally audited</small>
           </span>
         </div>
         <button className="user-chip">
@@ -1195,45 +1195,62 @@ function NumericalReliability({ result }: { result: ModelResult }) {
           <b>{conditionLabel}</b>
         </span>
       </div>
-      <div className="identification-section">
-        <div className="identification-heading">
-          <span>Channel identification</span>
-          <small>Prior precision share</small>
+      {numerical.evidenceAttribution?.length ? (
+        <div className="identification-section evidence-attribution-section">
+          <div className="identification-heading">
+            <span>Channel evidence attribution</span>
+            <small>Share of local ROI precision</small>
+          </div>
+          <div className="evidence-attribution-list">
+            {numerical.evidenceAttribution.map((channel) => {
+              const shares = channel.uncertaintyShare;
+              const sources = [
+                { id: "observational", label: "Data", value: shares.observational },
+                { id: "experiment", label: "Experiment", value: shares.experiment },
+                { id: "benchmark", label: "Benchmark", value: shares.benchmark },
+                { id: "regularization", label: "Regularization", value: shares.regularization },
+              ] as const;
+              return (
+                <div key={channel.channel}>
+                  <span>
+                    <b>{cleanChannel(channel.channel)}</b>
+                    <small>
+                      Conditional data separation {Math.round(channel.conditionalDataShare * 100)}%
+                    </small>
+                  </span>
+                  <div className="evidence-attribution-detail">
+                    <div
+                      className="evidence-attribution-bar"
+                      aria-label={`${cleanChannel(channel.channel)} evidence attribution`}
+                    >
+                      {sources.map((source) => (
+                        <i
+                          key={source.id}
+                          className={source.id}
+                          style={{ width: `${Math.max(0, source.value) * 100}%` }}
+                          title={`${source.label}: ${Math.round(source.value * 100)}%`}
+                        />
+                      ))}
+                    </div>
+                    <small className="evidence-attribution-values">
+                      {sources.map((source) => `${source.label} ${Math.round(source.value * 100)}%`).join(" · ")}
+                    </small>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="evidence-attribution-legend" aria-label="Evidence sources">
+            <span className="observational">Data</span>
+            <span className="experiment">Experiment</span>
+            <span className="benchmark">Benchmark</span>
+            <span className="regularization">Regularization</span>
+          </div>
+          <small className="identification-caption">
+            Shares describe where local ROI precision comes from. Observational credit is interpreted with the conditional separation score; evidence quality, conflict, and decision dependence remain separate checks.
+          </small>
         </div>
-        <div className="identification-list">
-          {numerical.priorInfluence.map((channel) => {
-            const classificationLabel =
-              channel.classification === "prior-led"
-                ? "Prior-led"
-                : channel.classification === "data-and-prior"
-                  ? "Data + prior"
-                  : "Data-led";
-            const sourceLabel =
-              channel.source === "experiment"
-                ? "Experiment prior"
-                : channel.source === "industry"
-                  ? "Industry benchmark"
-                  : channel.source === "regularizing"
-                    ? "Regularizing prior"
-                    : "No coefficient prior";
-            return (
-              <div key={channel.channel}>
-                <span>
-                  <b>{cleanChannel(channel.channel)}</b>
-                  <small title={channel.sourceLabel}>{sourceLabel}</small>
-                </span>
-                <em className={channel.classification}>
-                  {classificationLabel}
-                </em>
-                <strong>{Math.round(channel.precisionShare * 100)}%</strong>
-              </div>
-            );
-          })}
-        </div>
-        <small className="identification-caption">
-          Data-led &lt;30% · Data + prior 30–69% · Prior-led ≥70%. Prior-led is not automatically weak: an independent experiment can be decision-grade, but the observational MMM did not recover that ROI alone.
-        </small>
-      </div>
+      ) : null}
       {numerical.clipping.applied ? (
         <div className={`clipping-disclosure ${numerical.clipping.material ? "warn" : "good"}`}>
           <div className="identification-heading">
@@ -3933,7 +3950,7 @@ function ValidationGuide({
               <article><span className="detail-icon mint">%</span><h3>Posterior plausibility</h3><p>Measures how much posterior probability lies inside the registered ROI range, not only whether the median looks reasonable.</p></article>
               <article><span className="detail-icon">↔</span><h3>Decision stability</h3><p>Tracks material-channel ROI as the available measurement history expands.</p></article>
               <article><span className="detail-icon orange">±</span><h3>Resolution</h3><p>Flags intervals too wide to support a practical channel decision.</p></article>
-              <article><span className="detail-icon">β</span><h3>Identification</h3><p>Distinguishes data-led estimates from data-plus-prior and prior-led estimates.</p></article>
+              <article><span className="detail-icon">β</span><h3>Evidence attribution</h3><p>Attributes ROI precision continuously to observational data, experiments, benchmarks, and regularization, with observational credit conditioned on the other regressors.</p></article>
               <article><span className="detail-icon mint">$</span><h3>Economic consistency</h3><p>Checks finite non-negative ROI, contribution accounting, and material coefficient clipping.</p></article>
               <article><span className="detail-icon orange">≠</span><h3>No circular credit</h3><p>Evidence used to calibrate a channel is a contract check and cannot earn independent validation points for matching itself.</p></article>
             </section>
