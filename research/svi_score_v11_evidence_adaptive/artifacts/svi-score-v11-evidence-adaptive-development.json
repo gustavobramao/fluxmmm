@@ -1,0 +1,892 @@
+{
+  "artifactId": "flux-svi-score-v11-evidence-adaptive-development-v1",
+  "version": "flux-svi-score-v11.0.0-evidence-adaptive-regretset-development",
+  "generatedAt": "2026-09-05T21:21:12Z",
+  "activation": "development-only",
+  "stage": "post-amss-evidence-adaptive-development-complete",
+  "contract": {
+    "purpose": "learn economic decision risk with evidence-conditional reliance on predictive, identification, posterior, and specification signals",
+    "status": "post-AMSS development; no confirmatory cohort accessed",
+    "source": {
+      "developmentBusinesses": 420,
+      "candidateMmmFits": 20160,
+      "posteriorRefitsRequired": 0,
+      "frozenV9CandidateTokens": 232,
+      "evidenceArms": [
+        "experiments-only",
+        "benchmark-gap-fill"
+      ]
+    },
+    "pairedRegimes": {
+      "setsPerBusiness": 3,
+      "totalDevelopmentSets": 1260,
+      "fullCandidates": 48,
+      "armCandidates": 24,
+      "sameBusinessFoldRequired": true,
+      "sameObservedOutcomeRequired": true,
+      "recalculatesOracleWithinRegime": true,
+      "experimentPresenceCounterfactualGenerated": false,
+      "note": "The cached design identifies benchmark gap-fill value within business. Removing an existing experiment would change the posterior and requires a future refit experiment."
+    },
+    "context": {
+      "count": 63,
+      "explicitMissingnessMasks": true,
+      "candidateIndependentWithinSet": true,
+      "hiddenTruthPermitted": false
+    },
+    "experts": [
+      "predictive-generalization",
+      "causal-identification",
+      "posterior-decision",
+      "structural-specification"
+    ],
+    "model": {
+      "family": "joint-plus-evidence-gated permutation-invariant DeepSets multi-head selector",
+      "jointPath": "an all-token candidate encoder preserves cross-pillar interactions",
+      "gate": "business evidence context -> softmax reliance over four residual candidate-token experts",
+      "selection": "direct 65% predicted mean plus 35% predicted P90 economic risk",
+      "training": "nested advertiser-grouped cross-validation; paired regimes never cross folds"
+    },
+    "targets": {
+      "scenarios": [
+        "budget-reduction",
+        "fixed-budget-mix",
+        "budget-growth",
+        "economic-ceiling"
+      ],
+      "riskPreference": {
+        "mean": 0.65,
+        "p90": 0.35
+      },
+      "theoremTarget": "capped normalized within-regime excess economic loss"
+    },
+    "governance": {
+      "activation": "development-only",
+      "amssConfirmatoryCohortAccessPermitted": false,
+      "previousAuditRetuningPermitted": false,
+      "freshIndependentAuditRequiredBeforeClaim": true,
+      "productionActivationPermitted": false
+    }
+  },
+  "provenance": {
+    "datasetSha256": "f0212faf7e8d2e8894149c61f67de83e685b8a36f4d5a8f96e07af4fedc28739",
+    "v9PredictionsSha256": "f6d566986ad24dabd0527626d35fa59fee5208f4bc16d94cf31adfa3e695f06b",
+    "predictionsSha256": "93767e5322ba02dbb5628b040dd380df303497e2c7f2d5e5ba199e0263cd3eed",
+    "modelSha256": "5c5cc9d7fb2128bb8bedd90d44df2393e30147856aae8e13b6d7c02afd423731",
+    "python": "3.14.6",
+    "numpy": "2.4.6",
+    "posteriorRefits": 0,
+    "amssConfirmatoryCohortAccessed": false,
+    "previousAuditAccessed": false,
+    "nutsUsed": false
+  },
+  "nestedCrossValidation": {
+    "outerAdvertiserFolds": 5,
+    "innerAdvertiserFoldsPerOuter": 4,
+    "augmentedRegimeSetsPerBusiness": 3,
+    "outerReceipts": [
+      {
+        "fold": 0,
+        "selectedModel": "evidence-adaptive-compact",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 1.9383427955554957,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.5870614759551374,
+          "medianPromotedExcessLoss": 0.6440654692180741,
+          "p90PromotedExcessLoss": 3.808208801936409,
+          "p95PromotedExcessLoss": 5.639791688674198,
+          "meanNormalizedExcessLoss": 0.5680435995192296,
+          "selectionObjective": 2.3644630400485824,
+          "dangerousFalseChampionShare": 0.34523809523809523,
+          "oracleRecall": 0.16666666666666666,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.19697873436540095,
+          "causal-identification": 0.2465168069834036,
+          "posterior-decision": 0.31108527855356816,
+          "structural-specification": 0.2454191800976272
+        },
+        "candidateConfigurations": [
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.9654832945744556
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.9694350166640016
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.9383427955554957
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.3632617071302247
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.3706094760702365
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.373193889985421
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.18147089548454365,
+              "causal-identification": 0.26351803305990995,
+              "posterior-decision": 0.29507309831246625,
+              "structural-specification": 0.2599379731430802
+            },
+            "finalBatchDirectSelectionLoss": 0.25570474775879753,
+            "finalBatchTheoremSurrogateLoss": 0.8822416820962277,
+            "seconds": 12.48651909828186
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.23350080771041368,
+              "causal-identification": 0.22161264455113927,
+              "posterior-decision": 0.3143075225162963,
+              "structural-specification": 0.23057902522215068
+            },
+            "finalBatchDirectSelectionLoss": 0.27014462219709995,
+            "finalBatchTheoremSurrogateLoss": 0.9192129557811127,
+            "seconds": 11.004760026931763
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.21205138243451524,
+              "causal-identification": 0.22246370250898373,
+              "posterior-decision": 0.31515481827933184,
+              "structural-specification": 0.2503300967771691
+            },
+            "finalBatchDirectSelectionLoss": 0.2580748458161398,
+            "finalBatchTheoremSurrogateLoss": 0.7077952135764718,
+            "seconds": 10.928505897521973
+          }
+        ]
+      },
+      {
+        "fold": 1,
+        "selectedModel": "evidence-adaptive-compact",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 2.0427496832370453,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 0.9988478818485415,
+          "medianPromotedExcessLoss": 0.34952491917189077,
+          "p90PromotedExcessLoss": 2.5556532616752285,
+          "p95PromotedExcessLoss": 3.455429458863045,
+          "meanNormalizedExcessLoss": 0.49651604690745477,
+          "selectionObjective": 1.5437297647878818,
+          "dangerousFalseChampionShare": 0.2976190476190476,
+          "oracleRecall": 0.13095238095238096,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.24835269415683706,
+          "causal-identification": 0.17948990104807785,
+          "posterior-decision": 0.2693445614276857,
+          "structural-specification": 0.30281284336739933
+        },
+        "candidateConfigurations": [
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.1089984908173767
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.0565408042488404
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.0427496832370453
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.3368958700643425
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.2965895608176323
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.3183176388375903
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.23297686623016584,
+              "causal-identification": 0.21227990902300348,
+              "posterior-decision": 0.2703463946601225,
+              "structural-specification": 0.2843968300867082
+            },
+            "finalBatchDirectSelectionLoss": 0.25392125323635767,
+            "finalBatchTheoremSurrogateLoss": 1.073828480984438,
+            "seconds": 11.98125171661377
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.3093433466336532,
+              "causal-identification": 0.18270559286202048,
+              "posterior-decision": 0.23303476301989473,
+              "structural-specification": 0.2749162974844316
+            },
+            "finalBatchDirectSelectionLoss": 0.23217847418056364,
+            "finalBatchTheoremSurrogateLoss": 0.8626268032230062,
+            "seconds": 12.326269388198853
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.19671107809404448,
+              "causal-identification": 0.19042724538137087,
+              "posterior-decision": 0.33425264548423955,
+              "structural-specification": 0.27860903104034507
+            },
+            "finalBatchDirectSelectionLoss": 0.3343367182269195,
+            "finalBatchTheoremSurrogateLoss": 0.7624872301375752,
+            "seconds": 12.188538074493408
+          }
+        ]
+      },
+      {
+        "fold": 2,
+        "selectedModel": "evidence-adaptive-compact",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 1.9477583426641867,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.190714747622371,
+          "medianPromotedExcessLoss": 0.3103781084575464,
+          "p90PromotedExcessLoss": 2.8467164855778644,
+          "p95PromotedExcessLoss": 5.1441605416266825,
+          "meanNormalizedExcessLoss": 0.4591706644982472,
+          "selectionObjective": 1.7703153559067935,
+          "dangerousFalseChampionShare": 0.27380952380952384,
+          "oracleRecall": 0.13095238095238096,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.24017478089732064,
+          "causal-identification": 0.2023524155009688,
+          "posterior-decision": 0.29429727491814683,
+          "structural-specification": 0.2631755286835637
+        },
+        "candidateConfigurations": [
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.9871581217932435
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.9913368827233424
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.9477583426641867
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.2463954311590104
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.2473938308466845
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 2.233540334176749
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.2279770447360679,
+              "causal-identification": 0.2139561317903299,
+              "posterior-decision": 0.31166824171721724,
+              "structural-specification": 0.246398581756385
+            },
+            "finalBatchDirectSelectionLoss": 0.28379560889272604,
+            "finalBatchTheoremSurrogateLoss": 0.9741111528458621,
+            "seconds": 14.460011005401611
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.19957207949507694,
+              "causal-identification": 0.20528908185044306,
+              "posterior-decision": 0.2830178168896655,
+              "structural-specification": 0.3121210217648145
+            },
+            "finalBatchDirectSelectionLoss": 0.29426513688986294,
+            "finalBatchTheoremSurrogateLoss": 0.7159001430729391,
+            "seconds": 14.251430988311768
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.25126623016505795,
+              "causal-identification": 0.19078579708010157,
+              "posterior-decision": 0.24677005408544683,
+              "structural-specification": 0.31117791866939365
+            },
+            "finalBatchDirectSelectionLoss": 0.3640069762528313,
+            "finalBatchTheoremSurrogateLoss": 0.821252187554737,
+            "seconds": 14.96691083908081
+          }
+        ]
+      },
+      {
+        "fold": 3,
+        "selectedModel": "evidence-adaptive-compact",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 1.6720105184736107,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.0973875095932406,
+          "medianPromotedExcessLoss": 0.4150373846381604,
+          "p90PromotedExcessLoss": 3.2909630021259533,
+          "p95PromotedExcessLoss": 4.385251186561077,
+          "meanNormalizedExcessLoss": 0.4966769853036316,
+          "selectionObjective": 1.86513893197969,
+          "dangerousFalseChampionShare": 0.32142857142857145,
+          "oracleRecall": 0.10714285714285714,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.2142654200712109,
+          "causal-identification": 0.21399288459883076,
+          "posterior-decision": 0.28332198437347883,
+          "structural-specification": 0.2884197109564795
+        },
+        "candidateConfigurations": [
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.7013733893639584
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.673222161402931
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.6720105184736107
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 2.0114360975690753
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 2.0082815005940957
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.9994557117424123
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.23096896017013502,
+              "causal-identification": 0.2053625982888845,
+              "posterior-decision": 0.2701997818189488,
+              "structural-specification": 0.2934686597220316
+            },
+            "finalBatchDirectSelectionLoss": 0.23006197404956977,
+            "finalBatchTheoremSurrogateLoss": 0.7912417149637285,
+            "seconds": 16.366014003753662
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.20850640710869311,
+              "causal-identification": 0.2321887884610806,
+              "posterior-decision": 0.2810107328328795,
+              "structural-specification": 0.2782940715973468
+            },
+            "finalBatchDirectSelectionLoss": 0.28865442761593824,
+            "finalBatchTheoremSurrogateLoss": 0.8668286004372483,
+            "seconds": 15.339548110961914
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.21157251832021892,
+              "causal-identification": 0.22757068941463893,
+              "posterior-decision": 0.28218386498421155,
+              "structural-specification": 0.2786729272809307
+            },
+            "finalBatchDirectSelectionLoss": 0.2590354525429152,
+            "finalBatchTheoremSurrogateLoss": 0.7935895842235414,
+            "seconds": 15.543751239776611
+          }
+        ]
+      },
+      {
+        "fold": 4,
+        "selectedModel": "evidence-adaptive-compact",
+        "selectedPolicy": "danger-0.5-uncertainty-0.25",
+        "innerObjective": 1.8238385181319727,
+        "assessmentAt100Percent": {
+          "businesses": 84,
+          "meanPromotedExcessLoss": 1.436894540385898,
+          "medianPromotedExcessLoss": 0.610765005990807,
+          "p90PromotedExcessLoss": 3.7343964480974114,
+          "p95PromotedExcessLoss": 5.6854248473247075,
+          "meanNormalizedExcessLoss": 0.5228994559880038,
+          "selectionObjective": 2.2410202080849277,
+          "dangerousFalseChampionShare": 0.3333333333333333,
+          "oracleRecall": 0.15476190476190477,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.214355195355391,
+          "causal-identification": 0.21460710529748328,
+          "posterior-decision": 0.2807852216646471,
+          "structural-specification": 0.2902524776824785
+        },
+        "candidateConfigurations": [
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.8454054716166237
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.8374744412779265
+          },
+          {
+            "model": "evidence-adaptive-compact",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.8238385181319727
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0-uncertainty-0.25",
+            "objective": 1.8649546321438333
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.25-uncertainty-0.25",
+            "objective": 1.86597359744476
+          },
+          {
+            "model": "evidence-adaptive-balanced",
+            "policy": "danger-0.5-uncertainty-0.25",
+            "objective": 1.8920088311545844
+          }
+        ],
+        "ensembleReceipts": [
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.2248030971170815,
+              "causal-identification": 0.18186922825544344,
+              "posterior-decision": 0.29685310218479055,
+              "structural-specification": 0.2964745724426845
+            },
+            "finalBatchDirectSelectionLoss": 0.22234327377040428,
+            "finalBatchTheoremSurrogateLoss": 0.7478392475826549,
+            "seconds": 14.343859195709229
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.2005859921833036,
+              "causal-identification": 0.24034919654181627,
+              "posterior-decision": 0.2605587769848152,
+              "structural-specification": 0.2985060342900649
+            },
+            "finalBatchDirectSelectionLoss": 0.30567264756795876,
+            "finalBatchTheoremSurrogateLoss": 1.1013883073331623,
+            "seconds": 17.782386779785156
+          },
+          {
+            "trainingBusinesses": 336,
+            "trainingRegimeSets": 1008,
+            "bootstrapByBusiness": true,
+            "epochs": 18,
+            "averageGate": {
+              "predictive-generalization": 0.1955474753535272,
+              "causal-identification": 0.23830576874128878,
+              "posterior-decision": 0.28266640552912775,
+              "structural-specification": 0.2834803503760562
+            },
+            "finalBatchDirectSelectionLoss": 0.36881669982401355,
+            "finalBatchTheoremSurrogateLoss": 0.7656830482003987,
+            "seconds": 13.73979902267456
+          }
+        ]
+      }
+    ]
+  },
+  "evidenceAdaptiveRegretSet": {
+    "at100PercentCoverage": {
+      "businesses": 420,
+      "meanPromotedExcessLoss": 1.2621812310810376,
+      "medianPromotedExcessLoss": 0.4160237462534085,
+      "p90PromotedExcessLoss": 3.332349674287064,
+      "p95PromotedExcessLoss": 5.2697473165048265,
+      "meanNormalizedExcessLoss": 0.5086613504433134,
+      "selectionObjective": 1.9867401862031469,
+      "dangerousFalseChampionShare": 0.3142857142857143,
+      "oracleRecall": 0.1380952380952381,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0
+    },
+    "riskCoverageCurve": {
+      "range": [
+        0.6,
+        1.0
+      ],
+      "points": [
+        {
+          "businesses": 252,
+          "meanPromotedExcessLoss": 1.2466810511025488,
+          "medianPromotedExcessLoss": 0.4160237462534085,
+          "p90PromotedExcessLoss": 3.4718214752664713,
+          "p95PromotedExcessLoss": 5.381380331050946,
+          "meanNormalizedExcessLoss": 0.5087532563621244,
+          "selectionObjective": 2.0254801995599214,
+          "dangerousFalseChampionShare": 0.3253968253968254,
+          "oracleRecall": 0.15476190476190477,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.6,
+          "promotionCoverage": 0.6
+        },
+        {
+          "businesses": 273,
+          "meanPromotedExcessLoss": 1.2312866652427543,
+          "medianPromotedExcessLoss": 0.40921888072612583,
+          "p90PromotedExcessLoss": 3.4543875001440463,
+          "p95PromotedExcessLoss": 5.380294910557051,
+          "meanNormalizedExcessLoss": 0.504466048326965,
+          "selectionObjective": 2.0093719574582067,
+          "dangerousFalseChampionShare": 0.31868131868131866,
+          "oracleRecall": 0.15384615384615385,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.65,
+          "promotionCoverage": 0.65
+        },
+        {
+          "businesses": 294,
+          "meanPromotedExcessLoss": 1.1849842900590004,
+          "medianPromotedExcessLoss": 0.3931672763155545,
+          "p90PromotedExcessLoss": 3.2080134391201094,
+          "p95PromotedExcessLoss": 5.002633952739544,
+          "meanNormalizedExcessLoss": 0.5012589567511149,
+          "selectionObjective": 1.8930444922303884,
+          "dangerousFalseChampionShare": 0.3129251700680272,
+          "oracleRecall": 0.14625850340136054,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7000000000000001,
+          "promotionCoverage": 0.7
+        },
+        {
+          "businesses": 315,
+          "meanPromotedExcessLoss": 1.1579514359719183,
+          "medianPromotedExcessLoss": 0.3879581760450271,
+          "p90PromotedExcessLoss": 3.110316997764564,
+          "p95PromotedExcessLoss": 4.974251060903697,
+          "meanNormalizedExcessLoss": 0.49625865841125133,
+          "selectionObjective": 1.8412793825993443,
+          "dangerousFalseChampionShare": 0.3047619047619048,
+          "oracleRecall": 0.13968253968253969,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.7500000000000001,
+          "promotionCoverage": 0.75
+        },
+        {
+          "businesses": 336,
+          "meanPromotedExcessLoss": 1.234716355664612,
+          "medianPromotedExcessLoss": 0.4016490876089621,
+          "p90PromotedExcessLoss": 3.4020855747767653,
+          "p95PromotedExcessLoss": 5.377038649075368,
+          "meanNormalizedExcessLoss": 0.5001710627782948,
+          "selectionObjective": 1.9932955823538656,
+          "dangerousFalseChampionShare": 0.31547619047619047,
+          "oracleRecall": 0.13988095238095238,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8000000000000002,
+          "promotionCoverage": 0.8
+        },
+        {
+          "businesses": 357,
+          "meanPromotedExcessLoss": 1.2132028414382405,
+          "medianPromotedExcessLoss": 0.40921888072612583,
+          "p90PromotedExcessLoss": 3.292545335402588,
+          "p95PromotedExcessLoss": 5.1631560895366055,
+          "meanNormalizedExcessLoss": 0.5039330089757275,
+          "selectionObjective": 1.940972714325762,
+          "dangerousFalseChampionShare": 0.3137254901960784,
+          "oracleRecall": 0.14285714285714285,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.8500000000000002,
+          "promotionCoverage": 0.85
+        },
+        {
+          "businesses": 378,
+          "meanPromotedExcessLoss": 1.1981089262355824,
+          "medianPromotedExcessLoss": 0.40707033967898415,
+          "p90PromotedExcessLoss": 3.2679137160199585,
+          "p95PromotedExcessLoss": 5.015057297186701,
+          "meanNormalizedExcessLoss": 0.5056073743619204,
+          "selectionObjective": 1.922540602660114,
+          "dangerousFalseChampionShare": 0.3148148148148148,
+          "oracleRecall": 0.1455026455026455,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9000000000000002,
+          "promotionCoverage": 0.9
+        },
+        {
+          "businesses": 399,
+          "meanPromotedExcessLoss": 1.1748187938309558,
+          "medianPromotedExcessLoss": 0.4122598346825572,
+          "p90PromotedExcessLoss": 3.1582582077853583,
+          "p95PromotedExcessLoss": 4.823370216946232,
+          "meanNormalizedExcessLoss": 0.5053094945499065,
+          "selectionObjective": 1.8690225887149965,
+          "dangerousFalseChampionShare": 0.3107769423558897,
+          "oracleRecall": 0.14035087719298245,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 0.9500000000000003,
+          "promotionCoverage": 0.95
+        },
+        {
+          "businesses": 420,
+          "meanPromotedExcessLoss": 1.2621812310810376,
+          "medianPromotedExcessLoss": 0.4160237462534085,
+          "p90PromotedExcessLoss": 3.332349674287064,
+          "p95PromotedExcessLoss": 5.2697473165048265,
+          "meanNormalizedExcessLoss": 0.5086613504433134,
+          "selectionObjective": 1.9867401862031469,
+          "dangerousFalseChampionShare": 0.3142857142857143,
+          "oracleRecall": 0.1380952380952381,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0,
+          "requestedCoverage": 1.0000000000000004,
+          "promotionCoverage": 1.0
+        }
+      ],
+      "areaUnderSelectionRisk": 1.9344546891530268,
+      "areaUnderMeanRisk": 1.2061875561918571
+    },
+    "averageEvidenceGate": {
+      "predictive-generalization": 0.22282536496923214,
+      "causal-identification": 0.21139182268575285,
+      "posterior-decision": 0.28776686418750536,
+      "structural-specification": 0.2780159481575097
+    },
+    "byExperimentAvailability": {
+      "withExperiment": {
+        "businesses": 396,
+        "metrics": {
+          "businesses": 396,
+          "meanPromotedExcessLoss": 1.166761314088883,
+          "medianPromotedExcessLoss": 0.3931672763155545,
+          "p90PromotedExcessLoss": 3.053351919294217,
+          "p95PromotedExcessLoss": 5.149378179261053,
+          "meanNormalizedExcessLoss": 0.49772221917540627,
+          "selectionObjective": 1.8270680259107497,
+          "dangerousFalseChampionShare": 0.3005050505050505,
+          "oracleRecall": 0.13636363636363635,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.22577469579976459,
+          "causal-identification": 0.21080965516160138,
+          "posterior-decision": 0.2915739302218471,
+          "structural-specification": 0.271841718816787
+        }
+      },
+      "withoutExperiment": {
+        "businesses": 24,
+        "metrics": {
+          "businesses": 24,
+          "meanPromotedExcessLoss": 2.8366098614515884,
+          "medianPromotedExcessLoss": 1.4480212601038245,
+          "p90PromotedExcessLoss": 3.9482640887189384,
+          "p95PromotedExcessLoss": 10.619030027698916,
+          "meanNormalizedExcessLoss": 0.6891570163637807,
+          "selectionObjective": 3.2256888409951605,
+          "dangerousFalseChampionShare": 0.5416666666666666,
+          "oracleRecall": 0.16666666666666666,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "predictionOnlyMetrics": {
+          "businesses": 24,
+          "meanPromotedExcessLoss": 3.9441419995904976,
+          "medianPromotedExcessLoss": 2.371595248610055,
+          "p90PromotedExcessLoss": 8.982038612673504,
+          "p95PromotedExcessLoss": 12.092944005785881,
+          "meanNormalizedExcessLoss": 0.7954039678172004,
+          "selectionObjective": 5.70740581416955,
+          "dangerousFalseChampionShare": 0.7083333333333334,
+          "oracleRecall": 0.08333333333333333,
+          "theoremViolations": 0,
+          "maximumTheoremSlack": 0.0
+        },
+        "averageEvidenceGate": {
+          "predictive-generalization": 0.17416140626544627,
+          "causal-identification": 0.22099758683425227,
+          "posterior-decision": 0.22495027462086728,
+          "structural-specification": 0.3798907322794342
+        }
+      }
+    }
+  },
+  "developmentComparators": {
+    "frozenV9": {
+      "businesses": 420,
+      "meanPromotedExcessLoss": 1.4727611913576342,
+      "medianPromotedExcessLoss": 0.476769328261379,
+      "p90PromotedExcessLoss": 3.630531015105533,
+      "p95PromotedExcessLoss": 6.727548925533684,
+      "meanNormalizedExcessLoss": 0.5215679021400846,
+      "selectionObjective": 2.227980629669399,
+      "dangerousFalseChampionShare": 0.3333333333333333,
+      "oracleRecall": 0.1380952380952381,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0
+    },
+    "predictionOnly": {
+      "businesses": 420,
+      "meanPromotedExcessLoss": 2.2896618735859287,
+      "medianPromotedExcessLoss": 0.7270803641723889,
+      "p90PromotedExcessLoss": 5.724086073415621,
+      "p95PromotedExcessLoss": 9.203725602807037,
+      "meanNormalizedExcessLoss": 0.6257007295216113,
+      "selectionObjective": 3.4917103435263206,
+      "dangerousFalseChampionShare": 0.44285714285714284,
+      "oracleRecall": 0.05238095238095238,
+      "theoremViolations": 0,
+      "maximumTheoremSlack": 0.0
+    }
+  },
+  "checks": {
+    "allFullSetsCrossFitted": true,
+    "allPairedRegimesGroupedByAdvertiser": true,
+    "evidenceGatesFinite": true,
+    "evidenceGatesSumToOne": true,
+    "theoremVerified": true,
+    "posteriorRefitsExcluded": true,
+    "amssConfirmatoryCohortUntouched": true,
+    "previousAuditsUntouched": true,
+    "nutsExcluded": true
+  },
+  "conclusion": {
+    "implementationValid": true,
+    "developmentImprovedVsV9": true,
+    "developmentImprovedVsPredictionOnly": true,
+    "confirmatoryClaimPermitted": false,
+    "freshIndependentAuditRequired": true,
+    "amssCohortMayBeReused": false,
+    "productionActivationPermitted": false
+  },
+  "developmentSelector": {
+    "model": "evidence-adaptive-compact",
+    "policy": "danger-0.5-uncertainty-0.25",
+    "outerSelectionFrequency": {
+      "evidence-adaptive-compact/danger-0.5-uncertainty-0.25": 5
+    },
+    "path": ".flux-artifacts/svi-score-v11-evidence-adaptive/development-selector.json"
+  },
+  "runtimeSeconds": 798.7564868927002
+}

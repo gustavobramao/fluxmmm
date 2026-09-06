@@ -1,0 +1,13 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --file
+      - research/svi_score_v11_amss_confirmatory/cloud/Dockerfile.truth
+      - --tag
+      - europe-west1-docker.pkg.dev/fluxmmm-production/fluxmmm-research/amss-truth-v11-confirmatory:002
+      - .
+images:
+  - europe-west1-docker.pkg.dev/fluxmmm-production/fluxmmm-research/amss-truth-v11-confirmatory:002
+options:
+  machineType: E2_HIGHCPU_8

@@ -12,15 +12,17 @@ It connects data validation, explicit experiment or benchmark calibration,
 model diagnostics, model search, production posterior sampling, and budget
 planning in one auditable workflow.
 
-This release adds **RegretSet-MMM V9**, a frozen research selector that learns
-across synthetic advertisers which complete MMM specification is least likely
-to produce costly downstream budget decisions. Its model, token registry,
-internal sealed audit, and independent AMSS synthetic-transport audit are
-published with the product.
+This release adds **evidence-adaptive RegretSet-MMM V11**, a frozen research
+selector that learns across synthetic advertisers which complete MMM
+specification is least likely to produce costly downstream budget decisions.
+V11 keeps the full joint candidate representation from V9 and adds learned
+residual experts whose reliance changes with the advertiser's observable
+evidence environment. Its model, token registries, frozen selection receipts,
+and independent AMSS synthetic audit are published with the product.
 
 [Explore the cached public demo](https://fluxmmm-demo.web.app/) ·
 [Read the paper](https://fluxmmm-web.web.app/paper/) ·
-[Read the V9 release notes](RELEASE_NOTES.md) ·
+[Read the V11 release notes](RELEASE_NOTES.md) ·
 [Visit FluxMMM](https://fluxmmm-web.web.app/)
 
 ![FluxMMM — open measurement and grounded ROI](public/og.png)
@@ -41,45 +43,57 @@ decisions that require stronger evidence. FluxMMM keeps those claims separate:
    into observational data, experiments, benchmarks, and regularization rather
    than reduced to arbitrary “data-led” or “prior-led” point thresholds.
 
-## RegretSet-MMM V9
+## Evidence-adaptive RegretSet-MMM V11
 
 RegretSet-MMM changes the model-selection target. Instead of asking only which
 candidate predicts best, it asks which candidate is least likely to recommend
 an economically costly budget decision.
 
-- **420 development businesses** generated across declared mechanism families.
-- **48 truth-blind candidates per business**, or 20,160 FullRankADVI fits.
-- **232 deployment-observable tokens** per candidate, covering diagnostics,
-  posterior geometry, evidence, and the model contract.
-- A permutation-invariant **DeepSets multi-head selector** that sees the full
-  candidate set and predicts loss across four predeclared budget decisions.
+- **420 development businesses** generated across declared mechanism families,
+  reusing **20,160 FullRankADVI candidate fits** under three matched evidence
+  regimes per business.
+- **48 truth-blind candidates per complete set** and **232 candidate tokens**
+  spanning diagnostics, posterior geometry, evidence, and the model contract.
+- **63 business-context tokens** encoding evidence availability, quality,
+  compatibility, missingness, and candidate-set summaries.
+- A permutation-invariant **DeepSets multi-head selector** with one full joint
+  pathway plus four learned residual experts: predictive generalization,
+  causal identification, posterior decision quality, and structural
+  specification.
+- Ten jointly trained loss and tail-risk heads covering four predeclared budget
+  decisions; promotion minimizes the declared **65% mean / 35% P90** risk.
 - A finite-candidate regret bound connecting oracle misranking to capped
   selected-model excess regret.
-- A new **140-business internal sealed audit** with 6,720 additional SVI fits;
-  all 9 predeclared checks passed and the bound had zero observed violations.
-- A frozen external transport test on **100 businesses from Google AMSS 1.0.1**:
-  4,800 SVI fits and 19,200 budget actions, with no retraining or truth access
-  before model selections were frozen.
+- A fresh external audit on **100 businesses from Google AMSS 1.0.1**: 4,800
+  SVI fits and 19,200 budget actions, with no retraining or truth access before
+  candidate actions and selections were frozen.
 
-On the external AMSS cohort, RegretSet-MMM produced mean capped decision risk of
-**0.230**, compared with **0.400** for uniform random selection among valid
-candidates—a **42.5% reduction**. The unattainable in-pool oracle lower bound was
-0.012. This establishes transport to a second synthetic universe under the
-declared adapter, candidate pool, inference contract, and utility. It does
+On that untouched AMSS cohort, V11 achieved a declared selection objective of
+**0.203**, versus **0.353** for prediction-only selection, **0.401** for frozen
+V9, **0.458** for uniform random valid-candidate selection, and **0.701** for a
+conventional prediction/decomposition/experiment-calibration Pareto rule. The
+unattainable in-pool oracle was **0.029**. V11 reduced the objective by **42.6%**
+relative to prediction-only and passed all three predeclared confirmatory
+checks. The Pareto comparison is secondary and used no new posterior fits.
+
+These findings establish transport to a second synthetic universe under the
+declared adapter, candidate pool, FullRankADVI contract, and utility. They do
 **not** establish real-advertiser effectiveness or universal SOTA performance.
 
 The research release lives in:
 
 ```text
-research/svi_score_v9/          Frozen selector, tokens, and internal audit
-research/svi_score_v10_amss/    AMSS transport protocol and results
-docs/regretset-mmm-paper.pdf     Publication-format working paper
+research/svi_score_v9/                     Frozen joint selector lineage
+research/svi_score_v11_evidence_adaptive/  V11 selector and development contract
+research/svi_score_v11_amss_confirmatory/  Fresh AMSS protocol and audit receipts
+docs/regretset-mmm-paper.pdf                Publication-format working paper
 ```
 
-The interactive Agentic workspace still uses fast analytic screening to keep
-local search responsive. RegretSet-MMM is a research surface and reproducible
-frozen selector; it is not silently substituted when its full SVI token
-contract is unavailable.
+The interactive Agentic workspace still uses fast analytic MAP/Laplace
+screening to keep broad local search responsive. The frozen V11 selector
+evaluates a complete 48-candidate SVI pool with its exact token and context
+contract. The UI states this boundary rather than silently relabelling the
+analytic runtime as V11.
 
 ## Product capabilities
 
@@ -184,11 +198,24 @@ pnpm exec tsc --noEmit
 pnpm test
 pnpm test:svi-score-v9
 pnpm test:svi-score-v10-amss
+pnpm test:svi-score-v11-ea
+pnpm test:svi-score-v11-amss
+```
+
+After `pnpm mcmc:setup`, the Python selector-equivalence checks are available as
+`pnpm test:svi-score-v11-ea-python`.
+
+To regenerate the publication-format PDF from the compact research artifacts:
+
+```bash
+pnpm research:paper:setup
+pnpm research:paper:build
 ```
 
 Large posterior checkpoints and generated cohorts are excluded from Git. The
-repository includes frozen selectors, compact audit results, hashes,
-candidate-level external losses, and the code needed to inspect the research.
+repository includes frozen V9 and V11 selectors, compact audit results,
+pre-truth selections, hashes, candidate-level external losses, and the code
+needed to inspect the research.
 
 ## Scientific limits
 
@@ -198,6 +225,8 @@ candidate-level external losses, and the code needed to inspect the research.
 - RegretSet-MMM was developed and audited in simulation. Independent AMSS
   transport is stronger than testing only in the Flux generator, but it is not
   a substitute for prospective validation on real advertiser experiments.
+- V11's learned expert routing is not feature importance, evidence quality, or
+  causal validity. The joint pathway still sees every candidate token.
 - Results are conditional on the candidate pool, inference engine, token schema,
   channel adapter, and declared 65% mean / 35% P90 risk preference.
 - Neither specification search nor budget optimization guarantees a global

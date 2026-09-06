@@ -30,11 +30,42 @@ INTERPRETABILITY = ROOT / "research" / "svi_score_v9" / "artifacts" / "svi-score
 POSTERIOR_GEOMETRY = ROOT / "research" / "svi_score_v9" / "artifacts" / "svi-score-v9-posterior-geometry.json"
 EVIDENCE_ATTRIBUTION = ROOT / "research" / "svi_score_v9" / "artifacts" / "svi-score-v9-evidence-attribution.json"
 AUDIT_RESULT = ROOT / "research" / "svi_score_v9" / "artifacts" / "svi-score-v9-sealed-audit.json"
-AUDIT_RECOVERY = ROOT / ".flux-artifacts" / "svi-score-v9" / "audit" / "sealed-audit-dataset-recovery-receipt.json"
-AMSS_RESULT = ROOT / ".flux-artifacts" / "svi-score-v10-amss" / "external-audit" / "result.json"
-AMSS_ACCEPTANCE = ROOT / ".flux-artifacts" / "svi-score-v10-amss" / "external-audit" / "acceptance-receipt.json"
-AMSS_CANDIDATE_LOSSES = ROOT / ".flux-artifacts" / "svi-score-v10-amss" / "external-audit" / "candidate-losses.csv"
-AMSS_CONTRACT = ROOT / "research" / "svi_score_v10_amss" / "frozen-protocol" / "scientific-contract.json"
+AUDIT_RECOVERY_LOCAL = ROOT / ".flux-artifacts" / "svi-score-v9" / "audit" / "sealed-audit-dataset-recovery-receipt.json"
+AUDIT_RECOVERY = (
+    AUDIT_RECOVERY_LOCAL
+    if AUDIT_RECOVERY_LOCAL.exists()
+    else ROOT / "research" / "svi_score_v9" / "artifacts" / "sealed-audit-dataset-recovery-receipt.json"
+)
+AMSS_ROOT = ROOT / ".flux-artifacts" / "svi-score-v11-amss-confirmatory"
+PUBLISHED_AMSS = ROOT / "research" / "svi_score_v11_amss_confirmatory" / "artifacts"
+AMSS_RESULT = (
+    AMSS_ROOT / "external-audit" / "result.json"
+    if (AMSS_ROOT / "external-audit" / "result.json").exists()
+    else PUBLISHED_AMSS / "result.json"
+)
+AMSS_TRUTH_RECEIPT = (
+    AMSS_ROOT / "opened-truth" / "cloud-truth-retrieval-receipt.json"
+    if (AMSS_ROOT / "opened-truth" / "cloud-truth-retrieval-receipt.json").exists()
+    else PUBLISHED_AMSS / "cloud-truth-retrieval-receipt.json"
+)
+AMSS_CANDIDATE_LOSSES = (
+    AMSS_ROOT / "external-audit" / "candidate-losses.csv"
+    if (AMSS_ROOT / "external-audit" / "candidate-losses.csv").exists()
+    else PUBLISHED_AMSS / "candidate-losses.csv"
+)
+AMSS_CONTRACT = ROOT / "research" / "svi_score_v11_amss_confirmatory" / "frozen-protocol" / "scientific-contract.json"
+AMSS_SECONDARY_BASELINES = (
+    AMSS_ROOT / "secondary-baselines" / "result.json"
+    if (AMSS_ROOT / "secondary-baselines" / "result.json").exists()
+    else PUBLISHED_AMSS / "secondary-baselines.json"
+)
+V11_DEVELOPMENT = (
+    ROOT
+    / "research"
+    / "svi_score_v11_evidence_adaptive"
+    / "artifacts"
+    / "svi-score-v11-evidence-adaptive-development.json"
+)
 
 colors = base.colors
 plt = base.plt
@@ -135,7 +166,7 @@ def page_header(canvas, doc: RegretSetDoc) -> None:
         canvas.setFont(FONT_ITALIC, 7.5)
         canvas.setFillColor(MID)
         canvas.drawString(LEFT, PAGE_H - 10.7 * mm, "Bramao: RegretSet-MMM")
-        canvas.drawRightString(PAGE_W - RIGHT, PAGE_H - 10.7 * mm, "Working paper - external synthetic validation complete")
+        canvas.drawRightString(PAGE_W - RIGHT, PAGE_H - 10.7 * mm, "Working paper - confirmatory external audit complete")
         canvas.setFont(FONT, 8)
         canvas.setFillColor(BLACK)
         canvas.drawCentredString(PAGE_W / 2, 10.5 * mm, str(doc.page))
@@ -483,26 +514,25 @@ def read_amss_candidate_losses() -> list[dict[str, str]]:
 
 
 def amss_random_comparator() -> dict[str, float]:
-    """Exact distribution induced by uniform valid-candidate selection.
+    """Frozen business-level expectation under uniform valid-candidate choice."""
+    return json.loads(AMSS_RESULT.read_text())["endpoints"]["uniformRandomValidExpectation"]
 
-    Every AMSS business has 48 valid candidates, so pooling the 4,800 candidate
-    risks gives each business equal weight and integrates over the random draw
-    exactly.  This is distinct from taking quantiles of the 100 business-level
-    conditional expectations stored in the audit receipt.
-    """
-    risks = [float(row["risk"]) for row in read_amss_candidate_losses()]
-    return {
-        "mean": statistics.fmean(risks),
-        "p90": percentile(risks, 0.90),
-        "p95": percentile(risks, 0.95),
-    }
+
+def amss_random_expected_by_business() -> dict[str, float]:
+    grouped: dict[str, list[float]] = {}
+    for row in read_amss_candidate_losses():
+        grouped.setdefault(row["business_id"], []).append(float(row["risk"]))
+    if len(grouped) != 100 or any(len(values) != 48 for values in grouped.values()):
+        raise RuntimeError("Uniform-random AMSS expectation requires 48 valid candidates per business.")
+    return {business: statistics.fmean(values) for business, values in grouped.items()}
 
 
 def amss_paired_random_inference() -> dict[str, float | list[float] | int]:
     result = json.loads(AMSS_RESULT.read_text())
+    random_by_business = amss_random_expected_by_business()
     by_group: dict[str, list[float]] = {}
     for row in result["selections"]:
-        difference = row["v9Risk"] - row["randomValidExpectedRisk"]
+        difference = row["v11Risk"] - random_by_business[row["businessId"]]
         by_group.setdefault(row["evidenceGroup"], []).append(difference)
     if sorted(map(len, by_group.values())) != [25, 25, 25, 25]:
         raise RuntimeError("AMSS paired bootstrap expects four evidence groups of 25 businesses.")
@@ -514,7 +544,7 @@ def amss_paired_random_inference() -> dict[str, float | list[float] | int]:
             draw.extend(rng.choice(differences) for _ in differences)
         bootstrap_means.append(statistics.fmean(draw))
     observed = [
-        row["v9Risk"] - row["randomValidExpectedRisk"]
+        row["v11Risk"] - random_by_business[row["businessId"]]
         for row in result["selections"]
     ]
     return {
@@ -528,25 +558,45 @@ def amss_paired_random_inference() -> dict[str, float | list[float] | int]:
     }
 
 
+def amss_secondary_baselines() -> dict:
+    result = json.loads(AMSS_SECONDARY_BASELINES.read_text())
+    if result["status"] != "complete-post-truth-secondary-analysis-not-confirmatory":
+        raise RuntimeError("The transparent AMSS secondary-baseline analysis is incomplete.")
+    governance = result["governance"]
+    if (
+        governance["confirmatory"]
+        or governance["newPosteriorFits"] != 0
+        or governance["cloudComputeUsed"]
+        or governance["selectorTrainingPerformed"]
+        or governance["candidateActionsChanged"]
+    ):
+        raise RuntimeError("Secondary comparator governance was not preserved.")
+    if result["cohort"]["businesses"] != 100 or result["cohort"]["candidates"] != 4_800:
+        raise RuntimeError("Secondary comparators require the complete AMSS candidate pool.")
+    return result
+
+
 def save_amss_external_validation() -> Path:
     path = ASSETS / "figure-7-amss-external-validation.png"
     result = json.loads(AMSS_RESULT.read_text())
-    valid = read_amss_candidate_losses()
+    secondary = amss_secondary_baselines()
     selections = result["selections"]
 
-    regretset = sorted(row["v9Risk"] for row in selections)
-    random_valid = sorted(float(row["risk"]) for row in valid)
+    regretset = sorted(row["v11Risk"] for row in selections)
+    prediction = sorted(row["predictionOnlyRisk"] for row in selections)
+    frozen_v9 = sorted(row["v9Risk"] for row in selections)
+    pareto = sorted(row["conventionalParetoRisk"] for row in secondary["selections"])
     oracle = sorted(row["oracleRisk"] for row in selections)
-    paired = sorted(
-        row["v9Risk"] - row["randomValidExpectedRisk"]
-        for row in selections
-    )
+    endpoints = result["endpoints"]
+    pareto_endpoint = secondary["endpoints"]["conventionalPareto"]
 
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 3.5), dpi=300, gridspec_kw={"width_ratios": [1.12, 1.0]})
     ax = axes[0]
     for values, color, label, width in [
-        (regretset, "#355C9A", "RegretSet-MMM", 2.0),
-        (random_valid, "#A8483C", "Uniform random valid", 1.6),
+        (regretset, "#355C9A", "Adaptive RegretSet-MMM", 2.2),
+        (prediction, "#C28A42", "Prediction-only", 1.4),
+        (frozen_v9, "#777777", "Original RegretSet (V9)", 1.4),
+        (pareto, "#A8483C", "Classic Pareto", 1.4),
         (oracle, "#6E9E73", "In-pool oracle", 1.6),
     ]:
         y = [(index + 1) / len(values) for index in range(len(values))]
@@ -555,24 +605,31 @@ def save_amss_external_validation() -> Path:
     ax.set_ylim(0, 1.01)
     ax.set_xlabel("capped business decision risk", fontsize=8.0, family="serif")
     ax.set_ylabel("cumulative share", fontsize=8.0, family="serif")
-    ax.set_title("A. Exact risk distributions", fontsize=8.5, fontweight="bold", family="serif")
+    ax.set_title("A. Business-level capped-risk distributions", fontsize=8.5, fontweight="bold", family="serif")
     ax.grid(color="#E2E2E2", lw=0.5)
     ax.tick_params(labelsize=7.4)
-    ax.legend(loc="lower right", frameon=False, fontsize=7.0)
+    ax.legend(loc="lower right", frameon=False, fontsize=6.6)
 
     ax = axes[1]
-    positions = list(range(1, len(paired) + 1))
-    colors_for_points = ["#6E9E73" if value < 0 else "#A8483C" for value in paired]
-    ax.scatter(positions, paired, c=colors_for_points, s=10, alpha=0.9, linewidths=0)
-    ax.axhline(0, color="#222222", lw=0.8)
-    ax.axhline(statistics.fmean(paired), color="#355C9A", lw=1.2, ls="--")
-    ax.text(4, -0.46, "RegretSet-MMM lower risk", fontsize=7.0, color="#4E7B54", family="serif")
-    ax.text(4, 0.57, "Random-valid expectation lower", fontsize=7.0, color="#8E3E34", family="serif")
-    ax.set_xlim(0, 101)
-    ax.set_ylim(min(-0.52, min(paired) * 1.08), max(0.62, max(paired) * 1.08))
-    ax.set_xlabel("businesses ordered by paired difference", fontsize=8.0, family="serif")
-    ax.set_ylabel("RegretSet minus expected random risk", fontsize=8.0, family="serif")
-    ax.set_title("B. Paired external transport result", fontsize=8.5, fontweight="bold", family="serif")
+    labels = ["Oracle", "Adaptive\nRegretSet", "Prediction\nonly", "Original\nV9", "Random\nvalid", "Classic\nPareto"]
+    objectives = [
+        endpoints["inPoolOracle"]["selectionObjective"],
+        endpoints["evidenceAdaptiveV11"]["selectionObjective"],
+        endpoints["predictionOnly"]["selectionObjective"],
+        endpoints["frozenV9"]["selectionObjective"],
+        endpoints["uniformRandomValidExpectation"]["selectionObjective"],
+        pareto_endpoint["selectionObjective"],
+    ]
+    colors_for_bars = ["#6E9E73", "#355C9A", "#C28A42", "#777777", "#9B87B3", "#A8483C"]
+    positions = list(range(len(labels)))
+    bars = ax.bar(positions, objectives, color=colors_for_bars, width=0.72)
+    for bar, value in zip(bars, objectives):
+        ax.text(bar.get_x() + bar.get_width() / 2, value + 0.014, f"{value:.3f}",
+                ha="center", va="bottom", fontsize=6.6, family="serif")
+    ax.set_xticks(positions, labels)
+    ax.set_ylim(0, max(objectives) * 1.18)
+    ax.set_ylabel("65% mean + 35% P90 risk", fontsize=8.0, family="serif")
+    ax.set_title("B. Cohort decision-risk objective", fontsize=8.5, fontweight="bold", family="serif")
     ax.grid(axis="y", color="#E2E2E2", lw=0.5)
     ax.tick_params(labelsize=7.4)
     for panel in axes:
@@ -589,13 +646,13 @@ def add_title(story: list[Flowable]) -> None:
     story.extend([
         Spacer(1, 3 * mm),
         P(TITLE, "title"),
-        P("Set-wise posterior representation, economic-regret supervision, and source-resolved evidence attribution", "subtitle"),
+        P("Evidence-adaptive set-wise learning, economic-regret supervision, and source-resolved attribution", "subtitle"),
         P("Gustavo Bramao", "author"),
-        P("Independent Researcher | September 2026 | Working paper - external synthetic validation complete", "date"),
+        P("Independent Researcher | September 2026 | Working paper - confirmatory external audit complete", "date"),
         HRFlowable(width="100%", thickness=0.5, color=BLACK, spaceBefore=1, spaceAfter=8),
         P("Abstract", "abstract_heading"),
         P(
-            "Marketing mix modeling (MMM) is commonly selected by predictive fit, residual diagnostics, calibration agreement, or fixed analyst scores, although its operational purpose is budget decision support. RegretSet-MMM instead learns across advertisers which complete Bayesian MMM specification is least likely to produce costly budget decisions. Forty-eight truth-blind candidate MMMs per advertiser are fitted with full-rank variational inference and represented by 232 deployment-observable tokens covering diagnostics, posterior decision geometry, temporal identification, evidence attribution, and assumptions. A permutation-invariant multi-head learner predicts loss across four predeclared budget decisions. We establish a finite-candidate bound connecting selected capped regret to regret-weighted oracle misrankings and decompose local ROI information among observational data, experiments, benchmarks, and regularization. After grouped development and an internal sealed audit, the frozen selector was transported without retraining to 100 businesses generated by Google's independently developed Aggregate Marketing System Simulator. Across 4,800 candidate fits and 19,200 frozen actions, RegretSet-MMM achieved mean capped decision risk of 0.230, versus 0.400 under uniform random selection among valid candidates and 0.012 for an unattainable in-pool oracle. Its exact randomization-distribution P90 and P95 risks were also lower. The results establish external synthetic transport under the declared candidate and utility contracts, not real-advertiser effectiveness or universal state-of-the-art performance.",
+            "Marketing mix modeling (MMM) is commonly selected by predictive fit, residual diagnostics, calibration agreement, or fixed analyst scores, although its operational purpose is budget decision support. RegretSet-MMM instead learns across advertisers which complete Bayesian MMM specification is least likely to produce costly budget decisions. Forty-eight truth-blind candidate MMMs per advertiser are fitted with full-rank variational inference and represented by 232 deployment-observable tokens covering diagnostics, posterior decision geometry, temporal identification, evidence attribution, and assumptions. The evidence-adaptive selector retains a joint all-token path while a business-level gate routes residual representations of predictive, causal-identification, posterior-decision, and structural-specification evidence. A permutation-invariant multi-head learner predicts loss across four predeclared budget decisions. We establish a finite-candidate bound connecting selected capped regret to regret-weighted oracle misrankings and decompose local ROI information among observational data, experiments, benchmarks, and regularization. The frozen adaptive selector was evaluated without retraining in a fresh cohort of 100 businesses generated by Google's independently developed Aggregate Marketing System Simulator. Across 4,800 candidate fits and 19,200 frozen actions, its capped decision-risk objective was 0.203, versus 0.353 for prediction-only selection, 0.401 for the original V9 RegretSet selector, 0.458 for uniform random valid selection, 0.701 for an additional classic Pareto benchmark, and 0.029 for an unattainable in-pool oracle. The two predeclared comparator tests and the P95 tail-safety check passed. These findings establish confirmatory external synthetic transport under the declared candidate and utility contracts, not real-advertiser effectiveness or universal state-of-the-art performance.",
             "abstract",
         ),
         P("<b>Keywords:</b> marketing mix modeling; decision-focused learning; Bayesian inference; DeepSets; economic regret; source attribution; budget optimization; synthetic validation", "keywords"),
@@ -619,15 +676,15 @@ def add_introduction(story: list[Flowable]) -> None:
         caption("Figure 1", "Research and deployment paths. Hidden causal truth is opened only after a candidate has acted in simulation. Deployment uses the frozen mapping from observable candidate sets to predicted decision risk."),
         H2("1.1", "Contributions"),
         bullet("A decision-focused formulation of cross-advertiser MMM selection in which the supervised target is downstream economic loss rather than a hand-weighted model-quality score."),
-        bullet("A permutation-invariant learner that evaluates all 48 candidates jointly and emits location, tail, scenario, and dangerous-false-champion predictions for every candidate."),
+        bullet("An evidence-adaptive, permutation-invariant learner that evaluates all 48 candidates jointly and emits location, tail, scenario, and dangerous-false-champion predictions for every candidate."),
         bullet("A 232-token, truth-blind representation combining classical diagnostics with SVI posterior geometry, channel-response uncertainty, cross-channel posterior dependence, evidence provenance, and model assumptions."),
         bullet("A finite-candidate regret bound and a theorem-aligned, gap-weighted ranking surrogate that penalize economically costly misrankings more strongly than harmless ones."),
         bullet("A continuous local decomposition of ROI information into observational data, experiments, industry benchmarks, and regularization, together with separate notions of evidence quality, conflict, and decision dependence."),
-        bullet("An auditable validation design using advertiser-grouped nested cross-validation, complete-mechanism holdouts, a one-time internal sealed cohort, and a frozen external transport evaluation in Google's independently developed Aggregate Marketing System Simulator."),
+        bullet("An auditable validation design using advertiser-grouped nested cross-validation, complete-mechanism holdouts, a one-time internal sealed cohort, and a fresh confirmatory external transport audit in Google's independently developed Aggregate Marketing System Simulator."),
         Spacer(1, 2 * mm),
         H2("1.2", "Claim boundary"),
         P(
-            "The contribution is a method for learning and auditing an MMM selection rule. The completed internal sealed audit supports transfer to unseen advertisers sampled from the declared Flux population; the AMSS evaluation additionally supports transport to a separately authored synthetic system. Neither result implies real-advertiser effectiveness, universal state-of-the-art performance, inclusion of the true model in the candidate library, or exact posterior representation by variational inference."
+            "The contribution is a method for learning and auditing an MMM selection rule. The completed internal sealed audit supports the original V9 selector within the declared Flux population. The fresh AMSS audit tests the evidence-adaptive V11 selector against frozen V9 and prediction-only rules in a separately authored synthetic system. Neither result implies real-advertiser effectiveness, universal state-of-the-art performance, inclusion of the true model in the candidate library, or exact posterior representation by variational inference."
         ),
     ])
 
@@ -656,7 +713,7 @@ def add_related_work(story: list[Flowable]) -> None:
             "The paper is not organized as a chronology of internal scores. The relevant scientific question is whether deployment-observable evidence predicts the economic consequences of selecting among plausible MMMs for unseen advertisers. The one-time audit uses a frozen, predeclared reduced-information selector as a falsification comparator while the contribution remains the decision-focused method, its evidence representation, and its auditable evaluation protocol."
         ),
         P(
-            "Ground-truth simulation has an established role in marketing measurement research. AMASS generates aggregate marketing systems with known ROI and marginal ROI [23], while a recent independently released benchmark explicitly models endogenous budget feedback, promotional anticipation, scheduled television flights, and performance chasing [24]. These systems are especially relevant external challenges because their equations and implementation were not selected to favor RegretSet-MMM."
+            "Ground-truth simulation has an established role in marketing measurement research. AMSS generates aggregate marketing systems with known ROI and marginal ROI [23], while a recent independently released benchmark explicitly models endogenous budget feedback, promotional anticipation, scheduled television flights, and performance chasing [24]. These systems are especially relevant external challenges because their equations and implementation were not selected to favor RegretSet-MMM."
         ),
     ])
 
@@ -881,7 +938,7 @@ def add_learning(story: list[Flowable]) -> None:
             r"u_{bc}=\psi\!\left(z_{bc},h_b,z_{bc}-h_b,z_{bc}\odot h_b\right)",
         ], "12"),
         image_flow(save_selector_architecture(), 162),
-        caption("Figure 3", "Set-wise, multi-head architecture. Reordering candidates or channels cannot change the candidate predictions. The ten heads expose different dimensions of decision loss rather than collapsing training to one scalar target."),
+        caption("Figure 3", "Core set-wise, multi-head pathway introduced in V9 and retained as V11's joint all-token path. Reordering candidates or channels cannot change candidate predictions. Equation (16a) adds the evidence-gated residual pathway without removing this joint representation."),
         H2("8.2", "Ten prediction heads"),
         P(
             "The decoder produces ten outputs per candidate: mean, median, P90, P95, and CVaR90 across the candidate's four predeclared scenario-loss values; the four scenario-specific absolute losses; and the probability of being a dangerous false champion. These summaries describe the declared scenario distribution, not posterior quantiles of an unknown causal truth. Quantile outputs use positive softplus increments so that median ≤ P90 ≤ P95 ≤ CVaR90 by construction. A candidate is dangerous when it appears sufficiently attractive to win while its true normalized excess loss exceeds the predeclared threshold."
@@ -901,17 +958,34 @@ def add_learning(story: list[Flowable]) -> None:
         ], "14"),
         equation(r"\mathcal{L}=\mathcal{L}_{heads}+\mathcal{L}_{set}+0.25\,\mathcal{L}_{pair}+\lambda\|\Theta\|_2^2", "15"),
         P(
-            "The numerical coefficients in the head loss are frozen optimization choices, not claims about the scientific importance of the corresponding diagnostic pillars. They balance gradients on distinct supervised targets. Candidate selection at deployment follows equation (16), whose 65/35 mean-tail mixture is explicitly a business risk preference."
+            "The numerical coefficients in the head loss are frozen optimization choices, not claims about the scientific importance of the corresponding diagnostic pillars. They balance gradients on distinct supervised targets. Candidate selection at deployment follows equation (16b), whose 65/35 mean-tail mixture is explicitly a business risk preference."
         ),
-        H2("8.4", "Ensemble policy and abstention"),
+        H2("8.4", "From the original V9 selector to evidence-adaptive RegretSet-MMM"),
+        P(
+            "The original V9 selector used one pooled 232-token DeepSets pathway for every advertiser. It could learn interactions involving experiment and benchmark indicators, but it had no separate representation of the advertiser's evidence environment. The evidence-adaptive version, designated V11 in the frozen research artifacts, preserves that joint all-token pathway and adds four disjoint residual encoders for predictive generalization, causal identification, posterior decision quality, and structural specification. A 63-token, candidate-independent context records evidence availability and channel coverage, explicit missingness masks, candidate-set regime, set-level diagnostic summaries, and matched benchmark-minus-experiment summaries."
+        ),
+        multiline_equation([
+            r"g_b=\operatorname{softmax}(W_g c_b+b_g),\qquad \sum_{k=1}^{4}g_{bk}=1",
+            r"r_{bc}=\sum_{k=1}^{4}g_{bk}\phi_k(x_{bc}^{(k)}),\qquad \widetilde z_{bc}=[\phi_{all}(x_{bc}),r_{bc}],",
+        ], "16a"),
+        P(
+            "The joint path prevents the expert partition from discarding cross-pillar interactions; the gated path permits the marginal value of those signals to vary with the available evidence. The softmax values are residual routing weights, not feature importance, source validity, or causal identification shares. The ten supervised heads, theorem-aligned loss, 65/35 mean-tail decision utility, and truth firewall remain unchanged."
+        ),
+        P(
+            "Training reuses the 20,160 FullRankADVI candidates from 420 development advertisers without posterior refitting. Each advertiser contributes three matched candidate sets: all 48 candidates, the 24 experiments-only candidates, and the same 24 structural specifications with benchmark gap-fill. All three remain in the same advertiser fold, share the observed outcome, spend paths, hidden truth, and simulator family, and recompute the in-regime oracle and excess loss. This paired construction teaches the gate about benchmark availability without confounding the comparison with a different advertiser. It does not identify the counterfactual effect of removing an existing experiment, because doing so would require refitting the posterior; post-fit token masking was prohibited."
+        ),
+        P(
+            "Across cross-fitted full candidate sets, the mean residual routing weights were 22.3% predictive generalization, 21.1% causal identification, 28.8% posterior decision quality, and 27.8% structural specification. These averages describe how the auxiliary residual path was routed in development. They neither sum with the joint path nor replace the source-resolved posterior attribution in Section 9."
+        ),
+        H2("8.5", "Ensemble policy and abstention"),
         P(
             "Five bootstrap selector fits estimate model disagreement. Predicted danger and disagreement increase adjusted risk. Confidence combines predicted danger, relative ensemble uncertainty, and ambiguity between the best and second-best candidates. Selective promotion can abstain on low-confidence advertisers; all primary results nevertheless report 100% coverage to prevent apparent improvement through selective omission."
         ),
         multiline_equation([
             r"f_{bc}=R_{bc}+\lambda_d\widehat p(d_{bc}=1)+0.25\,\operatorname{SD}_{m}(R^{(m)}_{bc})",
             r"\operatorname{conf}_b=1-\left(0.4\widehat p_d+0.3\,u_b^{rel}+0.3\,a_b\right),",
-        ], "16"),
-        H2("8.5", "Nested model and policy selection"),
+        ], "16b"),
+        H2("8.6", "Nested model and policy selection"),
         P(
             "Two compact architectures and three danger penalties are compared only inside four-fold inner grouped cross-validation. Five outer grouped folds estimate transfer to unseen advertisers. All rows from one advertiser remain in one fold. Fold-specific standardization is fitted only on the training advertisers, and cross-fitted predictions are retained for every development business."
         ),
@@ -1025,9 +1099,9 @@ def add_confirmatory_results(story: list[Flowable]) -> None:
         "wrong-evidence": "Wrong external evidence",
     }
     story.extend([
-        H1("11", "Confirmatory sealed-audit results"),
+        H1("11", "Internal sealed audit of the original V9 selector"),
         P(
-            "The one-time audit evaluated the frozen selector on 140 previously unseen synthetic advertisers and 6,720 newly fitted candidate MMMs. All 6,720 candidate rows were finite, valid, and unique. The audit was scored once after posterior inference and truth-blind token construction were complete. All nine predeclared confirmatory checks passed."
+            "The one-time internal audit evaluated the original V9 RegretSet selector on 140 previously unseen Flux synthetic advertisers and 6,720 newly fitted candidate MMMs. This audit predates the evidence-adaptive extension in Section 8.4 and is retained unchanged as validation of the foundational set-wise method. All 6,720 candidate rows were finite, valid, and unique. The audit was scored once after posterior inference and truth-blind token construction were complete. All nine predeclared confirmatory checks passed."
         ),
         make_table([
             ["Confirmatory quantity", "100% coverage", "70% coverage", "Interpretation"],
@@ -1043,7 +1117,7 @@ def add_confirmatory_results(story: list[Flowable]) -> None:
         caption("Table 6", "Absolute sealed-audit performance. Coverage is the fraction of advertisers for which the selector promotes a candidate rather than abstaining."),
         H2("11.1", "Primary confirmatory inference"),
         P(
-            f"The predeclared primary estimand was the full-coverage decision-risk objective for RegretSet-MMM minus the same objective for a frozen reduced-information comparator. The observed difference was {comparison['pointDifference']:.3f} loss units. The family-stratified two-sided 95% bootstrap interval was [{comparison['twoSided95Interval'][0]:.3f}, {comparison['twoSided95Interval'][1]:.3f}], and the predeclared one-sided 95% upper bound was {comparison['oneSided95UpperBound']:.3f}. All values favor RegretSet-MMM because lower loss is better. The interval excludes zero in the favorable direction, satisfying the superiority rule. Across individual businesses, RegretSet-MMM had lower loss in {100 * paired['v9LowerLossShare']:.1f}%, equal loss in {100 * paired['equalLossShare']:.1f}%, and higher loss in {100 * paired['v9HigherLossShare']:.1f}%."
+            f"The predeclared primary estimand was the full-coverage decision-risk objective for the original V9 RegretSet selector minus the same objective for a frozen reduced-information comparator. The observed difference was {comparison['pointDifference']:.3f} loss units. The family-stratified two-sided 95% bootstrap interval was [{comparison['twoSided95Interval'][0]:.3f}, {comparison['twoSided95Interval'][1]:.3f}], and the predeclared one-sided 95% upper bound was {comparison['oneSided95UpperBound']:.3f}. All values favor V9 because lower loss is better. The interval excludes zero in the favorable direction, satisfying the superiority rule. Across individual businesses, V9 had lower loss in {100 * paired['v9LowerLossShare']:.1f}%, equal loss in {100 * paired['equalLossShare']:.1f}%, and higher loss in {100 * paired['v9HigherLossShare']:.1f}%."
         ),
         image_flow(save_confirmatory_audit(), 158),
         caption("Figure 6", "Absolute risk-coverage behavior on the sealed cohort. Abstaining on the least-confident advertisers reduces mean, tail, and composite decision loss. The 70% operating point was declared before the audit was opened."),
@@ -1079,28 +1153,43 @@ def add_confirmatory_results(story: list[Flowable]) -> None:
 
 def add_external_validation(story: list[Flowable]) -> None:
     result = json.loads(AMSS_RESULT.read_text())
-    acceptance = json.loads(AMSS_ACCEPTANCE.read_text())
+    truth_receipt = json.loads(AMSS_TRUTH_RECEIPT.read_text())
     contract = json.loads(AMSS_CONTRACT.read_text())
-    if result["status"] != "frozen-external-audit-complete-no-post-open-tuning":
-        raise RuntimeError("The manuscript expects the completed frozen AMSS external audit.")
-    if result["provenance"]["frozenV9Retrained"] or not result["provenance"]["candidateActionsFrozenBeforeTruth"]:
+    if result["status"] != "fresh-confirmatory-audit-complete-no-post-truth-tuning":
+        raise RuntimeError("The manuscript expects the completed fresh V11 AMSS audit.")
+    if result["provenance"]["selectorRetrainedAfterTruth"] or not result["provenance"]["candidateActionsFrozenBeforeTruth"]:
         raise RuntimeError("AMSS provenance does not preserve the frozen-selector contract.")
-    if not acceptance["verification"]["deterministicReassembly"]:
-        raise RuntimeError("AMSS acceptance receipt did not verify deterministic reassembly.")
+    if (
+        truth_receipt["status"] != "all-cloud-truth-parts-retrieved-and-verified"
+        or truth_receipt["businesses"] != 100
+        or truth_receipt["parts"] != 100
+        or truth_receipt["uniqueCandidateScenarioRows"] != 19_200
+    ):
+        raise RuntimeError("AMSS truth receipt is incomplete.")
 
-    regretset = result["endpoints"]["frozenV9"]
+    regretset = result["endpoints"]["evidenceAdaptiveV11"]
+    frozen_v9 = result["endpoints"]["frozenV9"]
+    prediction_only = result["endpoints"]["predictionOnly"]
     oracle = result["endpoints"]["inPoolOracle"]
     random_valid = amss_random_comparator()
     paired = amss_paired_random_inference()
-    mean_reduction = 100 * (1 - regretset["mean"] / random_valid["mean"])
-    p90_reduction = 100 * (1 - regretset["p90"] / random_valid["p90"])
-    p95_reduction = 100 * (1 - regretset["p95"] / random_valid["p95"])
+    secondary = amss_secondary_baselines()
+    conventional = secondary["endpoints"]["conventionalPareto"]
+    v9_paired = result["pairedComparisons"]["v11MinusFrozenV9"]
+    prediction_paired = result["pairedComparisons"]["v11MinusPredictionOnly"]
+    conventional_paired = secondary["pairedComparisons"]["regretSetVersusConventionalPareto"]
+    objective_reductions = {
+        "v9": 100 * (1 - regretset["selectionObjective"] / frozen_v9["selectionObjective"]),
+        "prediction": 100 * (1 - regretset["selectionObjective"] / prediction_only["selectionObjective"]),
+        "random": 100 * (1 - regretset["selectionObjective"] / random_valid["selectionObjective"]),
+        "pareto": 100 * (1 - regretset["selectionObjective"] / conventional["selectionObjective"]),
+    }
 
     story.extend([
         H1("12", "External transport validation in AMSS"),
-        H2("12.1", "A frozen test in a separately authored simulator"),
+        H2("12.1", "Fresh confirmatory test in a separately authored simulator"),
         P(
-            "The Aggregate Marketing System Simulator (AMSS) was developed independently of FluxMMM to generate aggregate marketing time series and associated ground-truth return and marginal-return measures [23]. It therefore provides a stronger transport test than drawing additional seeds from the Flux generator. Before any AMSS business was generated, the selector developed above, its 232-token registry, SVI contract, candidate library, evidence rules, four decision scenarios, loss definition, and 65/35 mean-tail utility were frozen. This frozen artifact is named <b>RegretSet-MMM</b>. It was not retrained, recalibrated, or reselected after AMSS truth became available."
+            "The Aggregate Marketing System Simulator (AMSS) was developed independently of FluxMMM to generate aggregate marketing time series and associated ground-truth return and marginal-return measures [23]. It therefore provides a stronger transport test than drawing additional seeds from the Flux generator. A new cohort, with seeds disjoint from the earlier AMSS study, was generated only after the evidence-adaptive architecture, 232 candidate tokens, 63 business-context tokens, SVI contract, candidate library, evidence rules, four decisions, loss definition, comparator family, and 65/35 mean-tail utility were frozen. No AMSS truth was available during fitting or selection, and no model was retrained or reselected after truth opening."
         ),
         P(
             f"The external cohort contains {result['cohort']['businesses']} AMSS businesses, balanced across paid-social-experiment, search-experiment, television-experiment, and no-experiment evidence conditions. Each business contributes 24 structural specifications under two evidence arms, producing {result['cohort']['candidateModels']:,} FullRankADVI fits. Each posterior fixed actions for budget reduction, fixed-budget reallocation, budget growth, and an economic-ceiling decision before truth was opened, for {result['cohort']['decisionActions']:,} evaluated actions. The unit of evaluation is the business."
@@ -1108,35 +1197,47 @@ def add_external_validation(story: list[Flowable]) -> None:
         P(
             "The design uses a deterministic 100-point marginal space-filling cohort and rotates all six orders of the three media modules. Candidate fitting observes 156 weekly periods after a 52-week burn-in. Frozen actions cover a 52-week decision horizon plus eight post-action carryover weeks. Every candidate chooses the feasible allocation that maximizes posterior-expected incremental contribution less incremental media cost. AMSS then evaluates the fixed action using four common-random-number truth replicates. Period-matched experiments, when assigned, compare treatment with a 20%-lower-budget path from the same pretest state and include a declared post-test outcome window."
         ),
-        H2("12.2", "Three selection rules and what they mean"),
-        definition("RegretSet-MMM", "The deployable learned rule. It sees only the same truth-blind candidate tokens available for a new advertiser and selects one of the 48 valid candidates. Lower realized decision risk is better."),
-        definition("Uniform random valid candidate", "A chance benchmark that selects each of the 48 valid candidates with equal probability within a business. Its distribution is calculated exactly over all 4,800 business-candidate pairs, rather than approximated by one random draw."),
-        definition("In-pool oracle", "A nondeployable lower benchmark that observes AMSS truth and chooses the lowest-risk action among the same 48 frozen candidates. It is not the true global model, a globally optimal budget, or an information set available to an advertiser."),
+        H2("12.2", "Selection rules and benchmark hierarchy"),
+        definition("Adaptive RegretSet-MMM (V11)", "The current deployable learned rule. It retains V9's joint candidate-set representation and adds the evidence-conditioned residual gate in Section 8.4. It sees only truth-blind deployment tokens."),
+        definition("Original RegretSet (V9)", "The frozen non-adaptive predecessor. It uses the same 232 candidate tokens and economic-loss targets but no 63-token business evidence context or gated residual experts."),
+        definition("Prediction-only", "Selects the valid candidate with the strongest frozen three-fold rolling out-of-sample score. It is a strong deployable baseline because it uses no hidden economic truth."),
+        definition("Classic Pareto", "Forms a nondominated set over rolling prediction error, DECOMP.RSSD, and same-window experiment MAPE when available, then applies a deterministic equal-rank compromise. It is an additional benchmark rather than a member of the predeclared primary screen."),
+        definition("Uniform random and in-pool oracle", "Uniform random averages over all 48 valid choices within each business. The oracle observes hidden AMSS truth and supplies an unattainable lower reference within the same candidate pool; neither is a deployable selection rule."),
         make_table([
-            ["Selection rule", "Role", "Mean", "P90", "P95"],
-            ["RegretSet-MMM", "frozen deployable selector", f"{regretset['mean']:.3f}", f"{regretset['p90']:.3f}", f"{regretset['p95']:.3f}"],
-            ["Uniform random valid", "chance selection among valid MMMs", f"{random_valid['mean']:.3f}", f"{random_valid['p90']:.3f}", f"{random_valid['p95']:.3f}"],
-            ["In-pool oracle", "truth-informed lower benchmark", f"{oracle['mean']:.3f}", f"{oracle['p90']:.3f}", f"{oracle['p95']:.3f}"],
-        ], widths=[44 * mm, 62 * mm, 18 * mm, 18 * mm, 18 * mm]),
-        caption("Table 8", "External AMSS decision risk under the predeclared capped-loss contract. For uniform random selection, P90 and P95 integrate exactly over both businesses and the candidate draw. The in-pool oracle is a diagnostic lower benchmark, not a feasible selector."),
-        H2("12.3", "External result"),
+            ["Selection rule", "Status", "Mean", "P90", "P95", "Objective"],
+            ["Adaptive RegretSet (V11)", "confirmatory target", f"{regretset['mean']:.3f}", f"{regretset['p90']:.3f}", f"{regretset['p95']:.3f}", f"{regretset['selectionObjective']:.3f}"],
+            ["Prediction-only", "primary comparator", f"{prediction_only['mean']:.3f}", f"{prediction_only['p90']:.3f}", f"{prediction_only['p95']:.3f}", f"{prediction_only['selectionObjective']:.3f}"],
+            ["Original RegretSet (V9)", "primary comparator", f"{frozen_v9['mean']:.3f}", f"{frozen_v9['p90']:.3f}", f"{frozen_v9['p95']:.3f}", f"{frozen_v9['selectionObjective']:.3f}"],
+            ["Uniform random valid", "descriptive chance", f"{random_valid['mean']:.3f}", f"{random_valid['p90']:.3f}", f"{random_valid['p95']:.3f}", f"{random_valid['selectionObjective']:.3f}"],
+            ["Classic Pareto", "additional benchmark", f"{conventional['mean']:.3f}", f"{conventional['p90']:.3f}", f"{conventional['p95']:.3f}", f"{conventional['selectionObjective']:.3f}"],
+            ["In-pool oracle", "truth-informed lower bound", f"{oracle['mean']:.3f}", f"{oracle['p90']:.3f}", f"{oracle['p95']:.3f}", f"{oracle['selectionObjective']:.3f}"],
+        ], widths=[38 * mm, 43 * mm, 16 * mm, 16 * mm, 16 * mm, 22 * mm]),
+        caption("Table 8", "Fresh AMSS capped decision risk. The objective is 65% cohort mean plus 35% cohort P90; lower is better. Uniform-random rows summarize each business's conditional expected risk. Classic Pareto is an additional, non-confirmatory benchmark. The oracle is not deployable."),
+        H2("12.3", "Confirmatory result"),
         P(
-            f"RegretSet-MMM achieved mean capped decision risk of {regretset['mean']:.3f}, compared with {random_valid['mean']:.3f} under uniform random valid selection: a {mean_reduction:.1f}% reduction. Its P90 and P95 risks were {regretset['p90']:.3f} and {regretset['p95']:.3f}, respectively {p90_reduction:.1f}% and {p95_reduction:.1f}% below the exact random-selection distribution. Thus the external result is not limited to the average; the learned selector also reduced downside risk under the same utility and candidate pool."
+            f"Adaptive RegretSet-MMM achieved a decision-risk objective of {regretset['selectionObjective']:.3f}. The frozen V9 objective was {frozen_v9['selectionObjective']:.3f}; the paired V11-minus-V9 difference was {v9_paired['selectionObjectiveDifference']:.3f}, with 95% bootstrap interval [{v9_paired['selectionObjectiveDifferenceInterval95'][0]:.3f}, {v9_paired['selectionObjectiveDifferenceInterval95'][1]:.3f}]. Prediction-only achieved {prediction_only['selectionObjective']:.3f}; the paired difference was {prediction_paired['selectionObjectiveDifference']:.3f}, with interval [{prediction_paired['selectionObjectiveDifferenceInterval95'][0]:.3f}, {prediction_paired['selectionObjectiveDifferenceInterval95'][1]:.3f}]. Thus the adaptive selector reduced the objective by {objective_reductions['v9']:.1f}% relative to V9 and {objective_reductions['prediction']:.1f}% relative to prediction-only."
         ),
         P(
-            f"A descriptive evidence-group-stratified paired bootstrap compares each RegretSet-MMM risk with that business's expected risk under uniform valid selection. The mean paired difference was {paired['point']:.3f}; the 95% interval from {paired['resamples']:,} resamples was [{paired['interval'][0]:.3f}, {paired['interval'][1]:.3f}]. RegretSet-MMM had lower risk than the random-valid expectation for {paired['lower']} of 100 businesses and higher risk for {paired['higher']}. Because this comparator-specific interval was added for manuscript interpretation after the frozen audit, it is reported as descriptive rather than relabeled as a predeclared confirmatory test."
+            f"All three predeclared checks passed: the adaptive objective was lower than V9, no higher than prediction-only, and its P95 capped risk of {regretset['p95']:.3f} remained well inside the 0.02 non-inferiority margin relative to the better comparator tail. Both paired objective intervals exclude zero in the favorable direction. The bootstrap resampled businesses within the four evidence groups for 10,000 replicates, preserving the design's evidence balance."
         ),
         image_flow(save_amss_external_validation(), 164),
-        caption("Figure 7", "External AMSS transport. Panel A shows the exact capped-risk distributions for the frozen RegretSet-MMM selector, uniform random selection among valid candidates, and the truth-informed in-pool oracle. Panel B shows paired RegretSet-MMM risk minus each business's expected random-valid risk; values below zero favor RegretSet-MMM."),
-        H2("12.4", "Interpretation and remaining headroom"),
+        caption("Figure 7", "Fresh AMSS transport. Panel A shows business-level capped-risk distributions for deployable selectors and the in-pool oracle. Panel B reports the common 65/35 mean-tail objective. Classic Pareto is additional rather than confirmatory."),
+        H2("12.4", "Additional classic Pareto benchmark"),
         P(
-            f"The in-pool oracle achieved mean risk of {oracle['mean']:.3f}. The gap between {regretset['mean']:.3f} and {oracle['mean']:.3f} demonstrates that substantial selection headroom remains even without expanding the candidate library. RegretSet-MMM therefore transfers useful ranking information to AMSS, but it does not recover the best candidate reliably enough to justify a claim of global optimality. The scientific contribution is the frozen external transport of a learned decision rule, not equivalence to the oracle."
+            "Classic Pareto approximates established multi-objective MMM practice [7]. It forms the nondominated set over rolling prediction error, DECOMP.RSSD between analytic-screening spend and contribution shares, and same-window experiment MAPE when an experiment exists. A deterministic equal-rank compromise selects one member; no-experiment businesses use prediction and decomposition only. The rule was inherited unchanged from the earlier AMSS analysis and applied to the frozen V11 candidate pool without posterior refits, selector training, action changes, or business exclusions. Because it was outside the fresh audit's predeclared two-comparator primary screen, the result is reported as an additional benchmark rather than promoted to confirmatory evidence."
+        ),
+        P(
+            f"Classic Pareto's objective was {conventional['selectionObjective']:.3f}. Adaptive RegretSet-MMM was {objective_reductions['pareto']:.1f}% lower. Its business-level mean-risk difference was {conventional_paired['meanDifference']:.3f}, with 95% interval [{conventional_paired['interval95'][0]:.3f}, {conventional_paired['interval95'][1]:.3f}]; adaptive RegretSet had lower risk for {conventional_paired['selectedMethodLowerRisk']} businesses, tied for {conventional_paired['tied']}, and higher risk for {conventional_paired['comparatorLowerRisk']}. This supports superiority to the stated Pareto rule in this cohort, not to every Pareto implementation, expert review process, or established MMM system."
+        ),
+        H2("12.5", "Interpretation and remaining headroom"),
+        P(
+            f"The descriptive uniform-random objective was {random_valid['selectionObjective']:.3f}, {objective_reductions['random']:.1f}% above adaptive RegretSet. The evidence-group-stratified paired mean-risk difference against each business's random-valid expectation was {paired['point']:.3f}, with 95% interval [{paired['interval'][0]:.3f}, {paired['interval'][1]:.3f}]. The in-pool oracle achieved an objective of {oracle['selectionObjective']:.3f}. The gap from {regretset['selectionObjective']:.3f} demonstrates substantial headroom even without expanding the candidate library. The result supports external transport of the learned ranking rule, not global optimality."
         ),
         P(
             "The channel adapter maps AMSS native search to a nonbrand-search archetype, traditional television to the long-memory CTV role, and an unchanged AMSS traditional-media module to a paid-social stress proxy. The proxy preserves AMSS delivery, reach, frequency, state-transition, and stochastic mechanisms but is not a literal platform auction. This evaluation therefore tests transport across independently implemented marketing mechanisms and endogenous delivery, not exact platform-label fidelity."
         ),
         P(
-            f"All {acceptance['verification']['truthParts']} truth partitions and {acceptance['verification']['truthRows']} action outcomes were verified, {acceptance['verification']['contractTests']} contract checks passed, and deterministic reassembly reproduced the accepted result. The protocol forbade post-truth retraining, reselection, and business exclusion. These controls support an external synthetic transport claim; they do not establish realized effects in advertiser data or universal superiority to every published MMM workflow."
+            f"All {truth_receipt['parts']} truth partitions and {truth_receipt['uniqueCandidateScenarioRows']:,} unique candidate-scenario outcomes were retrieved and hash-verified. The protocol forbade post-truth retraining, reselection, and business exclusion. These controls support a confirmatory external synthetic transport claim for the two predeclared comparators; they do not establish realized effects in advertiser data or universal superiority to every published MMM workflow."
         ),
     ])
 
@@ -1148,16 +1249,16 @@ def add_interpretation(story: list[Flowable]) -> None:
         P(
             "The learner estimates a conditional mapping from an advertiser's joint candidate evidence to economic risk. It does not learn universal causal coefficients, and its hidden embedding is not an advertiser identity. At deployment it asks: among these candidates, which posterior and diagnostic configuration resembles configurations that led to low decision loss in held-out synthetic advertisers?"
         ),
-        H2("13.2", "Development evidence: what predicted lower economic loss"),
+        H2("13.2", "Original V9 development evidence: what predicted lower economic loss"),
         P(
-            "Raw neural-network weights are not stable scientific importance measures because nonlinear encoders distribute information across correlated tokens. We therefore organize all 232 deployment-observable tokens into six exhaustive practitioner pillars. For each pillar g, the entire group is removed, the selector is relearned on the outer-training advertisers under the originally selected architecture and policy, and economic loss is measured on the untouched outer fold. The primary importance estimand is"
+            "Raw neural-network weights are not stable scientific importance measures because nonlinear encoders distribute information across correlated tokens. The following pre-adaptation analysis concerns the original V9 selector and is retained because it isolates what its joint 232-token pathway learned. We organize the tokens into six exhaustive practitioner pillars. For each pillar g, the entire group is removed, V9 is relearned on the outer-training advertisers under the originally selected architecture and policy, and economic loss is measured on the untouched outer fold. The primary importance estimand is"
         ),
         equation(r"I_g=100\,\frac{J_{-g}^{OOF}-J_{all}^{OOF}}{J_{all}^{OOF}},", "21"),
         P(
             "where J is the declared 65% mean / 35% P90 selected-model excess-loss objective. Positive I_g means the remaining tokens could not replace the removed information; negative I_g means the group was conditionally redundant or harmful at the available sample size. The sign is not a causal statement about the diagnostic and does not license removing a scientific safety check. A twenty-repeat within-advertiser permutation analysis is retained as a sensitivity check, but drop-column refitting is primary because it permits the learner to adapt to the information that remains."
         ),
         image_flow(save_development_importance(), 164),
-        caption("Figure 8", "Advertiser-grouped development importance. Bars show the percentage change in held-out economic loss when a complete token group is removed and the selector is relearned. Positive values indicate incremental predictive information; gray negative values indicate conditional redundancy or finite-sample overfit, not that the underlying scientific check is unnecessary. The sealed cohort was not opened for this analysis."),
+        caption("Figure 8", "Original V9 advertiser-grouped development importance. Bars show the percentage change in held-out economic loss when a complete token group is removed and V9 is relearned. Positive values indicate incremental predictive information; gray negative values indicate conditional redundancy or finite-sample overfit, not that the underlying scientific check is unnecessary. The sealed cohort was not opened for this analysis."),
         P(
             "The central result is unusually concentrated. Removing posterior decision geometry increased held-out economic loss by 38.7%, and the direction was adverse in four of five advertiser folds. Removing any other broad pillar reduced the aggregate objective: causal and temporal robustness −5.0%, predictive generalization −7.2%, decision and evidence coherence −9.7%, structural adequacy −11.6%, and specification context −14.5%. The permutation sensitivity analysis also disrupted posterior geometry in all 20 repetitions; specification context appeared important under permutation but not after refitting, a pattern consistent with interaction information that is used by the fitted network yet can be relearned from correlated posterior summaries."
         ),
@@ -1176,7 +1277,7 @@ def add_interpretation(story: list[Flowable]) -> None:
             ["Structural adequacy", "residual, variance, likelihood-shape, influence, rank and boundary checks", "−11.6%. Use for model criticism and failure diagnosis, not as a stand-alone promotion score."],
             ["Decision and evidence coherence", "ROI plausibility, source quality and conflict, identification and evidence-deletion decisions", "−9.7%. Retain source-specific receipts; simplify correlated inputs before retraining the selector."],
         ], widths=[39 * mm, 70 * mm, 53 * mm]),
-        caption("Table 9", "Practitioner interpretation of outer-fold development ablation. Percentages are conditional predictive importance in the declared simulator population, not universal validation weights and not confirmatory sealed-audit outcomes."),
+        caption("Table 10", "Practitioner interpretation of the original V9 outer-fold development ablation. Percentages are conditional predictive importance in the declared simulator population, not V11 gate weights, universal validation weights, or confirmatory audit outcomes."),
         H2("13.3", "A disciplined interpretation of the null pillars"),
         P(
             "A negative drop-column result does not imply that residual tests, temporal placebos, experiments, or business plausibility are dispensable. First, several appear again inside posterior geometry: weak identification expands intervals, collinearity induces channel covariance, and conflicting evidence moves posterior location or tail mass. Second, a diagnostic can be essential as a hard safety gate even when it adds no marginal ranking accuracy. Third, correlated token groups divide predictive credit. The result instead identifies a model-development priority: compress overlapping diagnostics, preserve raw validation receipts for human review, and require future selector versions to demonstrate positive outer-fold ablation before claiming a pillar improves economic ranking."
@@ -1225,10 +1326,10 @@ def add_open_science(story: list[Flowable]) -> None:
             ["Decision labeling", "hidden truth only after action", "four actions, oracle actions, absolute and excess losses"],
             ["Selector training", "development labels only", "nested folds, hyperparameters, ensemble seeds"],
             ["Internal sealed audit", "truth opened once after freeze", "all endpoints, intervals, failures, provenance"],
-            ["External AMSS audit", "frozen actions; AMSS truth opened once", "adapter contract, actions, hashes, exact random comparator, acceptance receipt"],
+            ["External AMSS audit", "frozen actions; AMSS truth opened once", "adapter contract, actions, hashes, conditional random benchmark, verified truth receipt"],
             ["Deployment", "no causal truth", "predicted risk, confidence, evidence profile, candidate fingerprint"],
         ], widths=[35 * mm, 57 * mm, 70 * mm]),
-        caption("Table 10", "Information and artifact contract."),
+        caption("Table 11", "Information and artifact contract."),
         P(
             "Open sourcing allows researchers to challenge the simulator, contribute new channel mechanisms, add decision utilities, reproduce posterior tokens with different inference engines, and submit selectors under the same truth firewall. Revisions after an opened audit must receive a new method and audit identifier. Negative results are part of the public scientific record."
         ),
@@ -1243,13 +1344,13 @@ def add_conclusion(story: list[Flowable]) -> None:
     story.extend([
         H1("16", "Conclusion"),
         P(
-            "RegretSet-MMM reframes the selection of a marketing mix model as a learned, cross-advertiser decision problem. Candidate models are fitted without causal truth, summarized by named posterior and validation tokens, compared jointly as an unordered set, and supervised by the economic consequences of their budget actions. The method predicts the distribution—not only the mean—of loss and can abstain when top-one choice is ambiguous."
+            "RegretSet-MMM reframes the selection of a marketing mix model as a learned, cross-advertiser decision problem. Candidate models are fitted without causal truth, summarized by named posterior and validation tokens, compared jointly as an unordered set, and supervised by the economic consequences of their budget actions. The evidence-adaptive version also conditions residual routing on the advertiser's evidence environment while retaining the complete joint token path. The method predicts the distribution—not only the mean—of loss and can abstain when top-one choice is ambiguous."
         ),
         P(
             "Two theoretical components make the design auditable. The finite-candidate inequality shows why economically costly oracle misrankings bound selected capped regret and motivates gap-weighted ranking. The source decomposition reveals whether local ROI precision is supplied by observational data, experiments, benchmarks, or generic regularization, without confusing influence with validity."
         ),
         P(
-            "The internal sealed audit supports transfer within the declared Flux synthetic population. More importantly, the frozen selector reduced mean and upper-tail decision risk relative to uniform random valid-model selection after transport to 100 businesses from the independently developed AMSS system. Because no AMSS truth was available during selector training, candidate fitting, or action selection, this result demonstrates that deployment-observable posterior and validation evidence can carry useful economic-ranking information across synthetic data-generating systems."
+            "The internal sealed audit supports the original V9 selector within the declared Flux synthetic population. More importantly, a fresh AMSS cohort confirmed that the frozen evidence-adaptive selector lowered the 65/35 mean-tail decision-risk objective relative to both V9 and prediction-only selection, with favorable paired bootstrap intervals and preserved P95 tail safety. An additional classic Pareto benchmark produced substantially higher loss under its stated compromise rule. Because no fresh-cohort truth was available during selector training, candidate fitting, or action selection, the result demonstrates that deployment-observable posterior and validation evidence can carry useful economic-ranking information across synthetic data-generating systems."
         ),
         P(
             "The sizeable gap to the in-pool oracle, the restricted channel archetypes, the SVI approximation, and the absence of real-advertiser causal outcomes define the next research frontier. RegretSet-MMM should therefore be read as an externally transportable and falsifiable decision-focused selection protocol, not a claim of universal model recovery. Its open implementation allows researchers and advertisers to reproduce the evidence, test new simulators and candidate libraries, and challenge the learned rule under new decision utilities."
@@ -1297,8 +1398,11 @@ def add_appendices(story: list[Flowable]) -> None:
     amss_result_hash = hashlib.sha256(AMSS_RESULT.read_bytes()).hexdigest()
     amss_candidate_hash = hashlib.sha256(AMSS_CANDIDATE_LOSSES.read_bytes()).hexdigest()
     amss_result = json.loads(AMSS_RESULT.read_text())
-    amss_acceptance = json.loads(AMSS_ACCEPTANCE.read_text())
+    amss_truth_receipt = json.loads(AMSS_TRUTH_RECEIPT.read_text())
     amss_contract = json.loads(AMSS_CONTRACT.read_text())
+    amss_secondary_hash = hashlib.sha256(AMSS_SECONDARY_BASELINES.read_bytes()).hexdigest()
+    v11_development_hash = hashlib.sha256(V11_DEVELOPMENT.read_bytes()).hexdigest()
+    amss_secondary = amss_secondary_baselines()
     amss_random = amss_random_comparator()
     amss_paired = amss_paired_random_inference()
     story.extend([
@@ -1313,7 +1417,8 @@ def add_appendices(story: list[Flowable]) -> None:
             ["Outer / inner grouped folds", "5 / 4"],
             ["Posterior engine", "PyMC 6.2 FullRankADVI"],
             ["Tokens per candidate", "232 (136 base + 96 posterior decision)"],
-            ["Selector", "small permutation-invariant DeepSets, 10 outputs"],
+            ["Selector", "joint-plus-evidence-gated DeepSets, 10 outputs"],
+            ["Business evidence context", "63 candidate-independent tokens with missingness masks"],
             ["Bootstrap ensemble", "5 fits"],
             ["Sealed audit", "140 advertisers × 48 candidates = 6,720 new fits"],
             ["Sealed families", "7, with 20 advertisers per family"],
@@ -1324,17 +1429,17 @@ def add_appendices(story: list[Flowable]) -> None:
         H2("A.2", "Architecture and policy grid"),
         make_table([
             ["Choice", "Values considered inside inner grouped folds"],
-            ["Candidate encoder width", "12 or 20"],
+            ["Joint / expert encoder width", "12 or 20"],
             ["Decoder width", "12 or 16"],
-            ["Epochs", "16 or 20"],
-            ["Learning rate", "0.0025 or 0.0020"],
+            ["Epochs", "18 or 22"],
+            ["Learning rate", "0.0022 or 0.0018"],
             ["Weight decay", "0.001"],
             ["Set-selection temperature", "0.35"],
             ["Danger penalty", "0, 0.25, or 0.50"],
             ["Ensemble disagreement penalty", "0.25"],
             ["Mean / P90 risk preference", "0.65 / 0.35"],
         ], widths=[67 * mm, 95 * mm]),
-        caption("Table A.2", "Development choices. Outer-fold outcomes do not select these values."),
+        caption("Table A.2", "Evidence-adaptive development choices. Outer-fold outcomes do not select these values."),
         H1("B", "Appendix: posterior decision token registry"),
         H2("B.1", "Twenty-three channel metrics"),
         make_table([
@@ -1359,13 +1464,14 @@ def add_appendices(story: list[Flowable]) -> None:
         P("3. Compute 232 truth-blind tokens and verify candidate- and channel-order invariance.", "body_left"),
         P("4. Optimize four actions from each candidate posterior under common feasibility constraints.", "body_left"),
         P("5. Reveal truth only to label action loss, in-pool oracle loss, excess loss, and danger.", "body_left"),
-        P("6. Use nested advertiser-grouped cross-validation to select architecture and policy and obtain outer-fold predictions.", "body_left"),
-        P("7. Run complete-mechanism holdouts, freeze method and endpoints, then generate a disjoint sealed cohort.", "body_left"),
+        P("6. Construct matched full, experiments-only, and benchmark-gap-fill candidate sets; keep all sets from one advertiser in the same fold.", "body_left"),
+        P("7. Use nested advertiser-grouped cross-validation to select architecture and policy and obtain outer-fold predictions.", "body_left"),
+        P("8. Freeze the evidence-adaptive method and endpoints, then generate a fresh, disjoint AMSS cohort.", "body_left"),
         H2("C.2", "Deployment"),
         P("1. Validate schema, cadence, evidence, and decision utility for a new advertiser.", "body_left"),
         P("2. Generate and fit the declared candidate set without causal truth.", "body_left"),
-        P("3. Compute the identical 232-token representation and continuous evidence reports.", "body_left"),
-        P("4. Apply the frozen set-wise ensemble to predict loss distribution and adjusted risk.", "body_left"),
+        P("3. Compute the identical 232 candidate tokens, 63 business-context tokens, and continuous evidence reports.", "body_left"),
+        P("4. Apply the frozen evidence-adaptive set-wise ensemble to predict loss distribution and adjusted risk.", "body_left"),
         P("5. Promote, abstain, or request review under the declared coverage and risk policy.", "body_left"),
         H1("D", "Appendix: sealed-audit provenance receipt"),
         make_table([
@@ -1395,27 +1501,42 @@ def add_appendices(story: list[Flowable]) -> None:
             ["Decision actions", f"{amss_result['cohort']['decisionActions']:,}; four per candidate"],
             ["Evidence allocation", "25 businesses each: paid-social, search, television, or no experiment"],
             ["Visible / future horizon", f"{amss_contract['time']['visibleWeeks']} / {amss_contract['time']['futureActionWeeks']} weeks; {amss_contract['time']['postActionCarryoverWeeks']} carryover weeks"],
-            ["Frozen selector", "RegretSet-MMM; 232 tokens; no AMSS retraining or reselection"],
+            ["Frozen selector", "Adaptive RegretSet-MMM (V11); 232 candidate + 63 context tokens"],
             ["Posterior", "PyMC 6.2 FullRankADVI; 5,000 iterations; 256 draws; two primary seeds"],
             ["Primary loss", "scenario excess loss capped at 1; business risk = 65% mean + 35% P90"],
-            ["Truth verification", f"{amss_acceptance['verification']['truthParts']} partitions; {amss_acceptance['verification']['truthRows']} outcomes"],
-            ["Contract verification", f"{amss_acceptance['verification']['contractTests']}; deterministic reassembly"],
+            ["Primary comparators", "original V9 RegretSet and prediction-only"],
+            ["Truth verification", f"{amss_truth_receipt['parts']} partitions; {amss_truth_receipt['uniqueCandidateScenarioRows']:,} unique outcomes"],
+            ["Confirmatory checks", "V11 vs V9; V11 vs prediction-only; P95 tail safety - all passed"],
+            ["V11 development SHA-256", v11_development_hash],
             ["Result SHA-256", amss_result_hash],
             ["Candidate-loss SHA-256", amss_candidate_hash],
         ], widths=[58 * mm, 104 * mm]),
         caption("Table E.1", "External AMSS transport contract and reproducibility receipt."),
         H2("E.2", "Random-valid aggregation and paired uncertainty"),
         P(
-            "Every external business has 48 valid candidates. Uniform random valid selection is therefore evaluated exactly by assigning probability 1/48 to every candidate within every business. Pooling all 4,800 candidate risks gives equal weight to businesses and integrates over the candidate draw without Monte Carlo error. This yields mean, P90, and P95 capped risks of "
-            f"{amss_random['mean']:.3f}, {amss_random['p90']:.3f}, and {amss_random['p95']:.3f}. The frozen audit receipt also stores the P90 and P95 across the 100 conditional expected random risks; those answer a different question and are not used for the random-selection tail in Table 8."
+            "Every external business has 48 valid candidates. Uniform random valid selection is evaluated without Monte Carlo error by assigning probability 1/48 to each candidate within a business. The resulting conditional expected risk is then summarized across the 100 businesses. Its mean, P90, P95, and 65/35 objective are "
+            f"{amss_random['mean']:.3f}, {amss_random['p90']:.3f}, {amss_random['p95']:.3f}, and {amss_random['selectionObjective']:.3f}. These are quantiles of business-level conditional expectations, not the tail of one realized random candidate draw."
         ),
         P(
-            f"The descriptive paired interval resamples businesses within each of the four 25-business evidence groups. With {amss_paired['resamples']:,} resamples and seed {amss_paired['seed']}, the RegretSet-MMM-minus-expected-random mean was {amss_paired['point']:.3f}, with 95% interval [{amss_paired['interval'][0]:.3f}, {amss_paired['interval'][1]:.3f}]. The statistic was added for interpretation after the frozen audit and is not presented as a predeclared confirmatory endpoint."
+            f"The descriptive paired interval resamples businesses within each of the four 25-business evidence groups. With {amss_paired['resamples']:,} resamples and seed {amss_paired['seed']}, adaptive RegretSet-MMM minus expected-random mean risk was {amss_paired['point']:.3f}, with 95% interval [{amss_paired['interval'][0]:.3f}, {amss_paired['interval'][1]:.3f}]. Random-valid was not one of the two primary confirmatory comparators."
         ),
         H2("E.3", "Channel-adapter boundary"),
         P(
             "AMSS native search is mapped to the frozen nonbrand-search role and AMSS traditional television to the long-memory CTV role. The paid-social stress proxy is generated with AMSS's unchanged DefaultTraditionalMediaModule and mapped to the frozen paid-social role. Raw proxy naming and module provenance are preserved. The adapter makes no claim that AMSS implements a native social-platform auction or that traditional television is literally connected television."
         ),
+        H2("E.4", "Additional classic Pareto receipt"),
+        make_table([
+            ["Secondary item", "Verified value"],
+            ["Status", "additional benchmark outside the confirmatory two-comparator screen"],
+            ["Candidate pool", "100 businesses × 48 unchanged valid candidates"],
+            ["Classic Pareto", "rolling OOS; MAP DECOMP.RSSD; same-window experiment MAPE"],
+            ["Pareto compromise", "lowest equal-weight average objective rank on the nondominated set"],
+            ["No-experiment rule", "prediction and decomposition objectives only"],
+            ["New posterior fits / cloud compute", f"{amss_secondary['governance']['newPosteriorFits']} / none"],
+            ["Changed candidate actions", "none; accepted sealed losses were joined by candidate ID"],
+            ["Artifact SHA-256", amss_secondary_hash],
+        ], widths=[58 * mm, 104 * mm]),
+        caption("Table E.2", "Reproducibility and governance receipt for the additional classic Pareto benchmark."),
     ])
 
 

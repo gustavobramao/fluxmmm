@@ -32,6 +32,7 @@
   ],
   "exclude": [
     "node_modules",
-    "research/svi_score_v10_amss/frozen-v9/source"
+    "research/svi_score_v10_amss/frozen-v9/source",
+    "research/svi_score_v11_amss_confirmatory/frozen-selectors"
   ]
 }

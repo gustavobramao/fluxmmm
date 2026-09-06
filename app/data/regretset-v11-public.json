@@ -1,0 +1,147 @@
+{
+  "method": "RegretSet-MMM",
+  "researchVersion": "V11",
+  "releaseLabel": "Evidence-adaptive RegretSet-MMM",
+  "status": "Frozen and externally validated in simulation",
+  "development": {
+    "businesses": 420,
+    "candidatesPerBusiness": 48,
+    "candidateFits": 20160,
+    "candidateTokens": 232,
+    "contextTokens": 63,
+    "evidenceRegimes": 3,
+    "posteriorEngine": "PyMC 6.2 FullRankADVI",
+    "decisionScenarios": 4
+  },
+  "lineage": {
+    "v9": "One joint 232-token DeepSets pathway applied identically across evidence environments.",
+    "v11": "The V9 joint pathway plus four evidence-conditioned residual experts and 63 candidate-independent context tokens.",
+    "unchanged": "Ten supervised heads, theorem-aligned economic-loss target, truth firewall, and the declared 65% mean / 35% P90 risk utility."
+  },
+  "adaptiveExperts": [
+    {
+      "id": "posterior",
+      "label": "Posterior decision",
+      "weight": 0.288,
+      "description": "ROI geometry, uncertainty, predictive coverage, and variational stability."
+    },
+    {
+      "id": "structural",
+      "label": "Structural specification",
+      "weight": 0.278,
+      "description": "Adstock, saturation, likelihood, dynamics, and model-contract fit."
+    },
+    {
+      "id": "predictive",
+      "label": "Predictive generalization",
+      "weight": 0.223,
+      "description": "Rolling and spend-regime generalization evidence."
+    },
+    {
+      "id": "causal",
+      "label": "Causal identification",
+      "weight": 0.211,
+      "description": "Anchors, placebos, confounder stress, and evidence dependence."
+    }
+  ],
+  "externalAudit": {
+    "simulator": "Google AMSS 1.0.1",
+    "businesses": 100,
+    "candidateFits": 4800,
+    "frozenActions": 19200,
+    "evidenceGroups": 4,
+    "checksPassed": 3,
+    "checksTotal": 3,
+    "selectors": [
+      {
+        "id": "adaptive",
+        "label": "Adaptive RegretSet (V11)",
+        "description": "Confirmatory target; evidence-conditioned frozen selector.",
+        "status": "confirmatory target",
+        "mean": 0.1347148797,
+        "p90": 0.3286962488,
+        "p95": 0.4009677748,
+        "objective": 0.2026083589
+      },
+      {
+        "id": "prediction",
+        "label": "Prediction-only",
+        "description": "Strongest frozen three-fold rolling out-of-sample score.",
+        "status": "primary comparator",
+        "mean": 0.2173227449,
+        "p90": 0.6054498912,
+        "p95": 0.9094598641,
+        "objective": 0.3531672461
+      },
+      {
+        "id": "v9",
+        "label": "Original RegretSet (V9)",
+        "description": "Frozen non-adaptive predecessor using the same economic targets.",
+        "status": "primary comparator",
+        "mean": 0.2473484274,
+        "p90": 0.6877698979,
+        "p95": 0.9072139153,
+        "objective": 0.4014959421
+      },
+      {
+        "id": "random",
+        "label": "Uniform random valid",
+        "description": "Conditional expected risk from equal-probability valid choices.",
+        "status": "descriptive chance",
+        "mean": 0.3951182991,
+        "p90": 0.5758665189,
+        "p95": 0.6157384683,
+        "objective": 0.4583801760
+      },
+      {
+        "id": "pareto",
+        "label": "Classic Pareto",
+        "description": "Prediction, decomposition, and same-window experiment compromise.",
+        "status": "additional benchmark",
+        "mean": 0.5392707106,
+        "p90": 1.0,
+        "p95": 1.0,
+        "objective": 0.7005259619
+      },
+      {
+        "id": "oracle",
+        "label": "In-pool oracle",
+        "description": "Truth-informed lower bound within the same 48 candidates.",
+        "status": "not deployable",
+        "mean": 0.0170282488,
+        "p90": 0.0520214675,
+        "p95": 0.0638838441,
+        "objective": 0.0292758753
+      }
+    ],
+    "objectiveReductionVsPrediction": 0.4263005674,
+    "objectiveReductionVsV9": 0.4953663609,
+    "objectiveReductionVsRandom": 0.5580008151,
+    "objectiveReductionVsPareto": 0.7107769115,
+    "pairedV11MinusV9": {
+      "difference": -0.1988875831,
+      "interval95": [-0.2918873515, -0.0801360181]
+    },
+    "pairedV11MinusPrediction": {
+      "difference": -0.1505588871,
+      "interval95": [-0.2981362478, -0.0541343130]
+    },
+    "pairedV11MinusParetoMean": {
+      "difference": -0.4045558309,
+      "interval95": [-0.4692290706, -0.3373506971],
+      "lower": 88,
+      "tied": 2,
+      "higher": 10
+    }
+  },
+  "evidenceAttribution": {
+    "basis": "Spend-weighted Flux development mean",
+    "observational": 0.4496941191,
+    "experiment": 0.3403780296,
+    "benchmark": 0.0607159883,
+    "regularization": 0.1492118630,
+    "conditionalDataShareMean": 0.0853776455,
+    "note": "Local curvature shares describe where ROI precision came from. They do not prove that a source is valid or causal."
+  },
+  "claimBoundary": "The evidence establishes external synthetic transport under the declared AMSS adapter, candidate pool, FullRankADVI contract, and utility. It does not establish real-advertiser effectiveness or universal state-of-the-art performance."
+}

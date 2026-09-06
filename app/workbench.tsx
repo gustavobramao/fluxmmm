@@ -630,7 +630,7 @@ function Sidebar({
           <i>◎</i>
           <span>
             <b>RegretSet-MMM</b>
-            <small>V9 · externally audited</small>
+            <small>Adaptive V11 · externally audited</small>
           </span>
         </div>
         <button className="user-chip">

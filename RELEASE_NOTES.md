@@ -1,60 +1,88 @@
-# FluxMMM 3.0.0 — RegretSet-MMM V9
+# FluxMMM 4.0.0 — Evidence-Adaptive RegretSet-MMM
 
-Released 5 September 2026.
+Released 6 September 2026.
 
-This release publishes the frozen RegretSet-MMM V9 research selector alongside
-the local-first FluxMMM product. It is a scientific-method release, not a claim
-that simulation makes observational MMM automatically causal.
+This release publishes the frozen evidence-adaptive RegretSet-MMM V11 selector,
+its fresh external synthetic audit, and a clearer product boundary between
+research-grade SVI selection and responsive analytic model search.
 
-## Main changes
+## Model and evidence changes
 
-- A permutation-invariant DeepSets selector learns from complete 48-candidate
-  advertiser sets rather than scoring candidates in isolation.
-- Each candidate is represented by 232 truth-blind tokens spanning validation,
-  posterior decision geometry, evidence attribution, and model specification.
-- Multi-head prediction covers mean, median, P90, P95, CVaR90, four decision
-  scenarios, and dangerous-false-champion probability.
-- The selection target is downstream economic regret under a declared 65% mean
-  / 35% P90 business-risk preference.
-- A finite-candidate theorem connects selected-model capped excess regret to
-  regret-weighted oracle misranking.
-- Evidence influence is continuously attributed to observational data,
-  experiments, benchmarks, and regularization using local curvature and
-  conditional information for correlated media.
-- The frozen method passed all 9 predeclared checks on a new 140-business
-  internal sealed audit with zero observed theorem violations.
-- Without retraining, it was challenged on 100 businesses from Google AMSS
-  1.0.1: 4,800 SVI fits and 19,200 frozen budget actions.
-- Mean capped AMSS decision risk was 0.230 for RegretSet-MMM versus 0.400 for
-  uniform random valid-candidate selection, a 42.5% reduction. The in-pool
-  oracle lower bound was 0.012.
+- V11 retains V9's joint 232-token DeepSets pathway and adds four disjoint
+  residual experts for predictive generalization, causal identification,
+  posterior decision quality, and structural specification.
+- A 63-token business context captures evidence availability, quality,
+  compatibility, explicit missingness, and candidate-set summaries.
+- The learned gate adapts residual expert routing to the advertiser's evidence
+  environment. Routing values are not presented as source validity or total
+  feature importance because the joint pathway always sees all tokens.
+- Development reuses the frozen 20,160 FullRankADVI candidates across 420
+  businesses and constructs three matched evidence regimes per business; it
+  does not fabricate counterfactual posteriors or mask experiment effects after
+  fitting.
+- The ten-head selector and theorem-aligned loss target remain decision-focused:
+  the declared promotion objective is 65% cohort mean plus 35% cohort P90
+  capped economic loss across four budget decisions.
 
-## Product changes
+## Fresh AMSS audit
 
-- A Score Research surface explains the V9 target, scientific firewall,
-  development design, evidence attribution, internal audit, and AMSS external
-  validation without relabeling the fast Agentic runtime as V9.
-- Evidence-attribution and leave-source-out decision-dependence diagnostics are
-  available in the shared MMM library.
-- The PyMC sampler preserves channel-specific response contracts and remains
-  contract-matched to promoted specifications.
+The frozen V11 selector was tested without retraining on 100 new businesses
+from Google AMSS 1.0.1. The audit contains 4,800 SVI candidates, 19,200 frozen
+actions, four balanced evidence environments, pre-truth candidate selections,
+and 10,000 stratified paired-bootstrap resamples.
+
+| Selector | Mean risk | P90 risk | 65/35 objective |
+|---|---:|---:|---:|
+| Evidence-adaptive V11 | 0.135 | 0.329 | **0.203** |
+| Prediction-only | 0.217 | 0.605 | 0.353 |
+| Frozen V9 | 0.247 | 0.688 | 0.401 |
+| Uniform random valid expectation | 0.395 | 0.576 | 0.458 |
+| Conventional Pareto | 0.539 | 1.000 | 0.701 |
+| In-pool oracle | 0.017 | 0.052 | 0.029 |
+
+V11 reduced the declared objective by 42.6% relative to prediction-only, 49.5%
+relative to V9, 55.8% relative to random valid-candidate selection, and 71.1%
+relative to the conventional Pareto selector. It passed all three predeclared
+confirmatory checks. The Pareto comparison is a post-truth secondary benchmark;
+it used the already accepted posterior actions and changed no V11 selection.
+
+## Product and documentation
+
+- The Score Research surface explains the V9-to-V11 lineage, adaptive expert
+  architecture, exact benchmark hierarchy, truth firewall, and inference
+  boundary without information overload.
+- The public paper, website, demo, README, citation metadata, and research
+  receipts now share the same frozen V11 numbers and terminology.
+- The interactive Agentic modeler remains fast MAP/Laplace screening. Running
+  the frozen V11 method requires its complete 48-candidate SVI pool and exact
+  deployment-observable token/context contract.
+- Continuous evidence attribution still separates observational data,
+  experiments, benchmarks, and regularization; influence remains distinct from
+  source quality, conflict, and decision dependence.
 
 ## Reproducibility
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm test:svi-score-v9
-pnpm test:svi-score-v10-amss
+pnpm test:svi-score-v11-ea
+pnpm test:svi-score-v11-amss
 ```
 
-The compact frozen selector, token registry, protocols, result summaries,
-candidate-level AMSS losses, acceptance hashes, and publication-format paper
-are versioned. Multi-gigabyte posterior checkpoints and generated cohorts
-remain excluded from Git and are reproducible from the declared contracts.
+The optional Python selector-equivalence test is available after
+`pnpm mcmc:setup` as `pnpm test:svi-score-v11-ea-python`.
+
+The paper can be rebuilt from the versioned compact artifacts with
+`pnpm research:paper:setup` followed by `pnpm research:paper:build`.
+
+Versioned artifacts include the selectors, contracts, manifests, compact audit
+result, frozen pre-truth selections, candidate-level losses, secondary benchmark
+receipt, hashes, and publication-format paper. Multi-gigabyte posterior
+checkpoints and generated panels are excluded from Git.
 
 ## Claim boundary
 
-The result supports external synthetic transport under the declared AMSS
-adapter, candidate pool, FullRankADVI contract, and utility. It does not
-establish real-advertiser effectiveness, universal SOTA performance, or causal
-validity for an observational dataset. V2 remains available from tag `v2.0.0`.
+This release supports external synthetic transport under the declared AMSS
+adapter, candidate pool, FullRankADVI contract, and economic utility. It does
+not prove causal validity on an observational dataset, prospective performance
+for real advertisers, universal superiority, or a global optimum. V3 remains
+available from tag `v3.0.0`.

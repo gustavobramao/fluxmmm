@@ -1,0 +1,2076 @@
+{
+  "artifactId": "flux-v11-amss-fresh-confirmatory-result-v1",
+  "version": "flux-svi-score-v11-amss.1.0.0-fresh-confirmatory",
+  "status": "fresh-confirmatory-audit-complete-no-post-truth-tuning",
+  "provenance": {
+    "observableDatasetSha256": "a5df6503c72e220e34aa9f2ba1f23ab8cedd7ebac305da2957b94f612890e16d",
+    "frozenSelectionsSha256": "3cc338ef55d3bae10511efbada2eac64c1770d31b996e1abfdc382ce523850aa",
+    "truthOpenReceiptSha256": "d00015ead285aa4472820fcb54c2effd9e43839c0c8cdc86882b357a385d00f8",
+    "cloudTruthRetrievalReceiptSha256": "3ad5ab0a2a5bf14e3ea50250c0a1f643f3a0085d253398d215e083f3cb49183a",
+    "cloudRunExecution": "flux-v11-amss-confirmatory-truth-001-fjzj6",
+    "candidateActionsFrozenBeforeTruth": true,
+    "selectorRetrainedAfterTruth": false,
+    "reselectionAfterTruth": false
+  },
+  "cohort": {
+    "businesses": 100,
+    "candidateModels": 4800,
+    "decisionActions": 19200,
+    "evidenceGroups": [
+      "no-experiment",
+      "paid-social-experiment",
+      "search-experiment",
+      "tv-experiment"
+    ]
+  },
+  "primaryEndpoint": "65% cohort mean candidate risk plus 35% cohort P90 candidate risk",
+  "endpoints": {
+    "evidenceAdaptiveV11": {
+      "businesses": 100,
+      "mean": 0.13471487973900886,
+      "p90": 0.3286962488498263,
+      "p95": 0.40096777479647344,
+      "selectionObjective": 0.20260835892779494,
+      "uncappedMean": 0.1659642069827388,
+      "uncappedP90": 0.3286962488498263,
+      "uncappedP95": 0.40096777479647344
+    },
+    "frozenV9": {
+      "businesses": 100,
+      "mean": 0.24734842737116824,
+      "p90": 0.6877698979167433,
+      "p95": 0.9072139153459982,
+      "selectionObjective": 0.40149594206211947,
+      "uncappedMean": 0.31794126894850877,
+      "uncappedP90": 0.7188194915500037,
+      "uncappedP95": 1.0851085745651246
+    },
+    "predictionOnly": {
+      "businesses": 100,
+      "mean": 0.2173227448639092,
+      "p90": 0.6054498911629151,
+      "p95": 0.9094598640806587,
+      "selectionObjective": 0.3531672460685613,
+      "uncappedMean": 0.34224954479725556,
+      "uncappedP90": 0.6054498911629151,
+      "uncappedP95": 1.1220660072070854
+    },
+    "uniformRandomValidExpectation": {
+      "businesses": 100,
+      "mean": 0.3951182990523157,
+      "p90": 0.5758665189123259,
+      "p95": 0.615738468267223,
+      "selectionObjective": 0.45838017600331926,
+      "uncappedMean": 0.6102477131798508,
+      "uncappedP90": 0.965830285272791,
+      "uncappedP95": 1.2705889417827183
+    },
+    "inPoolOracle": {
+      "businesses": 100,
+      "mean": 0.01702824875614544,
+      "p90": 0.05202146751830032,
+      "p95": 0.06388384414497851,
+      "selectionObjective": 0.029275875322899648,
+      "uncappedMean": 0.01702824875614544,
+      "uncappedP90": 0.05202146751830032,
+      "uncappedP95": 0.06388384414497851
+    }
+  },
+  "pairedComparisons": {
+    "v11MinusFrozenV9": {
+      "estimand": "V11 minus comparator; negative favors V11",
+      "meanDifference": -0.11263354763215949,
+      "meanDifferenceInterval95": [
+        -0.15784702036284207,
+        -0.06817196473371474
+      ],
+      "selectionObjectiveDifference": -0.19888758313432453,
+      "selectionObjectiveDifferenceInterval95": [
+        -0.2918873514820775,
+        -0.0801360180785487
+      ],
+      "oneSidedObjectiveUpper95": -0.09798018359673141,
+      "resamples": 10000,
+      "seed": 11210031,
+      "stratifiedByEvidenceGroup": true
+    },
+    "v11MinusPredictionOnly": {
+      "estimand": "V11 minus comparator; negative favors V11",
+      "meanDifference": -0.0826078651249003,
+      "meanDifferenceInterval95": [
+        -0.13016345557952294,
+        -0.03886809800874584
+      ],
+      "selectionObjectiveDifference": -0.15055888714076637,
+      "selectionObjectiveDifferenceInterval95": [
+        -0.2981362477535996,
+        -0.05413431298059384
+      ],
+      "oneSidedObjectiveUpper95": -0.07079335842919919,
+      "resamples": 10000,
+      "seed": 11210041,
+      "stratifiedByEvidenceGroup": true
+    }
+  },
+  "confirmatoryDecisionRule": {
+    "predeclared": {
+      "family": "predeclared two-comparator screen; no post-truth retuning",
+      "primarySuccess": [
+        "V11 selection objective is lower than frozen V9",
+        "V11 selection objective is no higher than prediction-only"
+      ],
+      "tailSafety": "V11 P95 capped risk may not exceed the better comparator P95 by more than 0.02 absolute",
+      "uncertainty": "10,000 business-level paired bootstrap resamples stratified by the four evidence groups",
+      "secondaryOnly": [
+        "mean and P90 capped risk",
+        "uncapped mean, P90, and P95 loss",
+        "in-pool oracle recall and excess risk",
+        "evidence-group results"
+      ]
+    },
+    "checks": {
+      "lowerObjectiveThanFrozenV9": true,
+      "noHigherObjectiveThanPredictionOnly": true,
+      "p95TailSafety": true
+    },
+    "passed": true
+  },
+  "subgroupsDescriptiveOnly": {
+    "no-experiment": {
+      "evidenceAdaptiveV11": {
+        "businesses": 25,
+        "mean": 0.16595749601959964,
+        "p90": 0.3979247711158399,
+        "p95": 0.43863292775533386,
+        "selectionObjective": 0.24714604230328374,
+        "uncappedMean": 0.16595749601959964,
+        "uncappedP90": 0.3979247711158399,
+        "uncappedP95": 0.43863292775533386
+      },
+      "frozenV9": {
+        "businesses": 25,
+        "mean": 0.41541705229878756,
+        "p90": 0.950854662883835,
+        "p95": 0.9905841458885917,
+        "selectionObjective": 0.6028202160035542,
+        "uncappedMean": 0.6465035769222008,
+        "uncappedP90": 1.3057285551549902,
+        "uncappedP95": 1.7013818953276831
+      },
+      "predictionOnly": {
+        "businesses": 25,
+        "mean": 0.30039722419463805,
+        "p90": 0.8917974145736707,
+        "p95": 0.9569650445289741,
+        "selectionObjective": 0.5073872908272995,
+        "uncappedMean": 0.5687440406183986,
+        "uncappedP90": 1.004301627682767,
+        "uncappedP95": 1.0923305907744616
+      }
+    },
+    "paid-social-experiment": {
+      "evidenceAdaptiveV11": {
+        "businesses": 25,
+        "mean": 0.09255444345465647,
+        "p90": 0.2143016411540618,
+        "p95": 0.3554607592325125,
+        "selectionObjective": 0.13516596264944833,
+        "uncappedMean": 0.09255444345465647,
+        "uncappedP90": 0.2143016411540618,
+        "uncappedP95": 0.3554607592325125
+      },
+      "frozenV9": {
+        "businesses": 25,
+        "mean": 0.06549629157931734,
+        "p90": 0.16885296788114623,
+        "p95": 0.17768508752632936,
+        "selectionObjective": 0.10167112828495745,
+        "uncappedMean": 0.06549629157931734,
+        "uncappedP90": 0.16885296788114623,
+        "uncappedP95": 0.17768508752632936
+      },
+      "predictionOnly": {
+        "businesses": 25,
+        "mean": 0.17346280330458913,
+        "p90": 0.37129077267311905,
+        "p95": 0.5247079256981599,
+        "selectionObjective": 0.2427025925835746,
+        "uncappedMean": 0.17426537499502623,
+        "uncappedP90": 0.37129077267311905,
+        "uncappedP95": 0.5247079256981599
+      }
+    },
+    "search-experiment": {
+      "evidenceAdaptiveV11": {
+        "businesses": 25,
+        "mean": 0.046784266217156194,
+        "p90": 0.1100838318223571,
+        "p95": 0.13971493048275685,
+        "selectionObjective": 0.06893911417897651,
+        "uncappedMean": 0.046784266217156194,
+        "uncappedP90": 0.1100838318223571,
+        "uncappedP95": 0.13971493048275685
+      },
+      "frozenV9": {
+        "businesses": 25,
+        "mean": 0.13727855245233303,
+        "p90": 0.3583856641313856,
+        "p95": 0.47613380405076017,
+        "selectionObjective": 0.21466604154000146,
+        "uncappedMean": 0.13780231443489732,
+        "uncappedP90": 0.3583856641313856,
+        "uncappedP95": 0.47613380405076017
+      },
+      "predictionOnly": {
+        "businesses": 25,
+        "mean": 0.14464557429297603,
+        "p90": 0.37283794438345,
+        "p95": 0.5669247371844173,
+        "selectionObjective": 0.22451290382464192,
+        "uncappedMean": 0.16528613942986567,
+        "uncappedP90": 0.37283794438345,
+        "uncappedP95": 0.5669247371844173
+      }
+    },
+    "tv-experiment": {
+      "evidenceAdaptiveV11": {
+        "businesses": 25,
+        "mean": 0.23356331326462293,
+        "p90": 0.368612523602739,
+        "p95": 0.8792590703177371,
+        "selectionObjective": 0.28083053688296356,
+        "uncappedMean": 0.35856062223954277,
+        "uncappedP90": 0.368612523602739,
+        "uncappedP95": 1.963241912095134
+      },
+      "frozenV9": {
+        "businesses": 25,
+        "mean": 0.3712018131542353,
+        "p90": 0.7254446875120569,
+        "p95": 0.9268849131046235,
+        "selectionObjective": 0.4951868191794728,
+        "uncappedMean": 0.42196289285761973,
+        "uncappedP90": 0.7254446875120569,
+        "uncappedP95": 1.025602580810734
+      },
+      "predictionOnly": {
+        "businesses": 25,
+        "mean": 0.2507853776634331,
+        "p90": 0.7599696976359229,
+        "p95": 0.9812320092942286,
+        "selectionObjective": 0.42899988965380453,
+        "uncappedMean": 0.4607026241457308,
+        "uncappedP90": 1.1927656380759253,
+        "uncappedP95": 2.255607926161716
+      }
+    }
+  },
+  "selections": [
+    {
+      "businessId": "amss-v11c-001",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.14195006914084488,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.15632560235611112,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.18921392481456195,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.18926459981285526,
+        "causal-identification": 0.1013516280246513,
+        "posterior-decision": 0.5220476323104315,
+        "structural-specification": 0.18733613985206193
+      }
+    },
+    {
+      "businessId": "amss-v11c-002",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C04 · experiments-only",
+      "v11Risk": 0.03206026466384507,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.05091173940658755,
+      "predictionOnlyCandidateId": "V6-C19 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.4519665769231448,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0.015729263463429392,
+      "evidenceGate": {
+        "predictive-generalization": 0.07646170146862832,
+        "causal-identification": 0.029811243843827606,
+        "posterior-decision": 0.6464668405241476,
+        "structural-specification": 0.24726021416339655
+      }
+    },
+    {
+      "businessId": "amss-v11c-003",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C03 · experiments-only",
+      "v11Risk": 0.244517703564681,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.29515660259820575,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.25028664252562205,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.03899516913402949,
+        "causal-identification": 0.013741427451352099,
+        "posterior-decision": 0.7752544946135651,
+        "structural-specification": 0.1720089088010534
+      }
+    },
+    {
+      "businessId": "amss-v11c-004",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.007190467754541725,
+      "v9CandidateId": "V6-C22 · benchmark-gap-fill",
+      "v9Risk": 0.9817184602582572,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.07290084582979652,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.007190467754541725,
+      "evidenceGate": {
+        "predictive-generalization": 0.2969946387540262,
+        "causal-identification": 0.16283246819705838,
+        "posterior-decision": 0.17467477743603604,
+        "structural-specification": 0.3654981156128795
+      }
+    },
+    {
+      "businessId": "amss-v11c-005",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.002390153747780203,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.002390153747780203,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.04118634050307217,
+      "oracleCandidateId": "V6-C01 · benchmark-gap-fill",
+      "oracleRisk": 0.002390153747780203,
+      "evidenceGate": {
+        "predictive-generalization": 0.20453819945668616,
+        "causal-identification": 0.15267654655719945,
+        "posterior-decision": 0.45207116183528717,
+        "structural-specification": 0.19071409215082716
+      }
+    },
+    {
+      "businessId": "amss-v11c-006",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.04342052022266432,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.04342052022266432,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.04342052022266432,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0.0030972479472500033,
+      "evidenceGate": {
+        "predictive-generalization": 0.08038707897064838,
+        "causal-identification": 0.05844578560837584,
+        "posterior-decision": 0.5123798264576412,
+        "structural-specification": 0.3487873089633346
+      }
+    },
+    {
+      "businessId": "amss-v11c-007",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.1031423413855388,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.34386655050490644,
+      "predictionOnlyCandidateId": "V6-C12 · experiments-only",
+      "predictionOnlyRisk": 0.045031615489351,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0.045031615489351,
+      "evidenceGate": {
+        "predictive-generalization": 0.08440355657041496,
+        "causal-identification": 0.05484169873672608,
+        "posterior-decision": 0.6869397408540484,
+        "structural-specification": 0.1738150038388105
+      }
+    },
+    {
+      "businessId": "amss-v11c-008",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.01136550756902006,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.01136550756902006,
+      "predictionOnlyCandidateId": "V6-C12 · experiments-only",
+      "predictionOnlyRisk": 0.025908125765705843,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0.0041351440540356894,
+      "evidenceGate": {
+        "predictive-generalization": 0.29561143757041974,
+        "causal-identification": 0.10266670763866019,
+        "posterior-decision": 0.16113092673942098,
+        "structural-specification": 0.4405909280514992
+      }
+    },
+    {
+      "businessId": "amss-v11c-009",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.3380912114953879,
+      "oracleCandidateId": "V6-C01 · benchmark-gap-fill",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.21208551894232355,
+        "causal-identification": 0.12195894057769892,
+        "posterior-decision": 0.4345439255344772,
+        "structural-specification": 0.2314116149455004
+      }
+    },
+    {
+      "businessId": "amss-v11c-010",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.02195378864710336,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.02195378864710336,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.14694688054209004,
+      "oracleCandidateId": "V6-C23 · experiments-only",
+      "oracleRisk": 0.006820098669280595,
+      "evidenceGate": {
+        "predictive-generalization": 0.08273399149213212,
+        "causal-identification": 0.07038463940851572,
+        "posterior-decision": 0.6319256206403416,
+        "structural-specification": 0.21495574845901047
+      }
+    },
+    {
+      "businessId": "amss-v11c-011",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.11683646518609692,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.6079224942842769,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.15431948389359376,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.0771488836427055,
+      "evidenceGate": {
+        "predictive-generalization": 0.09099692732839434,
+        "causal-identification": 0.04397724087674616,
+        "posterior-decision": 0.6687982126272806,
+        "structural-specification": 0.19622761916757891
+      }
+    },
+    {
+      "businessId": "amss-v11c-012",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.5043210414481184,
+      "v9CandidateId": "V6-C09 · experiments-only",
+      "v9Risk": 0.0964779434372444,
+      "predictionOnlyCandidateId": "V6-C14 · experiments-only",
+      "predictionOnlyRisk": 0.6935204163815207,
+      "oracleCandidateId": "V6-C17 · experiments-only",
+      "oracleRisk": 0.004168702434638265,
+      "evidenceGate": {
+        "predictive-generalization": 0.29410457530240725,
+        "causal-identification": 0.14029002165628052,
+        "posterior-decision": 0.1941967632680694,
+        "structural-specification": 0.3714086397732428
+      }
+    },
+    {
+      "businessId": "amss-v11c-013",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.03548827911929842,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.03548827911929842,
+      "predictionOnlyCandidateId": "V6-C12 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0,
+      "oracleCandidateId": "V6-C08 · benchmark-gap-fill",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.17501851185743328,
+        "causal-identification": 0.07836574319759937,
+        "posterior-decision": 0.471491406498575,
+        "structural-specification": 0.2751243384463923
+      }
+    },
+    {
+      "businessId": "amss-v11c-014",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.05400416779389802,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.24152642608042216,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.13522179196949471,
+      "oracleCandidateId": "V6-C23 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.043502468860157836,
+        "causal-identification": 0.027764960618545775,
+        "posterior-decision": 0.7519915980692391,
+        "structural-specification": 0.17674097245205733
+      }
+    },
+    {
+      "businessId": "amss-v11c-015",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.17208021405576002,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.17208021405576002,
+      "predictionOnlyCandidateId": "V6-C23 · experiments-only",
+      "predictionOnlyRisk": 0.10800261418992055,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.04672836559255834,
+      "evidenceGate": {
+        "predictive-generalization": 0.09798699769069782,
+        "causal-identification": 0.060387987166493226,
+        "posterior-decision": 0.6517292454759338,
+        "structural-specification": 0.18989576966687513
+      }
+    },
+    {
+      "businessId": "amss-v11c-016",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.3971267808907754,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.3971267808907754,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.10645831201669172,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.06373341415360446,
+      "evidenceGate": {
+        "predictive-generalization": 0.31025510368305287,
+        "causal-identification": 0.08006605934731267,
+        "posterior-decision": 0.1440626225402782,
+        "structural-specification": 0.4656162144293562
+      }
+    },
+    {
+      "businessId": "amss-v11c-017",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.23863258646780114,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.3422858019044082,
+      "predictionOnlyCandidateId": "V6-C21 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.26512145965866196,
+      "oracleCandidateId": "V6-C06 · benchmark-gap-fill",
+      "oracleRisk": 0.03344271888227583,
+      "evidenceGate": {
+        "predictive-generalization": 0.1603576155869766,
+        "causal-identification": 0.13064103155768958,
+        "posterior-decision": 0.6126532644100415,
+        "structural-specification": 0.0963480884452923
+      }
+    },
+    {
+      "businessId": "amss-v11c-018",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C08 · experiments-only",
+      "v11Risk": 0.22185755509880067,
+      "v9CandidateId": "V6-C14 · benchmark-gap-fill",
+      "v9Risk": 0.501037983167774,
+      "predictionOnlyCandidateId": "V6-C12 · experiments-only",
+      "predictionOnlyRisk": 0.25414499557390713,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.0026708474807108813,
+      "evidenceGate": {
+        "predictive-generalization": 0.16241498183728806,
+        "causal-identification": 0.1282522581049151,
+        "posterior-decision": 0.46234901393370187,
+        "structural-specification": 0.24698374612409496
+      }
+    },
+    {
+      "businessId": "amss-v11c-019",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.12342847233191792,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.12342847233191792,
+      "predictionOnlyCandidateId": "V6-C12 · experiments-only",
+      "predictionOnlyRisk": 0.039629467558074255,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.013141281335914369,
+      "evidenceGate": {
+        "predictive-generalization": 0.04626528999580945,
+        "causal-identification": 0.04494091293881868,
+        "posterior-decision": 0.7205814874856895,
+        "structural-specification": 0.18821230957968235
+      }
+    },
+    {
+      "businessId": "amss-v11c-020",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.22021409578004797,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.22021409578004797,
+      "predictionOnlyCandidateId": "V6-C21 · experiments-only",
+      "predictionOnlyRisk": 0.03696274795518417,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.008325604329303665,
+      "evidenceGate": {
+        "predictive-generalization": 0.2916190404287947,
+        "causal-identification": 0.06126954702338726,
+        "posterior-decision": 0.14666307165106063,
+        "structural-specification": 0.5004483408967573
+      }
+    },
+    {
+      "businessId": "amss-v11c-021",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.030808105938586985,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.030808105938586985,
+      "predictionOnlyCandidateId": "V6-C17 · experiments-only",
+      "predictionOnlyRisk": 0.35122522804726125,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.026018738648915435,
+      "evidenceGate": {
+        "predictive-generalization": 0.10343629687654385,
+        "causal-identification": 0.08766822919575148,
+        "posterior-decision": 0.7015071381358305,
+        "structural-specification": 0.10738833579187412
+      }
+    },
+    {
+      "businessId": "amss-v11c-022",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.001552753732366917,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.001552753732366917,
+      "predictionOnlyCandidateId": "V6-C02 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.5956642772497358,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.15320679204923987,
+        "causal-identification": 0.07910238945113511,
+        "posterior-decision": 0.46302781317502434,
+        "structural-specification": 0.3046630053246008
+      }
+    },
+    {
+      "businessId": "amss-v11c-023",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C04 · experiments-only",
+      "v11Risk": 1,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.9576579372981359,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 1,
+      "oracleCandidateId": "V6-C10 · benchmark-gap-fill",
+      "oracleRisk": 0.1510336756044507,
+      "evidenceGate": {
+        "predictive-generalization": 0.11594629970743638,
+        "causal-identification": 0.05392894706407596,
+        "posterior-decision": 0.6287131419503361,
+        "structural-specification": 0.20141161127815158
+      }
+    },
+    {
+      "businessId": "amss-v11c-024",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.13657947632214307,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.13657947632214307,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.0024963324703612157,
+      "oracleCandidateId": "V6-C03 · experiments-only",
+      "oracleRisk": 0.0024963324703612157,
+      "evidenceGate": {
+        "predictive-generalization": 0.28304665230479603,
+        "causal-identification": 0.06998811418322079,
+        "posterior-decision": 0.21466806588644727,
+        "structural-specification": 0.4322971676255358
+      }
+    },
+    {
+      "businessId": "amss-v11c-025",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.06413714503682776,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.06413714503682776,
+      "predictionOnlyCandidateId": "V6-C10 · experiments-only",
+      "predictionOnlyRisk": 0.0557615091413449,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.02116358168883433,
+      "evidenceGate": {
+        "predictive-generalization": 0.18653020996419806,
+        "causal-identification": 0.17987634183175255,
+        "posterior-decision": 0.4649181947343267,
+        "structural-specification": 0.16867525346972254
+      }
+    },
+    {
+      "businessId": "amss-v11c-026",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.007442805073100273,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.031288416252955156,
+        "causal-identification": 0.025792299444696055,
+        "posterior-decision": 0.7310748626101671,
+        "structural-specification": 0.2118444216921817
+      }
+    },
+    {
+      "businessId": "amss-v11c-027",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.396295351588694,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.396295351588694,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.396295351588694,
+      "oracleCandidateId": "V6-C02 · experiments-only",
+      "oracleRisk": 0.06674201398108563,
+      "evidenceGate": {
+        "predictive-generalization": 0.14179028326136572,
+        "causal-identification": 0.12155024246135845,
+        "posterior-decision": 0.47323791568175466,
+        "structural-specification": 0.26342155859552113
+      }
+    },
+    {
+      "businessId": "amss-v11c-028",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.07373040132737523,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.07373040132737523,
+      "predictionOnlyCandidateId": "V6-C12 · experiments-only",
+      "predictionOnlyRisk": 0.11553912301178593,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.053779176217198216,
+      "evidenceGate": {
+        "predictive-generalization": 0.29059568808017744,
+        "causal-identification": 0.17952306775436916,
+        "posterior-decision": 0.19345705666325758,
+        "structural-specification": 0.3364241875021958
+      }
+    },
+    {
+      "businessId": "amss-v11c-029",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.00707216097772688,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.1483487498837601,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.16841969115006233,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0.006042667854415134,
+      "evidenceGate": {
+        "predictive-generalization": 0.16637254548919506,
+        "causal-identification": 0.11667721100074739,
+        "posterior-decision": 0.40891075001173754,
+        "structural-specification": 0.30803949349832
+      }
+    },
+    {
+      "businessId": "amss-v11c-030",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C12 · experiments-only",
+      "v11Risk": 0.09031902882363115,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.8052740817563859,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.09739640446161274,
+      "oracleCandidateId": "V6-C17 · experiments-only",
+      "oracleRisk": 0.014941859381486764,
+      "evidenceGate": {
+        "predictive-generalization": 0.0639791182107631,
+        "causal-identification": 0.06715953394648189,
+        "posterior-decision": 0.6979319846444318,
+        "structural-specification": 0.17092936319832325
+      }
+    },
+    {
+      "businessId": "amss-v11c-031",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.17064008101191075,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.2655746259312019,
+      "predictionOnlyCandidateId": "V6-C02 · experiments-only",
+      "predictionOnlyRisk": 0.540684174383089,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.016984623575740095,
+      "evidenceGate": {
+        "predictive-generalization": 0.06618314827525387,
+        "causal-identification": 0.023891587762960877,
+        "posterior-decision": 0.7213192572175354,
+        "structural-specification": 0.18860600674424974
+      }
+    },
+    {
+      "businessId": "amss-v11c-032",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C08 · experiments-only",
+      "v11Risk": 0.05287017727366108,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.9928005672961753,
+      "predictionOnlyCandidateId": "V6-C16 · experiments-only",
+      "predictionOnlyRisk": 0.8961996279991519,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.01233782324054977,
+      "evidenceGate": {
+        "predictive-generalization": 0.27191792019886735,
+        "causal-identification": 0.048968286448616775,
+        "posterior-decision": 0.13753813618411662,
+        "structural-specification": 0.5415756571683994
+      }
+    },
+    {
+      "businessId": "amss-v11c-033",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.001702643531697683,
+      "v9CandidateId": "V6-C14 · benchmark-gap-fill",
+      "v9Risk": 0.01204443930144868,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.22600689952739944,
+      "oracleCandidateId": "V6-C01 · benchmark-gap-fill",
+      "oracleRisk": 0.001702643531697683,
+      "evidenceGate": {
+        "predictive-generalization": 0.19901802324255208,
+        "causal-identification": 0.15759043936671407,
+        "posterior-decision": 0.4664175727935115,
+        "structural-specification": 0.1769739645972223
+      }
+    },
+    {
+      "businessId": "amss-v11c-034",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.14382857131473586,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.30696467997202675,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.14382857131473586,
+      "oracleCandidateId": "V6-C13 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.07450963340882517,
+        "causal-identification": 0.05466869700952957,
+        "posterior-decision": 0.7332135966199657,
+        "structural-specification": 0.1376080729616796
+      }
+    },
+    {
+      "businessId": "amss-v11c-035",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.055517009585085084,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.33941372351341376,
+      "predictionOnlyCandidateId": "V6-C20 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.9061600464711447,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.055517009585085084,
+      "evidenceGate": {
+        "predictive-generalization": 0.1033109972718788,
+        "causal-identification": 0.06999991276895792,
+        "posterior-decision": 0.653660694278192,
+        "structural-specification": 0.17302839568097145
+      }
+    },
+    {
+      "businessId": "amss-v11c-036",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.17177872963938925,
+      "v9CandidateId": "V6-C18 · benchmark-gap-fill",
+      "v9Risk": 1,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.16202046258884464,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.025017116480587784,
+      "evidenceGate": {
+        "predictive-generalization": 0.24554492391707772,
+        "causal-identification": 0.08600252222670408,
+        "posterior-decision": 0.1935542039458166,
+        "structural-specification": 0.4748983499104016
+      }
+    },
+    {
+      "businessId": "amss-v11c-037",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.011808001808289408,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.011808001808289408,
+      "predictionOnlyCandidateId": "V6-C19 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.08260848982295328,
+      "oracleCandidateId": "V6-C21 · benchmark-gap-fill",
+      "oracleRisk": 0.0005296043990965427,
+      "evidenceGate": {
+        "predictive-generalization": 0.22772006758589258,
+        "causal-identification": 0.15338467269096762,
+        "posterior-decision": 0.38387319238481565,
+        "structural-specification": 0.23502206733832415
+      }
+    },
+    {
+      "businessId": "amss-v11c-038",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C06 · experiments-only",
+      "v11Risk": 0.08704588484489992,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.16438623309998543,
+      "predictionOnlyCandidateId": "V6-C08 · experiments-only",
+      "predictionOnlyRisk": 0.10247393031407567,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0.08704588484489992,
+      "evidenceGate": {
+        "predictive-generalization": 0.11574143391341636,
+        "causal-identification": 0.08838938074236984,
+        "posterior-decision": 0.5960874214571705,
+        "structural-specification": 0.1997817638870433
+      }
+    },
+    {
+      "businessId": "amss-v11c-039",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 1,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 1,
+      "predictionOnlyCandidateId": "V6-C17 · experiments-only",
+      "predictionOnlyRisk": 1,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0.02478856912022403,
+      "evidenceGate": {
+        "predictive-generalization": 0.120701753114146,
+        "causal-identification": 0.030886165732793496,
+        "posterior-decision": 0.6418366683676767,
+        "structural-specification": 0.20657541278538374
+      }
+    },
+    {
+      "businessId": "amss-v11c-040",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.3431679538840055,
+      "v9CandidateId": "V6-C22 · experiments-only",
+      "v9Risk": 0.7551269055130905,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.3431679538840055,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.014377739996160509,
+      "evidenceGate": {
+        "predictive-generalization": 0.29342415093449314,
+        "causal-identification": 0.09130846202081036,
+        "posterior-decision": 0.1356755498289193,
+        "structural-specification": 0.47959183721577725
+      }
+    },
+    {
+      "businessId": "amss-v11c-041",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.8345849535519532,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.12171466611368922,
+      "predictionOnlyCandidateId": "V6-C24 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.7201546011832085,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.05194383990730937,
+      "evidenceGate": {
+        "predictive-generalization": 0.15157889886070924,
+        "causal-identification": 0.1302057039775374,
+        "posterior-decision": 0.4592947477224046,
+        "structural-specification": 0.2589206494393487
+      }
+    },
+    {
+      "businessId": "amss-v11c-042",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.0007776677621601541,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.0007776677621601541,
+      "predictionOnlyCandidateId": "V6-C23 · experiments-only",
+      "predictionOnlyRisk": 0.005727218074938683,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.0007776677621601541,
+      "evidenceGate": {
+        "predictive-generalization": 0.0975165870613613,
+        "causal-identification": 0.053030537269475556,
+        "posterior-decision": 0.520264877366267,
+        "structural-specification": 0.32918799830289613
+      }
+    },
+    {
+      "businessId": "amss-v11c-043",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C04 · experiments-only",
+      "v11Risk": 0.08832391860947594,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.3683161302475041,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.09663929844731899,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.004369878719183781,
+      "evidenceGate": {
+        "predictive-generalization": 0.07045280727506752,
+        "causal-identification": 0.020121359484932676,
+        "posterior-decision": 0.7107506627474447,
+        "structural-specification": 0.19867517049255518
+      }
+    },
+    {
+      "businessId": "amss-v11c-044",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.2973620687646207,
+      "v9CandidateId": "V6-C08 · experiments-only",
+      "v9Risk": 0.1627406675997355,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.09913610790916264,
+      "oracleCandidateId": "V6-C17 · experiments-only",
+      "oracleRisk": 0.0041659513016417205,
+      "evidenceGate": {
+        "predictive-generalization": 0.2934266772443408,
+        "causal-identification": 0.053572069419354065,
+        "posterior-decision": 0.14833584539755312,
+        "structural-specification": 0.504665407938752
+      }
+    },
+    {
+      "businessId": "amss-v11c-045",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.17780522318345265,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.17780522318345265,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.15264680832211738,
+      "oracleCandidateId": "V6-C23 · benchmark-gap-fill",
+      "oracleRisk": 0.007834269783690624,
+      "evidenceGate": {
+        "predictive-generalization": 0.14700253894935397,
+        "causal-identification": 0.059953886671432935,
+        "posterior-decision": 0.5667880366527766,
+        "structural-specification": 0.22625553772643658
+      }
+    },
+    {
+      "businessId": "amss-v11c-046",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C09 · experiments-only",
+      "v11Risk": 0.012066331623097774,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.006558831386936673,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.012066331623097774,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0.0045196934218262146,
+      "evidenceGate": {
+        "predictive-generalization": 0.04865601872015447,
+        "causal-identification": 0.02656407724630102,
+        "posterior-decision": 0.749365290421367,
+        "structural-specification": 0.17541461361217753
+      }
+    },
+    {
+      "businessId": "amss-v11c-047",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.3205000405514578,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.3205000405514578,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.050361815851311026,
+      "oracleCandidateId": "V6-C13 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.19957185943153527,
+        "causal-identification": 0.11881447019529631,
+        "posterior-decision": 0.5025664214830229,
+        "structural-specification": 0.17904724889014542
+      }
+    },
+    {
+      "businessId": "amss-v11c-048",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.17652417503072734,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.17652417503072734,
+      "predictionOnlyCandidateId": "V6-C02 · experiments-only",
+      "predictionOnlyRisk": 1,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.0004775930127740483,
+      "evidenceGate": {
+        "predictive-generalization": 0.2993899685075327,
+        "causal-identification": 0.16346036705881575,
+        "posterior-decision": 0.18553913645035575,
+        "structural-specification": 0.35161052798329584
+      }
+    },
+    {
+      "businessId": "amss-v11c-049",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0,
+      "predictionOnlyCandidateId": "V6-C10 · experiments-only",
+      "predictionOnlyRisk": 0.12204897368346321,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.24798094772097592,
+        "causal-identification": 0.17287734578909555,
+        "posterior-decision": 0.342831619183337,
+        "structural-specification": 0.23631008730659162
+      }
+    },
+    {
+      "businessId": "amss-v11c-050",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.0032923153353829043,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.0032923153353829043,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.009992555281334855,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.0032923153353829043,
+      "evidenceGate": {
+        "predictive-generalization": 0.020543611220227236,
+        "causal-identification": 0.022218745354473556,
+        "posterior-decision": 0.7708160518119225,
+        "structural-specification": 0.1864215916133768
+      }
+    },
+    {
+      "businessId": "amss-v11c-051",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.18698141426500187,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.41631080999240666,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.12938688050638264,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.036107670705853384,
+      "evidenceGate": {
+        "predictive-generalization": 0.09902503335305572,
+        "causal-identification": 0.04596006465910959,
+        "posterior-decision": 0.7090220536365508,
+        "structural-specification": 0.14599284835128384
+      }
+    },
+    {
+      "businessId": "amss-v11c-052",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.08124153093872119,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.7122379552705125,
+      "predictionOnlyCandidateId": "V6-C21 · experiments-only",
+      "predictionOnlyRisk": 0.12563331856340615,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.0008818832126624063,
+      "evidenceGate": {
+        "predictive-generalization": 0.28098950930808647,
+        "causal-identification": 0.058889174364774144,
+        "posterior-decision": 0.1567473650137034,
+        "structural-specification": 0.5033739513134361
+      }
+    },
+    {
+      "businessId": "amss-v11c-053",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.0036479374475775006,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.0036479374475775006,
+      "predictionOnlyCandidateId": "V6-C19 · experiments-only",
+      "predictionOnlyRisk": 0.0789212595784321,
+      "oracleCandidateId": "V6-C03 · experiments-only",
+      "oracleRisk": 0.0012510091664900283,
+      "evidenceGate": {
+        "predictive-generalization": 0.19745496870348483,
+        "causal-identification": 0.09422087776379207,
+        "posterior-decision": 0.45493622968935093,
+        "structural-specification": 0.25338792384337216
+      }
+    },
+    {
+      "businessId": "amss-v11c-054",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.060734226123429325,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.060734226123429325,
+      "predictionOnlyCandidateId": "V6-C10 · experiments-only",
+      "predictionOnlyRisk": 0.07939156155672682,
+      "oracleCandidateId": "V6-C23 · experiments-only",
+      "oracleRisk": 0.0046894170750715145,
+      "evidenceGate": {
+        "predictive-generalization": 0.05984149011206902,
+        "causal-identification": 0.05894038647518647,
+        "posterior-decision": 0.6111732645955615,
+        "structural-specification": 0.270044858817183
+      }
+    },
+    {
+      "businessId": "amss-v11c-055",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.19416951618562384,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.19416951618562384,
+      "predictionOnlyCandidateId": "V6-C15 · experiments-only",
+      "predictionOnlyRisk": 0.028382657964598462,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.028382657964598462,
+      "evidenceGate": {
+        "predictive-generalization": 0.04298329536423153,
+        "causal-identification": 0.04953074244517798,
+        "posterior-decision": 0.7397247839313296,
+        "structural-specification": 0.16776117825926087
+      }
+    },
+    {
+      "businessId": "amss-v11c-056",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0,
+      "predictionOnlyCandidateId": "V6-C17 · experiments-only",
+      "predictionOnlyRisk": 0.1737720975962552,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.25776046289709614,
+        "causal-identification": 0.06720640583493467,
+        "posterior-decision": 0.1477556952565148,
+        "structural-specification": 0.5272774360114545
+      }
+    },
+    {
+      "businessId": "amss-v11c-057",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.024969684517054697,
+      "v9CandidateId": "V6-C14 · benchmark-gap-fill",
+      "v9Risk": 0.048626329304963266,
+      "predictionOnlyCandidateId": "V6-C24 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.168944437313544,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.00701181699921314,
+      "evidenceGate": {
+        "predictive-generalization": 0.17925594224001445,
+        "causal-identification": 0.11180602293747108,
+        "posterior-decision": 0.3736493561235048,
+        "structural-specification": 0.3352886786990096
+      }
+    },
+    {
+      "businessId": "amss-v11c-058",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.00713946832776228,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.00713946832776228,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.008563754783897736,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.00713946832776228,
+      "evidenceGate": {
+        "predictive-generalization": 0.09174830967524673,
+        "causal-identification": 0.06739856437858881,
+        "posterior-decision": 0.691447512605482,
+        "structural-specification": 0.14940561334068242
+      }
+    },
+    {
+      "businessId": "amss-v11c-059",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C09 · experiments-only",
+      "v11Risk": 0.19292378116598,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.35982456157422793,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.23640731710808466,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.09649808962880006,
+      "evidenceGate": {
+        "predictive-generalization": 0.12934628218583744,
+        "causal-identification": 0.07202243975858313,
+        "posterior-decision": 0.6067543236706101,
+        "structural-specification": 0.19187695438496938
+      }
+    },
+    {
+      "businessId": "amss-v11c-060",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.03682754031845288,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.03682754031845288,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.030150824264530134,
+      "oracleCandidateId": "V6-C03 · experiments-only",
+      "oracleRisk": 0.02762974676140456,
+      "evidenceGate": {
+        "predictive-generalization": 0.27074511262814127,
+        "causal-identification": 0.1275923003217711,
+        "posterior-decision": 0.17350077895273094,
+        "structural-specification": 0.4281618080973567
+      }
+    },
+    {
+      "businessId": "amss-v11c-061",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C08 · experiments-only",
+      "v11Risk": 0.1179195024450146,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.1772045448978363,
+      "predictionOnlyCandidateId": "V6-C20 · experiments-only",
+      "predictionOnlyRisk": 0.10647833599144368,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.014865928724328766,
+      "evidenceGate": {
+        "predictive-generalization": 0.17861644258472956,
+        "causal-identification": 0.13121902098940477,
+        "posterior-decision": 0.5241403985115689,
+        "structural-specification": 0.166024137914297
+      }
+    },
+    {
+      "businessId": "amss-v11c-062",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.022361782937682644,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.022361782937682644,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.022361782937682644,
+      "oracleCandidateId": "V6-C11 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.09742419252071996,
+        "causal-identification": 0.0916424334061545,
+        "posterior-decision": 0.5958591099094918,
+        "structural-specification": 0.21507426416363384
+      }
+    },
+    {
+      "businessId": "amss-v11c-063",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C12 · benchmark-gap-fill",
+      "v11Risk": 0.24831040980764757,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.2748401351125982,
+      "predictionOnlyCandidateId": "V6-C24 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.2824554744061415,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.06937928977212653,
+        "causal-identification": 0.04164895239896197,
+        "posterior-decision": 0.7174216676577893,
+        "structural-specification": 0.17155009017112224
+      }
+    },
+    {
+      "businessId": "amss-v11c-064",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C08 · experiments-only",
+      "v11Risk": 0.002117913518835109,
+      "v9CandidateId": "V6-C22 · experiments-only",
+      "v9Risk": 0.5427485849497665,
+      "predictionOnlyCandidateId": "V6-C21 · experiments-only",
+      "predictionOnlyRisk": 0.005434585777052397,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.002117913518835109,
+      "evidenceGate": {
+        "predictive-generalization": 0.299493149029943,
+        "causal-identification": 0.06637928962073103,
+        "posterior-decision": 0.1473181294521901,
+        "structural-specification": 0.4868094318971359
+      }
+    },
+    {
+      "businessId": "amss-v11c-065",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.004744807214164953,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.01050289007894597,
+      "predictionOnlyCandidateId": "V6-C15 · experiments-only",
+      "predictionOnlyRisk": 0.016694670413280113,
+      "oracleCandidateId": "V6-C04 · benchmark-gap-fill",
+      "oracleRisk": 0.002441450977603894,
+      "evidenceGate": {
+        "predictive-generalization": 0.21036038090050982,
+        "causal-identification": 0.07513037769268789,
+        "posterior-decision": 0.4691285202321168,
+        "structural-specification": 0.24538072117468554
+      }
+    },
+    {
+      "businessId": "amss-v11c-066",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.014171423364200703,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.014171423364200703,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.014171423364200703,
+      "oracleCandidateId": "V6-C03 · experiments-only",
+      "oracleRisk": 0.0012989821762681218,
+      "evidenceGate": {
+        "predictive-generalization": 0.08293056298635282,
+        "causal-identification": 0.08950971667651167,
+        "posterior-decision": 0.6253385538660989,
+        "structural-specification": 0.20222116647103658
+      }
+    },
+    {
+      "businessId": "amss-v11c-067",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.3270882816238062,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.8037928163305764,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.13713542893789485,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.013326116222604188,
+      "evidenceGate": {
+        "predictive-generalization": 0.07034615393703308,
+        "causal-identification": 0.061205727348680496,
+        "posterior-decision": 0.681856489349381,
+        "structural-specification": 0.1865916293649054
+      }
+    },
+    {
+      "businessId": "amss-v11c-068",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.21221338248729443,
+      "v9CandidateId": "V6-C18 · benchmark-gap-fill",
+      "v9Risk": 0.6810114263999973,
+      "predictionOnlyCandidateId": "V6-C14 · experiments-only",
+      "predictionOnlyRisk": 0.5196832392792177,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.01986765058377464,
+      "evidenceGate": {
+        "predictive-generalization": 0.2890196972528371,
+        "causal-identification": 0.18457452110934264,
+        "posterior-decision": 0.15777409459593045,
+        "structural-specification": 0.3686316870418898
+      }
+    },
+    {
+      "businessId": "amss-v11c-069",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.03103409438115326,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.03103409438115326,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.5597179565167779,
+      "oracleCandidateId": "V6-C11 · benchmark-gap-fill",
+      "oracleRisk": 0.003429990553891713,
+      "evidenceGate": {
+        "predictive-generalization": 0.08021266148716966,
+        "causal-identification": 0.05754669347325505,
+        "posterior-decision": 0.43923460083069826,
+        "structural-specification": 0.4230060442088771
+      }
+    },
+    {
+      "businessId": "amss-v11c-070",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.25779047706531405,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.011878207925552713,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.047328769555489245,
+        "causal-identification": 0.037694711648934946,
+        "posterior-decision": 0.7399210275560433,
+        "structural-specification": 0.17505549123953254
+      }
+    },
+    {
+      "businessId": "amss-v11c-071",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.04029618205452126,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.27716220034295136,
+      "predictionOnlyCandidateId": "V6-C17 · experiments-only",
+      "predictionOnlyRisk": 0.031945561683564265,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.01727818613869129,
+      "evidenceGate": {
+        "predictive-generalization": 0.09824743332261346,
+        "causal-identification": 0.09327394562153209,
+        "posterior-decision": 0.5201658009980072,
+        "structural-specification": 0.28831282005784714
+      }
+    },
+    {
+      "businessId": "amss-v11c-072",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.05020377019359498,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.05020377019359498,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.05020377019359498,
+      "oracleCandidateId": "V6-C13 · experiments-only",
+      "oracleRisk": 0.026529365023423946,
+      "evidenceGate": {
+        "predictive-generalization": 0.329045898267639,
+        "causal-identification": 0.12293195703333684,
+        "posterior-decision": 0.14456935861569375,
+        "structural-specification": 0.4034527860833303
+      }
+    },
+    {
+      "businessId": "amss-v11c-073",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.026034705865914512,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.002178957572470296,
+      "predictionOnlyCandidateId": "V6-C12 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.046075594995328734,
+      "oracleCandidateId": "V6-C01 · benchmark-gap-fill",
+      "oracleRisk": 0.002178957572470296,
+      "evidenceGate": {
+        "predictive-generalization": 0.19599010615315776,
+        "causal-identification": 0.11981046831499605,
+        "posterior-decision": 0.4618263156653086,
+        "structural-specification": 0.22237310986653772
+      }
+    },
+    {
+      "businessId": "amss-v11c-074",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.015356741275373013,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.3311885289544043,
+      "predictionOnlyCandidateId": "V6-C23 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.25338396678295744,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.04135096789971851,
+        "causal-identification": 0.04358206379249278,
+        "posterior-decision": 0.7657155390195639,
+        "structural-specification": 0.14935142928822484
+      }
+    },
+    {
+      "businessId": "amss-v11c-075",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.13494114329605333,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.2610041830873641,
+      "predictionOnlyCandidateId": "V6-C13 · experiments-only",
+      "predictionOnlyRisk": 0.08918303984520914,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.030883195722529566,
+      "evidenceGate": {
+        "predictive-generalization": 0.14300667376299617,
+        "causal-identification": 0.10970669812943208,
+        "posterior-decision": 0.5538568940415166,
+        "structural-specification": 0.19342973406605515
+      }
+    },
+    {
+      "businessId": "amss-v11c-076",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.44867696854436345,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.44867696854436345,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.1626245852457609,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.008322358187254516,
+      "evidenceGate": {
+        "predictive-generalization": 0.2722658322366761,
+        "causal-identification": 0.10041065200681534,
+        "posterior-decision": 0.1726861514685493,
+        "structural-specification": 0.4546373642879593
+      }
+    },
+    {
+      "businessId": "amss-v11c-077",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.38466780242369086,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.07249358147050176,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.38466780242369086,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.01767447368908465,
+      "evidenceGate": {
+        "predictive-generalization": 0.18487796108645765,
+        "causal-identification": 0.12488889283333734,
+        "posterior-decision": 0.4240783599081662,
+        "structural-specification": 0.26615478617203875
+      }
+    },
+    {
+      "businessId": "amss-v11c-078",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.123260367154841,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.3765170875827064,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.05036553353972961,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0.001831737669345859,
+      "evidenceGate": {
+        "predictive-generalization": 0.05878487963916644,
+        "causal-identification": 0.05134543909317123,
+        "posterior-decision": 0.7161549665761531,
+        "structural-specification": 0.17371471469150937
+      }
+    },
+    {
+      "businessId": "amss-v11c-079",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.0698839047056545,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.2396417113923727,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.05909532239511443,
+      "oracleCandidateId": "V6-C06 · experiments-only",
+      "oracleRisk": 0.02839267099527709,
+      "evidenceGate": {
+        "predictive-generalization": 0.10908570739559983,
+        "causal-identification": 0.09302134414298074,
+        "posterior-decision": 0.5466207830597324,
+        "structural-specification": 0.25127216540168706
+      }
+    },
+    {
+      "businessId": "amss-v11c-080",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C10 · experiments-only",
+      "v11Risk": 0.04550144661580993,
+      "v9CandidateId": "V6-C18 · benchmark-gap-fill",
+      "v9Risk": 0.4241574701532754,
+      "predictionOnlyCandidateId": "V6-C02 · experiments-only",
+      "predictionOnlyRisk": 0.5402172087312157,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0.013553866623403289,
+      "evidenceGate": {
+        "predictive-generalization": 0.2551755630695379,
+        "causal-identification": 0.04471039881272737,
+        "posterior-decision": 0.14415449988766477,
+        "structural-specification": 0.5559595382300699
+      }
+    },
+    {
+      "businessId": "amss-v11c-081",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.004837046251237756,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.06017694491347628,
+      "predictionOnlyCandidateId": "V6-C15 · experiments-only",
+      "predictionOnlyRisk": 0.04535946049503771,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0.004837046251237756,
+      "evidenceGate": {
+        "predictive-generalization": 0.16395900791561804,
+        "causal-identification": 0.12059110144572356,
+        "posterior-decision": 0.4491312308178387,
+        "structural-specification": 0.2663186598208198
+      }
+    },
+    {
+      "businessId": "amss-v11c-082",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.018545715675109327,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.018545715675109327,
+      "predictionOnlyCandidateId": "V6-C10 · experiments-only",
+      "predictionOnlyRisk": 0.05142190156228063,
+      "oracleCandidateId": "V6-C07 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.0389349147690613,
+        "causal-identification": 0.03210841703719496,
+        "posterior-decision": 0.7696428183780301,
+        "structural-specification": 0.15931384981571373
+      }
+    },
+    {
+      "businessId": "amss-v11c-083",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.1487372844970637,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.1487372844970637,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.13140042161049725,
+      "oracleCandidateId": "V6-C02 · experiments-only",
+      "oracleRisk": 0.016883216684703377,
+      "evidenceGate": {
+        "predictive-generalization": 0.06976925462485112,
+        "causal-identification": 0.06841717994192914,
+        "posterior-decision": 0.7071563552897124,
+        "structural-specification": 0.1546572101435073
+      }
+    },
+    {
+      "businessId": "amss-v11c-084",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.008076263684198302,
+      "v9CandidateId": "V6-C18 · benchmark-gap-fill",
+      "v9Risk": 0.6850512248774354,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.008076263684198302,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.0060108160808495,
+      "evidenceGate": {
+        "predictive-generalization": 0.27433864450413364,
+        "causal-identification": 0.06012886525306178,
+        "posterior-decision": 0.15352725599532432,
+        "structural-specification": 0.5120052342474802
+      }
+    },
+    {
+      "businessId": "amss-v11c-085",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.00612480469309847,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.010104080125312963,
+      "predictionOnlyCandidateId": "V6-C09 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.0005843888855770129,
+      "oracleCandidateId": "V6-C09 · benchmark-gap-fill",
+      "oracleRisk": 0.0005843888855770129,
+      "evidenceGate": {
+        "predictive-generalization": 0.21658872041646368,
+        "causal-identification": 0.1455562978289725,
+        "posterior-decision": 0.3791271021675117,
+        "structural-specification": 0.25872787958705207
+      }
+    },
+    {
+      "businessId": "amss-v11c-086",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.05299872314395035,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.05299872314395035,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.05299872314395035,
+      "oracleCandidateId": "V6-C04 · experiments-only",
+      "oracleRisk": 0,
+      "evidenceGate": {
+        "predictive-generalization": 0.010889453316476127,
+        "causal-identification": 0.01248972165334312,
+        "posterior-decision": 0.8043102222724181,
+        "structural-specification": 0.1723106027577626
+      }
+    },
+    {
+      "businessId": "amss-v11c-087",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.1141429695299785,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.439063393512783,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.11849140675122768,
+      "oracleCandidateId": "V6-C02 · experiments-only",
+      "oracleRisk": 0.009961622034425906,
+      "evidenceGate": {
+        "predictive-generalization": 0.08128643134803143,
+        "causal-identification": 0.0435375573041214,
+        "posterior-decision": 0.6887379144364079,
+        "structural-specification": 0.18643809691143934
+      }
+    },
+    {
+      "businessId": "amss-v11c-088",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.14234212239945165,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.4185573821581753,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.08401739802241331,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.012084275554870738,
+      "evidenceGate": {
+        "predictive-generalization": 0.28749051424808786,
+        "causal-identification": 0.08627811992713959,
+        "posterior-decision": 0.16097761793084692,
+        "structural-specification": 0.4652537478939256
+      }
+    },
+    {
+      "businessId": "amss-v11c-089",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.010103645389446662,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.013070204486400124,
+      "predictionOnlyCandidateId": "V6-C01 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.01325615495545839,
+      "oracleCandidateId": "V6-C10 · benchmark-gap-fill",
+      "oracleRisk": 0.004140125544785312,
+      "evidenceGate": {
+        "predictive-generalization": 0.16667491051132824,
+        "causal-identification": 0.14178629651490787,
+        "posterior-decision": 0.5879324466914196,
+        "structural-specification": 0.10360634628234433
+      }
+    },
+    {
+      "businessId": "amss-v11c-090",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.051308490357676914,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.051308490357676914,
+      "predictionOnlyCandidateId": "V6-C19 · benchmark-gap-fill",
+      "predictionOnlyRisk": 1,
+      "oracleCandidateId": "V6-C03 · experiments-only",
+      "oracleRisk": 0.0027562059239680655,
+      "evidenceGate": {
+        "predictive-generalization": 0.09499554271318816,
+        "causal-identification": 0.055397063080202556,
+        "posterior-decision": 0.5723276038442,
+        "structural-specification": 0.27727979036240924
+      }
+    },
+    {
+      "businessId": "amss-v11c-091",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.12043940994312988,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.12043940994312988,
+      "predictionOnlyCandidateId": "V6-C11 · experiments-only",
+      "predictionOnlyRisk": 0.11446538294985081,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.05456751662461411,
+      "evidenceGate": {
+        "predictive-generalization": 0.10970563199431689,
+        "causal-identification": 0.04794938992057685,
+        "posterior-decision": 0.655941232864984,
+        "structural-specification": 0.1864037452201222
+      }
+    },
+    {
+      "businessId": "amss-v11c-092",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.07853327215810685,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.07853327215810685,
+      "predictionOnlyCandidateId": "V6-C16 · experiments-only",
+      "predictionOnlyRisk": 0.885194094435449,
+      "oracleCandidateId": "V6-C02 · experiments-only",
+      "oracleRisk": 0.023732118714974812,
+      "evidenceGate": {
+        "predictive-generalization": 0.28488236729649663,
+        "causal-identification": 0.14010986969252986,
+        "posterior-decision": 0.1953976597805703,
+        "structural-specification": 0.3796101032304031
+      }
+    },
+    {
+      "businessId": "amss-v11c-093",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v11Risk": 0.13653444918958393,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.08824074179064685,
+      "predictionOnlyCandidateId": "V6-C10 · experiments-only",
+      "predictionOnlyRisk": 0.14405773477359346,
+      "oracleCandidateId": "V6-C02 · benchmark-gap-fill",
+      "oracleRisk": 0.014981940107015517,
+      "evidenceGate": {
+        "predictive-generalization": 0.23347974248498699,
+        "causal-identification": 0.1447975274058752,
+        "posterior-decision": 0.4490221037706089,
+        "structural-specification": 0.17270062633852887
+      }
+    },
+    {
+      "businessId": "amss-v11c-094",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C02 · experiments-only",
+      "v11Risk": 0.008731901101080323,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.008731901101080323,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.005400994666679272,
+      "oracleCandidateId": "V6-C01 · experiments-only",
+      "oracleRisk": 0.005400994666679272,
+      "evidenceGate": {
+        "predictive-generalization": 0.053043861341168154,
+        "causal-identification": 0.0360650500361335,
+        "posterior-decision": 0.7351057032667995,
+        "structural-specification": 0.17578538535589897
+      }
+    },
+    {
+      "businessId": "amss-v11c-095",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.21682116961320239,
+      "v9CandidateId": "V6-C01 · benchmark-gap-fill",
+      "v9Risk": 0.4658436180366182,
+      "predictionOnlyCandidateId": "V6-C09 · experiments-only",
+      "predictionOnlyRisk": 0.2035873762400278,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.05272011601721882,
+      "evidenceGate": {
+        "predictive-generalization": 0.09168044834142358,
+        "causal-identification": 0.055841378642871885,
+        "posterior-decision": 0.6581478954947316,
+        "structural-specification": 0.19433027752097276
+      }
+    },
+    {
+      "businessId": "amss-v11c-096",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.3984567645992162,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.3984567645992162,
+      "predictionOnlyCandidateId": "V6-C01 · experiments-only",
+      "predictionOnlyRisk": 0.3984567645992162,
+      "oracleCandidateId": "V6-C15 · benchmark-gap-fill",
+      "oracleRisk": 0.0033003104577130106,
+      "evidenceGate": {
+        "predictive-generalization": 0.2498464394236259,
+        "causal-identification": 0.05043209373625662,
+        "posterior-decision": 0.16515516834653857,
+        "structural-specification": 0.534566298493579
+      }
+    },
+    {
+      "businessId": "amss-v11c-097",
+      "evidenceGroup": "paid-social-experiment",
+      "v11CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v11Risk": 0.016863284044214902,
+      "v9CandidateId": "V6-C02 · experiments-only",
+      "v9Risk": 0.016970814619996003,
+      "predictionOnlyCandidateId": "V6-C08 · experiments-only",
+      "predictionOnlyRisk": 0.05932714892307102,
+      "oracleCandidateId": "V6-C06 · benchmark-gap-fill",
+      "oracleRisk": 0.0020562031403074266,
+      "evidenceGate": {
+        "predictive-generalization": 0.23097574935493298,
+        "causal-identification": 0.1885180641449276,
+        "posterior-decision": 0.4076588724978005,
+        "structural-specification": 0.1728473140023389
+      }
+    },
+    {
+      "businessId": "amss-v11c-098",
+      "evidenceGroup": "search-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.08281896610521307,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.08281896610521307,
+      "predictionOnlyCandidateId": "V6-C03 · experiments-only",
+      "predictionOnlyRisk": 0.059908648436810936,
+      "oracleCandidateId": "V6-C15 · experiments-only",
+      "oracleRisk": 0.035834268102501884,
+      "evidenceGate": {
+        "predictive-generalization": 0.02702995052726509,
+        "causal-identification": 0.02452083313938579,
+        "posterior-decision": 0.7820564846447136,
+        "structural-specification": 0.16639273168863558
+      }
+    },
+    {
+      "businessId": "amss-v11c-099",
+      "evidenceGroup": "tv-experiment",
+      "v11CandidateId": "V6-C07 · experiments-only",
+      "v11Risk": 0.05306576705729281,
+      "v9CandidateId": "V6-C01 · experiments-only",
+      "v9Risk": 0.08900354594269175,
+      "predictionOnlyCandidateId": "V6-C21 · experiments-only",
+      "predictionOnlyRisk": 0.12028766078911632,
+      "oracleCandidateId": "V6-C08 · experiments-only",
+      "oracleRisk": 0.034129299622682296,
+      "evidenceGate": {
+        "predictive-generalization": 0.022090709010543823,
+        "causal-identification": 0.015648953494821344,
+        "posterior-decision": 0.7837795672049014,
+        "structural-specification": 0.17848077028973344
+      }
+    },
+    {
+      "businessId": "amss-v11c-100",
+      "evidenceGroup": "no-experiment",
+      "v11CandidateId": "V6-C01 · experiments-only",
+      "v11Risk": 0.25251554934752,
+      "v9CandidateId": "V6-C02 · benchmark-gap-fill",
+      "v9Risk": 0.9045589668222016,
+      "predictionOnlyCandidateId": "V6-C22 · benchmark-gap-fill",
+      "predictionOnlyRisk": 0.97215639866143,
+      "oracleCandidateId": "V6-C17 · experiments-only",
+      "oracleRisk": 0.013605728137639427,
+      "evidenceGate": {
+        "predictive-generalization": 0.2718777134970479,
+        "causal-identification": 0.05918658050098358,
+        "posterior-decision": 0.1722808086931618,
+        "structural-specification": 0.49665489730880663
+      }
+    }
+  ],
+  "governance": {
+    "truthOpenedExactlyOnce": true,
+    "postTruthTuningPermitted": false,
+    "publicationUpdateBeforeAcceptancePermitted": false,
+    "externalRealAdvertiserClaimPermitted": false
+  }
+}

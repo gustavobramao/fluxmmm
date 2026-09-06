@@ -1,0 +1,22 @@
+{
+  "artifactId": "flux-v11-amss-confirmatory-selector-freeze-v1",
+  "status": "selectors-frozen-before-cohort-generation",
+  "frozenAt": "2026-09-06T06:41:34.306Z",
+  "truthOpened": false,
+  "v11": {
+    "featureTokens": 232,
+    "contextTokens": 63,
+    "ensembleMembers": 5,
+    "policy": {
+      "danger_penalty": 0.5,
+      "uncertainty_penalty": 0.25
+    }
+  },
+  "files": {
+    "v11-selector.json": "5c5cc9d7fb2128bb8bedd90d44df2393e30147856aae8e13b6d7c02afd423731",
+    "v11-train-selector.py": "e6f54398d327e59499b170d9cf6ff1b3290f0e6f47cc0edf23f02a871882562a",
+    "v11-contract.ts": "233ca1d66d604a3bc83e0091c39f7cd9b39993d66f30aa695fba1b727ff8079d",
+    "v9-selector.json": "867326c3ea171826a85dd1d7036c9fd86738c80d367b977c8497d4441debac8a",
+    "v9-train-selector.py": "406c49a08f68c28c7ee4684a24872db92f75f1b9fc672c3b293bd8c02a03e2a6"
+  }
+}

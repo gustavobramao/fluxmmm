@@ -1,0 +1,31 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: flux-v11-amss-confirmatory-001
+  labels:
+    fluxmmm-audit-id: v11-amss-confirmatory-001
+    fluxmmm-workload: svi-external-transport
+spec:
+  template:
+    spec:
+      taskCount: 4800
+      parallelism: 180
+      template:
+        spec:
+          containers:
+            - image: europe-west1-docker.pkg.dev/fluxmmm-production/fluxmmm-research/svi-cvm-one-candidate@sha256:3276faca285998efdf40db81ec8b881d4102ab5b3eb528e4dba529e53c9e893e
+              env:
+                - name: FLUX_GCS_BUCKET
+                  value: fluxmmm-production-svi-research
+                - name: FLUX_MANIFEST_OBJECT
+                  value: v11-amss-confirmatory-001/execution-shards/manifest.json
+                - name: FLUX_CANDIDATE_CONCURRENCY
+                  value: "1"
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 2Gi
+          maxRetries: 0
+          serviceAccountName: fluxmmm-v11-amss@fluxmmm-production.iam.gserviceaccount.com
+          timeoutSeconds: "1800"
+

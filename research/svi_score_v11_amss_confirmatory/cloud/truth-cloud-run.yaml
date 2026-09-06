@@ -1,0 +1,30 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: flux-v11-amss-confirmatory-truth-001
+  labels:
+    fluxmmm-audit-id: v11-amss-confirmatory-001
+    fluxmmm-workload: amss-frozen-truth
+spec:
+  template:
+    spec:
+      taskCount: 100
+      parallelism: 100
+      template:
+        spec:
+          containers:
+            - image: europe-west1-docker.pkg.dev/fluxmmm-production/fluxmmm-research/amss-truth-v11-confirmatory@sha256:ab78317233dd42d0391acd6b1611f451ef2616a1ed5b33fa08cf865bdcdec8a7
+              env:
+                - name: FLUX_GCS_BUCKET
+                  value: fluxmmm-production-svi-research
+                - name: FLUX_TRUTH_INPUT_PREFIX
+                  value: v11-amss-confirmatory-001/truth-input
+                - name: FLUX_TRUTH_OUTPUT_PREFIX
+                  value: v11-amss-confirmatory-001/truth-results
+              resources:
+                limits:
+                  cpu: "1"
+                  memory: 2Gi
+          maxRetries: 0
+          serviceAccountName: fluxmmm-v11-amss@fluxmmm-production.iam.gserviceaccount.com
+          timeoutSeconds: "14400"

@@ -441,7 +441,7 @@ export function ScoreLabView() {
     <div className="view score-lab-view">
       <section className="page-heading compact-heading score-lab-heading">
         <div>
-          <span className="kicker">RegretSet-MMM · frozen V9 research release</span>
+          <span className="kicker">RegretSet-MMM · evidence-adaptive V11 release</span>
           <h1>Score research</h1>
           <p>Learn how posterior and validation evidence predicts economic decision loss across advertisers.</p>
         </div>
@@ -450,7 +450,7 @@ export function ScoreLabView() {
 
       <section className="score-lab-mode-tabs compact" aria-label="Score research views">
         <button className={labMode === "evidence" ? "active" : ""} onClick={() => setLabMode("evidence")}>
-          <span>1</span><b>External evidence</b><small>Frozen V9 on Google AMSS</small>
+          <span>1</span><b>External evidence</b><small>Fresh V11 audit on Google AMSS</small>
         </button>
         <button className={labMode === "method" ? "active" : ""} onClick={() => setLabMode("method")}>
           <span>2</span><b>How it learns</b><small>Truth firewall, tokens, and loss</small>
