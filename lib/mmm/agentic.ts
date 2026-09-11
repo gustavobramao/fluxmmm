@@ -17,9 +17,10 @@ import type {
   ValidationProgress,
   ValidationResult,
 } from "./validation";
+import type { RegretSetV11CandidateReceipt } from "./regretset-v11";
 
 export const AGENTIC_SEARCH_VERSION =
-  "flux-agentic-search-v5.2.0-v6-paired-evidence-rescue";
+  "flux-agentic-search-v11.0.0-evidence-adaptive-regretset";
 
 export interface AgenticSearchContract {
   families: Record<ValidationModelKind, boolean>;
@@ -73,6 +74,11 @@ export interface AgenticCandidateRun {
   state: AgenticCandidateState;
   model?: ModelResult;
   validation?: ValidationResult;
+  regretSet?: RegretSetV11CandidateReceipt;
+  regretSetProgress?: {
+    stage: "screening" | "posterior" | "scoring";
+    detail: string;
+  };
   roiGuardrailViolations?: AgenticRoiGuardrailViolation[];
   progress?: ValidationProgress;
   restoredFromCache?: boolean;
@@ -270,6 +276,15 @@ export function findAgenticBenchmarkRescueRecommendations(
 export function passesAgenticEligibility(
   run: AgenticCandidateRun,
 ): boolean {
+  if (run.regretSet) {
+    return Boolean(
+      run.regretSet.selected &&
+        run.regretSet.posteriorStatus === "labelled" &&
+        run.validation &&
+        passesApplicableGates(run.validation) &&
+        !run.roiGuardrailViolations?.length,
+    );
+  }
   return Boolean(
     run.validation &&
       (run.validation.finalScore ?? 0) >= 75 &&
@@ -281,6 +296,16 @@ export function passesAgenticEligibility(
 export function rankAgenticCandidates(
   runs: AgenticCandidateRun[],
 ): AgenticCandidateRun[] {
+  const v11Runs = runs.filter(
+    (run) => run.state === "complete" && Boolean(run.regretSet),
+  );
+  if (v11Runs.length) {
+    return v11Runs.sort((left, right) =>
+      (left.regretSet?.rank ?? Number.POSITIVE_INFINITY) -
+        (right.regretSet?.rank ?? Number.POSITIVE_INFINITY) ||
+      left.spec.id.localeCompare(right.spec.id),
+    );
+  }
   return runs
     .filter(
       (run) =>

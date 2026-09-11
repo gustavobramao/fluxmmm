@@ -1,3 +1,53 @@
+# FluxMMM 4.1.0 — Frozen V11 Runtime Selection
+
+Released 11 September 2026.
+
+This release activates the frozen evidence-adaptive RegretSet-MMM V11 contract
+inside the local product workflow. The Agentic screen no longer presents an
+analytic MAP/Laplace rank as though it were V11.
+
+## Runtime alignment
+
+- The Agentic workspace evaluates the complete 24-specification × 2-evidence-
+  regime candidate set required by V11.
+- Each candidate receives the frozen two-seed FullRankADVI posterior contract,
+  232 observable candidate tokens, and 63 business-context tokens before the
+  five-member DeepSets ensemble ranks adjusted economic risk.
+- Standalone validation remains diagnostic evidence; a V11 score exists only
+  after the complete 48-candidate set has been evaluated.
+- Promotion preserves validation and ROI gates. NUTS then samples the frozen
+  winner and cannot retroactively change which candidate V11 selected.
+
+## Faster and safer local execution
+
+- Inference-equivalent evidence arms reuse a single posterior artifact. When
+  every media channel is already experiment-anchored, this reduces 48 declared
+  candidates to at most 24 unique posterior fits without removing candidates.
+- Existing artifacts created before the new canonical fingerprint are safely
+  discovered and reused only when the statistical model and inference contract
+  match exactly.
+- Local SVI concurrency now adapts to installed memory, reducing memory
+  contention on smaller machines.
+- Oversized PyTensor graphs automatically retry through the deterministic C/VM
+  backend after a compilation-limit failure.
+- Experiment CSV upload, schema guidance, dynamic column mapping, and explicit
+  missing-value repair are available in the calibration and data workflows.
+
+## Verification
+
+```bash
+pnpm test
+pnpm test:experiment-csv
+pnpm test:regretset-v11-runtime
+pnpm mcmc:test
+```
+
+The V11 weights, candidate registry, posterior-token contract, and selection
+objective remain frozen. This is a product-runtime and reliability release, not
+a retraining or a new research result.
+
+---
+
 # FluxMMM 4.0.0 — Evidence-Adaptive RegretSet-MMM
 
 Released 6 September 2026.

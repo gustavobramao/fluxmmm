@@ -17,6 +17,8 @@ export interface ColumnSpec {
 }
 
 export interface Dataset {
+  /** Version of the semantic inference and repair contract used at ingestion. */
+  contractVersion?: string;
   name: string;
   rawCsv: string;
   sourceRows: DataRow[];
@@ -32,6 +34,8 @@ export interface Dataset {
   hash: string;
   chronologyReordered: boolean;
   automaticRepairs: DatasetRepair[];
+  /** Repairs applied only after an explicit analyst decision. */
+  confirmedRepairs?: DatasetRepair[];
   sourceCadence: DatasetCadence;
   modelCadence: ModelCadence;
   periodsPerYear: number;
@@ -41,7 +45,12 @@ export interface Dataset {
 export type ModelCadence = "weekly" | "monthly";
 
 export interface DatasetRepair {
-  id: "date-format" | "daily-aggregation";
+  id:
+    | "date-format"
+    | "daily-aggregation"
+    | "media-missing-zero"
+    | "control-missing-interpolation"
+    | "outcome-missing-interpolation";
   column: string;
   count: number;
   title: string;
@@ -77,6 +86,7 @@ export interface ValidationResult {
   modeledMissingCells: number;
   excludedControlColumns: string[];
   automaticRepairs: DatasetRepair[];
+  confirmedRepairs: DatasetRepair[];
   missingCells: number;
   duplicateDates: number;
 }

@@ -23,7 +23,18 @@ const OUTCOME_NAMES = [
 ];
 const DAY_MS = 86_400_000;
 const MAX_MODELED_CONTROLS = 4;
-const DATA_CONTRACT_VERSION = "cadence-v1.2-daily-weekly-monthly";
+export const DATA_CONTRACT_VERSION = "cadence-v1.3-safe-upload-repairs";
+
+export type MissingValueRepairStrategy =
+  | "media-as-zero"
+  | "interpolate-controls"
+  | "interpolate-outcome";
+
+export interface MissingValueRepairCounts {
+  media: number;
+  controls: number;
+  outcome: number;
+}
 
 function isMissing(value: string | number | undefined): boolean {
   return value === undefined || (typeof value === "string" && value.trim() === "");
@@ -72,6 +83,39 @@ function expandTwoDigitYear(year: number): number {
   return year <= 68 ? 2000 + year : 1900 + year;
 }
 
+function separatedNumericDateParts(value: string | number | undefined): {
+  first: number;
+  second: number;
+  year: number;
+} | null {
+  if (isMissing(value)) return null;
+  const match = String(value)
+    .trim()
+    .match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/);
+  if (!match) return null;
+  return {
+    first: Number(match[1]),
+    second: Number(match[2]),
+    year: expandTwoDigitYear(Number(match[3])),
+  };
+}
+
+function yearFirstDate(value: string | number | undefined): string | null {
+  if (isMissing(value)) return null;
+  const match = String(value)
+    .trim()
+    .match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})(?:[T\s].*)?$/);
+  if (!match) return null;
+  return isoDateFromParts(Number(match[1]), Number(match[2]), Number(match[3]));
+}
+
+function compactYearFirstDate(value: string | number | undefined): string | null {
+  if (isMissing(value)) return null;
+  const match = String(value).trim().match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (!match) return null;
+  return isoDateFromParts(Number(match[1]), Number(match[2]), Number(match[3]));
+}
+
 function normalizeUnambiguousDateColumn(
   rows: DataRow[],
   dateColumn: string,
@@ -83,36 +127,43 @@ function normalizeUnambiguousDateColumn(
     return { rows: [...rows], repairs: [] };
   }
 
-  const parts = populated.map((value) =>
-    String(value)
-      .trim()
-      .match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/),
-  );
-  if (parts.some((match) => !match)) {
+  const yearFirst = populated.map(yearFirstDate);
+  const compactYearFirst = populated.map(compactYearFirstDate);
+  const localeParts = populated.map(separatedNumericDateParts);
+  const allYearFirst = yearFirst.every(Boolean);
+  const allCompactYearFirst = compactYearFirst.every(Boolean);
+  const allLocale = localeParts.every(Boolean);
+
+  if (!allYearFirst && !allCompactYearFirst && !allLocale) {
     return { rows: [...rows], repairs: [] };
   }
 
-  const firstExceedsMonth = parts.some((match) => Number(match?.[1]) > 12);
-  const secondExceedsMonth = parts.some((match) => Number(match?.[2]) > 12);
-  if (firstExceedsMonth === secondExceedsMonth) {
-    return { rows: [...rows], repairs: [] };
+  let order: "year-month-day" | "month-day-year" | "day-month-year";
+  if (allYearFirst || allCompactYearFirst) {
+    order = "year-month-day";
+  } else {
+    const firstExceedsMonth = localeParts.some((part) => Number(part?.first) > 12);
+    const secondExceedsMonth = localeParts.some((part) => Number(part?.second) > 12);
+    if (firstExceedsMonth === secondExceedsMonth) {
+      return { rows: [...rows], repairs: [] };
+    }
+    order = secondExceedsMonth ? "month-day-year" : "day-month-year";
   }
 
-  const order = secondExceedsMonth ? "month-day-year" : "day-month-year";
   let repairCount = 0;
   const normalized = rows.map((row) => {
     const value = row[dateColumn];
     if (isMissing(value)) return { ...row };
-    const match = String(value)
-      .trim()
-      .match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
-    if (!match) return { ...row };
-    const first = Number(match[1]);
-    const second = Number(match[2]);
-    const year = expandTwoDigitYear(Number(match[3]));
-    const month = order === "month-day-year" ? first : second;
-    const day = order === "month-day-year" ? second : first;
-    const iso = isoDateFromParts(year, month, day);
+    const parts = separatedNumericDateParts(value);
+    const iso = order === "year-month-day"
+      ? yearFirstDate(value) ?? compactYearFirstDate(value)
+      : parts
+        ? isoDateFromParts(
+            parts.year,
+            order === "month-day-year" ? parts.first : parts.second,
+            order === "month-day-year" ? parts.second : parts.first,
+          )
+        : null;
     if (!iso) return { ...row };
     repairCount += 1;
     return { ...row, [dateColumn]: iso };
@@ -128,7 +179,11 @@ function normalizeUnambiguousDateColumn(
   }
 
   const sourceFormat =
-    order === "month-day-year" ? "month/day/year" : "day/month/year";
+    order === "year-month-day"
+      ? "year-first"
+      : order === "month-day-year"
+        ? "month-first"
+        : "day-first";
   return {
     rows: normalized,
     repairs: [
@@ -294,12 +349,18 @@ function datasetContract(
   specs: ColumnSpec[],
   dateColumn: string,
   outcomeColumn: string,
+  confirmedRepairs: DatasetRepair[] = [],
 ): string {
   return JSON.stringify({
     version: DATA_CONTRACT_VERSION,
     sourceHash,
     dateColumn,
     outcomeColumn,
+    confirmedRepairs: confirmedRepairs.map(({ id, column, count }) => ({
+      id,
+      column,
+      count,
+    })),
     columns: specs.map(({ name, role, channel, numeric }) => ({
       name,
       role,
@@ -314,8 +375,15 @@ async function contractHash(
   specs: ColumnSpec[],
   dateColumn: string,
   outcomeColumn: string,
+  confirmedRepairs: DatasetRepair[] = [],
 ): Promise<string> {
-  return sha256(datasetContract(sourceHash, specs, dateColumn, outcomeColumn));
+  return sha256(datasetContract(
+    sourceHash,
+    specs,
+    dateColumn,
+    outcomeColumn,
+    confirmedRepairs,
+  ));
 }
 
 function cadenceFromDates(timestamps: number[]): {
@@ -382,14 +450,6 @@ function inferRole(name: string, numeric: boolean): ColumnRole {
     return "date";
   }
   if (
-    !/competitor|market|category/.test(lower) &&
-    OUTCOME_NAMES.some(
-      (candidate) => lower === candidate || tokens.includes(candidate),
-    )
-  ) {
-    return "outcome";
-  }
-  if (
     /(_s$|spend|cost|investment)/i.test(name) &&
     !/competitor/i.test(name)
   ) {
@@ -397,6 +457,15 @@ function inferRole(name: string, numeric: boolean): ColumnRole {
   }
   if (/(impression|click|reach|_i$|_p$)/i.test(name)) {
     return "media_exposure";
+  }
+  if (
+    numeric &&
+    !/competitor|market|category|promotion|promo|discount|holiday|event|campaign|target|forecast/.test(lower) &&
+    OUTCOME_NAMES.some(
+      (candidate) => lower === candidate || tokens.includes(candidate),
+    )
+  ) {
+    return "outcome";
   }
   if (!numeric) return "categorical";
   return "control";
@@ -429,9 +498,9 @@ export async function createDataset(
   });
 
   const dateColumn =
-    specs.find((column) => column.role === "date")?.name ?? columns[0];
+    specs.find((column) => column.role === "date")?.name ?? "";
   const outcomeColumn =
-    specs.find((column) => column.role === "outcome")?.name ?? columns[1];
+    specs.find((column) => column.role === "outcome")?.name ?? "";
   const mediaColumns = specs
     .filter((column) => column.role === "media_spend")
     .map((column) => column.name);
@@ -443,6 +512,7 @@ export async function createDataset(
   const prepared = prepareRows(rows, dateColumn, specs);
 
   return {
+    contractVersion: DATA_CONTRACT_VERSION,
     name,
     rawCsv,
     sourceRows: rows.map((row) => ({ ...row })),
@@ -458,6 +528,7 @@ export async function createDataset(
     hash: await contractHash(sourceHash, specs, dateColumn, outcomeColumn),
     chronologyReordered: prepared.reordered,
     automaticRepairs: prepared.repairs,
+    confirmedRepairs: [],
     sourceCadence: prepared.sourceCadence,
     modelCadence: prepared.modelCadence,
     periodsPerYear: prepared.periodsPerYear,
@@ -468,6 +539,14 @@ export async function createDataset(
 export function validateDataset(dataset: Dataset): ValidationResult {
   const issues: ValidationIssue[] = [];
   dataset.automaticRepairs.forEach((repair) => {
+    issues.push({
+      level: "info",
+      title: repair.title,
+      detail: repair.detail,
+    });
+  });
+  const confirmedRepairs = dataset.confirmedRepairs ?? [];
+  confirmedRepairs.forEach((repair) => {
     issues.push({
       level: "info",
       title: repair.title,
@@ -732,8 +811,137 @@ export function validateDataset(dataset: Dataset): ValidationResult {
     modeledMissingCells,
     excludedControlColumns,
     automaticRepairs: dataset.automaticRepairs,
+    confirmedRepairs,
     missingCells,
     duplicateDates,
+  };
+}
+
+export function missingValueRepairCounts(
+  dataset: Dataset,
+): MissingValueRepairCounts {
+  const activeControls = dataset.controlColumns.slice(0, MAX_MODELED_CONTROLS);
+  const countFor = (columns: string[]) => dataset.rows.reduce(
+    (total, row) => total + columns.filter((column) => isMissing(row[column])).length,
+    0,
+  );
+  return {
+    media: countFor(dataset.mediaColumns),
+    controls: countFor(activeControls),
+    outcome: dataset.outcomeColumn
+      ? countFor([dataset.outcomeColumn])
+      : 0,
+  };
+}
+
+function interpolateColumn(rows: DataRow[], column: string): number {
+  const observed = rows.map((row) => {
+    const value = row[column];
+    return isMissing(value) || !Number.isFinite(Number(value))
+      ? null
+      : Number(value);
+  });
+  let repaired = 0;
+  for (let index = 0; index < observed.length; index += 1) {
+    if (observed[index] !== null) continue;
+    let left = index - 1;
+    while (left >= 0 && observed[left] === null) left -= 1;
+    let right = index + 1;
+    while (right < observed.length && observed[right] === null) right += 1;
+    if (left < 0 || right >= observed.length) continue;
+    const leftValue = observed[left];
+    const rightValue = observed[right];
+    if (leftValue === null || rightValue === null) continue;
+    const fraction = (index - left) / (right - left);
+    rows[index][column] = leftValue + (rightValue - leftValue) * fraction;
+    repaired += 1;
+  }
+  return repaired;
+}
+
+/**
+ * Apply an analyst-confirmed missing-value interpretation to the effective
+ * modeling table. These repairs are never automatic and become part of the
+ * dataset fingerprint. The uploaded CSV and its source hash remain unchanged.
+ */
+export async function applyMissingValueRepair(
+  dataset: Dataset,
+  strategy: MissingValueRepairStrategy,
+): Promise<Dataset> {
+  if (dataset.sourceCadence === "daily") {
+    throw new Error(
+      "Repair missing daily values before weekly aggregation so the weekly totals remain auditable.",
+    );
+  }
+
+  const rows = dataset.rows.map((row) => ({ ...row }));
+  let repaired = 0;
+  let repair: DatasetRepair;
+
+  if (strategy === "media-as-zero") {
+    for (const row of rows) {
+      for (const column of dataset.mediaColumns) {
+        if (!isMissing(row[column])) continue;
+        row[column] = 0;
+        repaired += 1;
+      }
+    }
+    repair = {
+      id: "media-missing-zero",
+      column: dataset.mediaColumns.join(", "),
+      count: repaired,
+      title: "Blank media cells confirmed as zero",
+      detail: `${repaired} blank media cell${repaired === 1 ? " was" : "s were"} set to zero after the analyst confirmed that blank means no delivery or spend. The uploaded CSV remains unchanged.`,
+    };
+  } else if (strategy === "interpolate-controls") {
+    const columns = dataset.controlColumns
+      .slice(0, MAX_MODELED_CONTROLS)
+      .filter((column) => dataset.specs.find((spec) => spec.name === column)?.numeric);
+    repaired = columns.reduce(
+      (total, column) => total + interpolateColumn(rows, column),
+      0,
+    );
+    repair = {
+      id: "control-missing-interpolation",
+      column: columns.join(", "),
+      count: repaired,
+      title: "Numeric control gaps interpolated",
+      detail: `${repaired} interior numeric-control gap${repaired === 1 ? " was" : "s were"} linearly interpolated between observed neighboring periods after analyst confirmation. Edge gaps remain unresolved. The uploaded CSV remains unchanged.`,
+    };
+  } else {
+    repaired = dataset.outcomeColumn
+      ? interpolateColumn(rows, dataset.outcomeColumn)
+      : 0;
+    repair = {
+      id: "outcome-missing-interpolation",
+      column: dataset.outcomeColumn,
+      count: repaired,
+      title: "Outcome gaps interpolated",
+      detail: `${repaired} interior outcome gap${repaired === 1 ? " was" : "s were"} linearly interpolated between observed neighboring periods after analyst confirmation. This modeling assumption is disclosed because it can affect ROI estimates. Edge gaps remain unresolved. The uploaded CSV remains unchanged.`,
+    };
+  }
+
+  if (repaired === 0) {
+    throw new Error("No eligible missing values could be repaired with that strategy.");
+  }
+
+  const confirmedRepairs = [
+    ...(dataset.confirmedRepairs ?? []).filter((item) => item.id !== repair.id),
+    repair,
+  ];
+  const prepared = prepareRows(rows, dataset.dateColumn, dataset.specs);
+  return {
+    ...dataset,
+    sourceRows: rows.map((row) => ({ ...row })),
+    rows: prepared.rows,
+    hash: await contractHash(
+      dataset.sourceHash,
+      dataset.specs,
+      dataset.dateColumn,
+      dataset.outcomeColumn,
+      confirmedRepairs,
+    ),
+    confirmedRepairs,
   };
 }
 
@@ -755,10 +963,9 @@ export async function updateColumnRole(
   );
 
   const dateColumn =
-    specs.find((column) => column.role === "date")?.name ?? dataset.dateColumn;
+    specs.find((column) => column.role === "date")?.name ?? "";
   const outcomeColumn =
-    specs.find((column) => column.role === "outcome")?.name ??
-    dataset.outcomeColumn;
+    specs.find((column) => column.role === "outcome")?.name ?? "";
   const prepared = prepareRows(dataset.sourceRows, dateColumn, specs);
   const dateColumnChanged = dateColumn !== dataset.dateColumn;
 
@@ -779,6 +986,7 @@ export async function updateColumnRole(
       specs,
       dateColumn,
       outcomeColumn,
+      dataset.confirmedRepairs ?? [],
     ),
     chronologyReordered:
       dataset.chronologyReordered || prepared.reordered,

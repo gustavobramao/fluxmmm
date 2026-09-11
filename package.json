@@ -1,6 +1,6 @@
 {
   "name": "fluxmmm",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Local-first Bayesian marketing mix modeling with evidence-adaptive RegretSet-MMM decision-focused model selection.",
   "private": true,
   "license": "MIT",
@@ -55,10 +55,12 @@
     "test:svi-score-v11-ea": "node --import tsx --test tests/svi-score-v11-evidence-adaptive.test.ts",
     "test:svi-score-v11-ea-python": ".venv/bin/python -m unittest tests/test_svi_score_v11_evidence_adaptive.py",
     "test:svi-score-v11-amss": "node --import tsx --test tests/svi-score-v11-amss-confirmatory.test.ts tests/svi-score-v11-amss-secondary-baselines.test.ts",
+    "test:experiment-csv": "node --import tsx --test tests/experiment-csv.test.ts",
+    "test:regretset-v11-runtime": "node --import tsx --test tests/regretset-v11-runtime.test.ts",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
-    "test": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build && node --import tsx --test tests/data-contract.test.ts tests/models.test.ts tests/numerical-regression-fixtures.test.ts tests/simulation-score-v2.test.ts tests/simulator-audit-v3.test.ts tests/learned-score-v4.test.ts tests/learned-score-v6.test.ts && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .venv --ignore-pattern .flux-artifacts",
+    "test": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build && node --import tsx --test tests/data-contract.test.ts tests/experiment-csv.test.ts tests/models.test.ts tests/numerical-regression-fixtures.test.ts tests/evidence-attribution.test.ts tests/regretset-v11-runtime.test.ts tests/simulation-score-v2.test.ts tests/simulator-audit-v3.test.ts tests/learned-score-v4.test.ts tests/learned-score-v6.test.ts && node --test tests/rendered-html.test.mjs",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .venv --ignore-pattern .flux-artifacts --ignore-pattern output --ignore-pattern tmp",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

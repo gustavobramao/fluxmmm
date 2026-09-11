@@ -1,6 +1,6 @@
 import type { AgenticCandidateSpec } from "../../lib/mmm/agentic";
 import type { MediaResponseConfig } from "../../lib/mmm/types";
-import { SCORE_V6_CANDIDATES } from "../score_v6/cohort";
+import candidateJson from "../../lib/mmm/artifacts/regretset-v11-candidates.json";
 import {
   SVI_SCORE_V4_FEATURES,
   v4FeatureValue,
@@ -14,7 +14,7 @@ interface FeatureTerm {
 }
 
 const SPEC_BY_ID = new Map(
-  SCORE_V6_CANDIDATES.map((spec) => [spec.id, spec]),
+  (candidateJson as AgenticCandidateSpec[]).map((spec) => [spec.id, spec]),
 );
 
 const DEFICIT_DIAGNOSTICS = [

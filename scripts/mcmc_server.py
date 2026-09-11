@@ -4,20 +4,35 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import math
 import os
 import re
+import subprocess
+import sys
 import threading
 import time
 import traceback
 import uuid
+import warnings
 from dataclasses import dataclass, field
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+
+# ArviZ 1.1 loads arviz-plots, which still accesses ``matplotlib.style.core``
+# as an attribute. Matplotlib 3.11 keeps that compatibility module but no
+# longer exposes it on ``matplotlib.style``. Attach it before importing ArviZ
+# so the local production sampler can start with the supported dependency set.
+import matplotlib.style as mplstyle
+
+if not hasattr(mplstyle, "core"):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=DeprecationWarning)
+        mplstyle.core = importlib.import_module("matplotlib.style.core")  # type: ignore[attr-defined]
 
 import arviz as az
 import numpy as np
@@ -27,10 +42,49 @@ import pytensor.tensor as pt
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = ROOT / ".flux-artifacts" / "mcmc"
+SVI_ARTIFACT_ROOT = ROOT / ".flux-artifacts" / "svi-production"
 MAX_BODY_BYTES = 32_000_000
 SAMPLING_CONTRACT_VERSION = (
     "flux-pymc-nuts-v2.2.0-full-response-same-window-experiment-roi"
 )
+SVI_CONTRACT_VERSION = "flux-fullrank-advi-v11-runtime-v1"
+
+
+def physical_memory_bytes() -> int | None:
+    """Return installed memory without adding a runtime dependency."""
+    try:
+        if sys.platform == "darwin":
+            return int(
+                subprocess.check_output(
+                    ["sysctl", "-n", "hw.memsize"],
+                    text=True,
+                    timeout=2,
+                ).strip()
+            )
+        page_size = int(os.sysconf("SC_PAGE_SIZE"))
+        page_count = int(os.sysconf("SC_PHYS_PAGES"))
+        return page_size * page_count
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return None
+
+
+def default_svi_workers() -> int:
+    memory = physical_memory_bytes()
+    if memory is None:
+        return 2
+    gib = memory / (1024**3)
+    if gib <= 12:
+        return 2
+    if gib <= 24:
+        return 3
+    return 4
+
+
+SVI_WORKERS = max(
+    1,
+    min(int(os.environ.get("FLUX_SVI_WORKERS", str(default_svi_workers()))), 8),
+)
+SVI_SEMAPHORE = threading.BoundedSemaphore(SVI_WORKERS)
 
 
 @dataclass
@@ -1656,6 +1710,183 @@ def cached_result(fingerprint: str) -> dict[str, Any] | None:
         return None
 
 
+def validate_svi_contract(contract: dict[str, Any]) -> None:
+    expected = {
+        "method": "fullrank-advi",
+        "iterations": 5000,
+        "draws": 256,
+        "primarySeeds": [30071, 81119],
+        "adjudicationSeed": 190081,
+        "learningRate": 0.001,
+        "initialScale": 0.01,
+        "gradientNorm": 10,
+        "elboWindow": 250,
+        "maximumElboDrift": 0.05,
+        "maximumSeedLogRoiDifference": 0.25,
+    }
+    if contract != expected:
+        raise ValueError(
+            "The V11 selector requires the frozen FullRankADVI inference contract."
+        )
+
+
+def inference_equivalent_model(model: dict[str, Any]) -> dict[str, Any]:
+    """Remove candidate provenance that cannot change the posterior."""
+    equivalent = dict(model)
+    equivalent.pop("promotedId", None)
+    return equivalent
+
+
+def cached_svi_result(
+    fingerprint: str,
+    model: dict[str, Any] | None = None,
+    contract: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    summary_path = SVI_ARTIFACT_ROOT / fingerprint / "summary.json"
+    if not summary_path.exists():
+        summary_path = None
+    if summary_path is not None:
+        try:
+            result = json.loads(summary_path.read_text(encoding="utf-8"))
+            result["cached"] = True
+            return result
+        except (OSError, json.JSONDecodeError):
+            pass
+    if model is None or contract is None or not SVI_ARTIFACT_ROOT.exists():
+        return None
+
+    # Migrate artifacts created before candidate labels were removed from the
+    # cache key. This also makes paired evidence arms share a posterior whenever
+    # their actual likelihood, priors, and inference contract are identical.
+    equivalent_model = inference_equivalent_model(model)
+    for artifact_dir in SVI_ARTIFACT_ROOT.iterdir():
+        payload_path = artifact_dir / "payload.json"
+        candidate_summary_path = artifact_dir / "summary.json"
+        if not payload_path.exists() or not candidate_summary_path.exists():
+            continue
+        try:
+            cached_payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            if cached_payload.get("contract") != contract:
+                continue
+            cached_model = cached_payload.get("model")
+            if not isinstance(cached_model, dict):
+                continue
+            if inference_equivalent_model(cached_model) != equivalent_model:
+                continue
+            result = json.loads(candidate_summary_path.read_text(encoding="utf-8"))
+            result["cached"] = True
+            result["cacheEquivalent"] = True
+            return result
+        except (OSError, json.JSONDecodeError):
+            continue
+    return None
+
+
+def run_svi(job: Job, payload: dict[str, Any]) -> None:
+    fingerprint = payload["fingerprint"]
+    artifact_dir = SVI_ARTIFACT_ROOT / fingerprint
+    payload_path = artifact_dir / "payload.json"
+    output_path = artifact_dir / "summary.json"
+    try:
+        job.status = "queued"
+        update_job(
+            job,
+            stage="queued",
+            completed=0,
+            total=2,
+            chain=0,
+            detail=f"Waiting for one of {SVI_WORKERS} local FullRankADVI workers.",
+        )
+        with SVI_SEMAPHORE:
+            job.status = "running"
+            update_job(
+                job,
+                stage="variational-inference",
+                completed=0,
+                total=2,
+                chain=1,
+                detail="Fitting two independent FullRankADVI approximations.",
+            )
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            payload_path.write_text(
+                json.dumps(payload, separators=(",", ":")),
+                encoding="utf-8",
+            )
+            environment = {
+                **os.environ,
+                "PYTENSOR_FLAGS": os.environ.get(
+                    "PYTENSOR_FLAGS",
+                    f"base_compiledir={ROOT / '.flux-artifacts' / 'pytensor-v11-runtime'}",
+                ),
+            }
+            base_command = [
+                sys.executable,
+                str(ROOT / "scripts" / "svi_batch.py"),
+                "--payload",
+                str(payload_path),
+                "--output",
+                str(output_path),
+            ]
+            completed = subprocess.run(
+                base_command,
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if completed.returncode != 0:
+                detail = completed.stderr.strip() or completed.stdout.strip()
+                compilation_limit = any(
+                    marker in detail.lower()
+                    for marker in (
+                        "kernel argument limit",
+                        "loop fusion failed",
+                        "numba",
+                    )
+                )
+                if compilation_limit:
+                    update_job(
+                        job,
+                        stage="variational-inference",
+                        completed=0,
+                        total=2,
+                        chain=1,
+                        detail="Default graph backend exceeded compilation limits; retrying with deterministic C/VM execution.",
+                    )
+                    completed = subprocess.run(
+                        [*base_command, "--backend", "c"],
+                        cwd=ROOT,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    detail = completed.stderr.strip() or completed.stdout.strip()
+            if completed.returncode != 0:
+                raise RuntimeError(detail[-4000:] or "FullRankADVI worker failed.")
+            result = json.loads(output_path.read_text(encoding="utf-8"))
+            job.result = result
+            job.status = "complete"
+            update_job(
+                job,
+                stage="complete",
+                completed=2,
+                total=2,
+                chain=2,
+                detail="FullRankADVI posterior tokens are ready for V11 scoring.",
+            )
+    except Exception as error:
+        job.status = "error"
+        job.error = f"{type(error).__name__}: {error}"
+        update_job(
+            job,
+            stage="error",
+            detail="FullRankADVI stopped before a valid V11 posterior was produced.",
+        )
+        traceback.print_exc()
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "FluxMCMC/1.0"
 
@@ -1698,6 +1929,34 @@ class Handler(BaseHTTPRequestHandler):
                 }
             )
             return
+        if path == "/v1/svi/health":
+            self.send_json(
+                {
+                    "ready": True,
+                    "engine": "PyMC 6.2 · FullRankADVI",
+                    "contractVersion": SVI_CONTRACT_VERSION,
+                    "workers": SVI_WORKERS,
+                }
+            )
+            return
+        svi_match = re.fullmatch(r"/v1/svi/([a-zA-Z0-9_-]+)", path)
+        if svi_match:
+            job_id = svi_match.group(1)
+            with JOBS_LOCK:
+                job = JOBS.get(job_id)
+            if not job:
+                self.send_json({"error": "FullRankADVI job not found."}, 404)
+                return
+            self.send_json(
+                {
+                    "id": job.id,
+                    "status": job.status,
+                    "progress": job.progress,
+                    "result": job.result,
+                    "error": job.error,
+                }
+            )
+            return
         match = re.fullmatch(r"/v1/sampling/([a-zA-Z0-9_-]+)", path)
         if match:
             job_id = match.group(1)
@@ -1720,6 +1979,57 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path
+        if path == "/v1/svi":
+            try:
+                payload = self.read_json()
+                fingerprint = str(payload.get("fingerprint", ""))
+                if not re.fullmatch(r"[a-f0-9]{64}", fingerprint):
+                    raise ValueError("A valid FullRankADVI fingerprint is required.")
+                if not payload.get("model") or not payload.get("contract"):
+                    raise ValueError("Compiled model and FullRankADVI contract are required.")
+                validate_compiled_model(payload["model"])
+                validate_svi_contract(payload["contract"])
+                cached = cached_svi_result(
+                    fingerprint,
+                    payload["model"],
+                    payload["contract"],
+                )
+                if cached:
+                    job = Job(
+                        id=fingerprint,
+                        fingerprint=fingerprint,
+                        status="complete",
+                        progress={
+                            "stage": "complete",
+                            "completed": 2,
+                            "total": 2,
+                            "chain": 2,
+                            "detail": "Identical FullRankADVI posterior restored from cache.",
+                        },
+                        result=cached,
+                    )
+                    with JOBS_LOCK:
+                        JOBS[fingerprint] = job
+                    self.send_json({"id": job.id, "status": job.status, "cached": True})
+                    return
+                with JOBS_LOCK:
+                    existing = JOBS.get(fingerprint)
+                    if existing and existing.status in {"queued", "running"}:
+                        self.send_json({"id": existing.id, "status": existing.status})
+                        return
+                    job = Job(id=fingerprint, fingerprint=fingerprint)
+                    JOBS[fingerprint] = job
+                thread = threading.Thread(
+                    target=run_svi,
+                    args=(job, payload),
+                    daemon=True,
+                    name=f"flux-svi-{job.id[:8]}",
+                )
+                thread.start()
+                self.send_json({"id": job.id, "status": job.status}, 202)
+            except (ValueError, json.JSONDecodeError) as error:
+                self.send_json({"error": str(error)}, 400)
+            return
         if path != "/v1/sampling":
             self.send_json({"error": "Not found."}, 404)
             return
@@ -1780,6 +2090,7 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8789)
     args = parser.parse_args()
     ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
+    SVI_ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(
         f"Flux MCMC service ready at http://{args.host}:{args.port}",

@@ -3,7 +3,9 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { parseCsv } from "../lib/mmm/csv";
 import {
+  applyMissingValueRepair,
   createDataset,
+  missingValueRepairCounts,
   updateColumnRole,
   validateDataset,
 } from "../lib/mmm/schema";
@@ -103,6 +105,32 @@ test("unambiguous slash dates are repaired automatically with an audit receipt",
     assert.equal(validation.automaticRepairs.length, 1);
     assert.equal(validation.automaticRepairs[0].count, 104);
     assert.match(validation.automaticRepairs[0].detail, /source CSV remains unchanged/i);
+  }
+});
+
+test("common unambiguous date formats normalize without locale guessing", async () => {
+  const start = Date.UTC(2022, 0, 3);
+  const formats = [
+    (timestamp: number) => slashDate(timestamp, "day-month").replaceAll("/", "-"),
+    (timestamp: number) => slashDate(timestamp, "month-day").replaceAll("/", "."),
+    (timestamp: number) => {
+      const date = new Date(timestamp);
+      return `${date.getUTCFullYear()}/${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
+    },
+    (timestamp: number) => isoDate(timestamp).replaceAll("-", ""),
+    (timestamp: number) => `${isoDate(timestamp)}T00:00:00Z`,
+  ];
+
+  for (const format of formats) {
+    const csv = weeklyCsv(104, (row, index) => {
+      row[0] = format(start + index * 7 * 86_400_000);
+      return row;
+    });
+    const dataset = await datasetFromCsv(csv);
+    const validation = validateDataset(dataset);
+    assert.equal(validation.status, "ready");
+    assert.equal(dataset.rows[0][dataset.dateColumn], "2022-01-03");
+    assert.equal(validation.automaticRepairs[0]?.id, "date-format");
   }
 });
 
@@ -244,6 +272,65 @@ test("invalid, missing, and non-numeric modeled values are never coerced to zero
       (issue) => issue.title === "Non-numeric modeled values",
     ),
   );
+});
+
+test("semantic inference and confirmed repairs handle a typical advertiser export", async () => {
+  const start = Date.UTC(2022, 0, 3);
+  const rows = Array.from({ length: 104 }, (_, index) => {
+    const values = [
+      slashDate(start + index * 7 * 86_400_000, "day-month").replaceAll("/", "-"),
+      String(index % 8 === 0 ? 1 : 0),
+      index % 3 === 0 ? "BOGO" : "Normal",
+      String(200 + index * 2),
+      String(100 + index),
+      String(10_000 + index * 20),
+    ];
+    if (index === 20) values[3] = "";
+    if (index === 30) values[4] = "";
+    if (index === 40) values[5] = "";
+    return values.join(",");
+  });
+  const csv = [
+    "date,holiday,sales_promotion,competitor_spend,instagram_spend,sales",
+    ...rows,
+  ].join("\n");
+  const dataset = await datasetFromCsv(csv);
+
+  assert.deepEqual(
+    dataset.specs.filter((column) => column.role === "outcome").map((column) => column.name),
+    ["sales"],
+  );
+  assert.equal(
+    dataset.specs.find((column) => column.name === "sales_promotion")?.role,
+    "categorical",
+  );
+  assert.equal(validateDataset(dataset).invalidDates, 0);
+  assert.deepEqual(missingValueRepairCounts(dataset), {
+    media: 1,
+    controls: 1,
+    outcome: 1,
+  });
+
+  const mediaRepaired = await applyMissingValueRepair(dataset, "media-as-zero");
+  const controlsRepaired = await applyMissingValueRepair(
+    mediaRepaired,
+    "interpolate-controls",
+  );
+  const fullyRepaired = await applyMissingValueRepair(
+    controlsRepaired,
+    "interpolate-outcome",
+  );
+  const validation = validateDataset(fullyRepaired);
+
+  assert.equal(validation.status, "ready");
+  assert.equal(validation.modeledMissingCells, 0);
+  assert.equal(fullyRepaired.rows[30].instagram_spend, 0);
+  assert.equal(fullyRepaired.rows[20].competitor_spend, 240);
+  assert.equal(fullyRepaired.rows[40].sales, 10_800);
+  assert.equal(validation.confirmedRepairs.length, 3);
+  assert.equal(fullyRepaired.rawCsv, dataset.rawCsv);
+  assert.equal(fullyRepaired.sourceHash, dataset.sourceHash);
+  assert.notEqual(fullyRepaired.hash, dataset.hash);
 });
 
 test("semantic remapping creates a distinct dataset contract fingerprint", async () => {

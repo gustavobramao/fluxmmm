@@ -53,10 +53,8 @@ import {
   runAdvancedModel,
 } from "../lib/mmm/advanced";
 import {
-  agenticSearchStage,
   createAgenticForcePromotionAudit,
   DEFAULT_AGENTIC_SEARCH_CONTRACT,
-  findAgenticBenchmarkRescueRecommendations,
   findAgenticRoiGuardrailViolations,
   passesAgenticEligibility,
   rankAgenticCandidates,
@@ -67,24 +65,7 @@ import type {
   AgenticForcePromotionAudit,
   AgenticSearchContract,
 } from "../lib/mmm/agentic";
-import {
-  agenticAdaptiveMinimumBudget,
-  agenticAdaptiveMaximumBudget,
-  agenticAdvancedChallengeBudget,
-  agenticAdvancedCoverage,
-  agenticBoundaryParameters,
-  agenticChannelResponseBudget,
-  agenticChannelResponseCoverage,
-  agenticSeedBudget,
-  agenticLocalChallengeBudget,
-  agenticSearchConfidence,
-  agenticStoppingDecision,
-  generateAgenticAdvancedChallenge,
-  generateAgenticChannelResponseChallenge,
-  generateAgenticLocalChallenge,
-  generateAgenticSeeds,
-  proposeAgenticCandidate,
-} from "../lib/mmm/agentic-search";
+import { agenticBoundaryParameters } from "../lib/mmm/agentic-search";
 import {
   activeIndustryPrior,
   channelExperiments,
@@ -93,15 +74,15 @@ import {
   industryPriorPercentile,
   isHighlyImprobableIndustryRoi,
 } from "../lib/mmm/benchmarks";
-import { formatCompact, formatFull, parseCsv, toNumber } from "../lib/mmm/csv";
+import { formatCompact, formatFull, parseCsv, sha256, toNumber } from "../lib/mmm/csv";
+import {
+  experimentCsvTemplate,
+  experimentSignature as importedExperimentSignature,
+  parseExperimentCsv,
+} from "../lib/mmm/experiment-csv";
 import { runEda } from "../lib/mmm/eda";
 import { modelExperimentWindowRoi } from "../lib/mmm/experiment-window";
 import { mean } from "../lib/mmm/math";
-import {
-  ACTIVE_SCORE_CONTRACT,
-  activeScoreFormula,
-  scoreWeightPercent,
-} from "../lib/mmm/score-contract";
 import { responseForChannel } from "../lib/mmm/response";
 import {
   defaultExperimentsForDataset,
@@ -111,10 +92,14 @@ import {
 } from "../lib/mmm/models";
 import type { DatasetExperimentOrigin } from "../lib/mmm/models";
 import {
+  applyMissingValueRepair,
   createDataset,
+  DATA_CONTRACT_VERSION,
+  missingValueRepairCounts,
   updateColumnRole,
   validateDataset,
 } from "../lib/mmm/schema";
+import type { MissingValueRepairStrategy } from "../lib/mmm/schema";
 import {
   compileSamplingModel,
   DEFAULT_SAMPLING_CONTRACT,
@@ -134,6 +119,23 @@ import {
   samplingServiceHealth,
   startSamplingJob,
 } from "../lib/mmm/sampling-api";
+import {
+  REGRETSET_V11_CANDIDATE_COUNT,
+  REGRETSET_V11_INFERENCE_CONTRACT,
+  REGRETSET_V11_SELECTOR_SHA256,
+  REGRETSET_V11_VERSION,
+  observableRegretSetV11Row,
+  regretSetV11CandidateSpecifications,
+  regretSetV11FeatureVector,
+  scoreRegretSetV11,
+} from "../lib/mmm/regretset-v11";
+import type { RegretSetV11CandidateReceipt } from "../lib/mmm/regretset-v11";
+import {
+  getRegretSetV11PosteriorJob,
+  regretSetV11ServiceHealth,
+  startRegretSetV11PosteriorJob,
+} from "../lib/mmm/regretset-v11-api";
+import type { SviApproximationResult } from "../research/svi_score_v3/types";
 import {
   assessExternalAnchorEligibility,
   runModelValidation,
@@ -322,6 +324,25 @@ function responseProfileForDataset(dataset: Dataset, config: ModelConfig) {
 
 function delay(milliseconds: number) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function mapWithConcurrency<T, U>(
+  values: readonly T[],
+  concurrency: number,
+  mapper: (value: T, index: number) => Promise<U>,
+): Promise<U[]> {
+  const output = new Array<U>(values.length);
+  let cursor = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(Math.max(1, concurrency), values.length) }, async () => {
+      while (cursor < values.length) {
+        const index = cursor;
+        cursor += 1;
+        output[index] = await mapper(values[index], index);
+      }
+    }),
+  );
+  return output;
 }
 
 function subscribeToClientRuntime() {
@@ -842,15 +863,20 @@ function DataView({
   dataset,
   validation,
   onDatasetChange,
+  onMissingValueRepair,
   onUpload,
   demoMode,
 }: {
   dataset: Dataset;
   validation: ValidationResult;
   onDatasetChange: (dataset: Dataset) => void;
+  onMissingValueRepair: (strategy: MissingValueRepairStrategy) => void;
   onUpload: () => void;
   demoMode: boolean;
 }) {
+  const repairCounts = missingValueRepairCounts(dataset);
+  const repairableMissing =
+    repairCounts.media + repairCounts.controls + repairCounts.outcome;
   return (
     <div className="view">
       <section className="page-heading compact-heading">
@@ -867,7 +893,7 @@ function DataView({
       </section>
       <section className="metric-grid three">
         <MetricCard
-          eyebrow="Validation score"
+          eyebrow="Data readiness"
           value={`${validation.score}/100`}
           detail={
             validation.status === "ready"
@@ -935,6 +961,30 @@ function DataView({
               </div>
             ))}
           </div>
+          {repairableMissing > 0 && dataset.sourceCadence !== "daily" && (
+            <div className="missing-repair-panel">
+              <span className="eyebrow">Explicit repair choices</span>
+              <h3>Resolve blanks without hiding assumptions</h3>
+              {repairCounts.media > 0 && (
+                <div>
+                  <p><b>{repairCounts.media} media cells are blank.</b><small>Confirm zero only when blank means the channel was off—not when spend is unknown.</small></p>
+                  <button className="button secondary" onClick={() => onMissingValueRepair("media-as-zero")}>Confirm blank media as zero</button>
+                </div>
+              )}
+              {repairCounts.controls > 0 && (
+                <div>
+                  <p><b>{repairCounts.controls} numeric-control cells are blank.</b><small>Interpolate only interior gaps between observed neighboring periods.</small></p>
+                  <button className="button secondary" onClick={() => onMissingValueRepair("interpolate-controls")}>Interpolate control gaps</button>
+                </div>
+              )}
+              {repairCounts.outcome > 0 && (
+                <div>
+                  <p><b>{repairCounts.outcome} outcome cells are blank.</b><small>Interpolation can affect ROI and is stored as a disclosed modeling assumption.</small></p>
+                  <button className="button secondary" onClick={() => onMissingValueRepair("interpolate-outcome")}>Interpolate outcome gaps</button>
+                </div>
+              )}
+            </div>
+          )}
           <div className="contract-note">
             <b>Cadence-aware data contract</b>
             <p>
@@ -2097,13 +2147,19 @@ function SpecificationInspector({
 
         <section className="specification-summary-strip">
           <div>
-            <span>Flux score</span>
-            <strong>{run.validation?.finalScore?.toFixed(1) ?? "—"}</strong>
+            <span>V11 adjusted risk</span>
+            <strong>{run.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</strong>
           </div>
           <div>
-            <span>Eligibility</span>
+            <span>V11 selection</span>
             <strong className={eligible ? "pass" : "review"}>
-              {run.validation ? (eligible ? "Pass" : "Review") : "Pending"}
+              {run.regretSet
+                ? run.regretSet.selected
+                  ? eligible
+                    ? "Selected · eligible"
+                    : "Selected · gated"
+                  : `Rank ${run.regretSet.rank}/48`
+                : "Pending"}
             </strong>
           </div>
           <div>
@@ -2354,7 +2410,7 @@ function PromotedSpecificationBanner({
           : "Evidence changed since promotion";
   const detail =
     forced && (state === "exact" || state === "inherited")
-      ? `${promotion.run.spec.id} was manually promoted with ${failedEvidenceCount} unresolved evidence item${failedEvidenceCount === 1 ? "" : "s"} preserved. Its score and eligibility were not changed.`
+      ? `${promotion.run.spec.id} was manually promoted with ${failedEvidenceCount} unresolved evidence item${failedEvidenceCount === 1 ? "" : "s"} preserved. Its V11 receipt and eligibility were not changed.`
       : state === "exact"
       ? `All ${parameterCount} applicable settings and the fitted artifact match ${promotion.run.spec.id}.`
       : state === "inherited"
@@ -2381,7 +2437,7 @@ function PromotedSpecificationBanner({
       </div>
       <div className="promotion-receipt-meta">
         <span>
-          {promotion.run.validation?.finalScore?.toFixed(1) ?? "—"} score
+          {promotion.run.regretSet?.adjustedRisk.toFixed(3) ?? "—"} V11 risk
         </span>
         <span>{agenticFamilyLabel(promotedFamily)}</span>
         {forced && <span>Forced override</span>}
@@ -3767,34 +3823,34 @@ function ValidationGuide({
     { kicker: string; title: string; summary: string }
   > = {
     generalization: {
-      kicker: `Layer 01 · ${scoreWeightPercent("generalization")}% learned weight`,
+      kicker: "Layer 01 · V11 predictive-generalization tokens",
       title: "Can the model handle unseen conditions?",
       summary:
         "Temporal folds and observed spend-regime holdouts test prediction without allowing future outcomes into training.",
     },
     structure: {
-      kicker: `Layer 02 · ${scoreWeightPercent("structure")}% learned weight`,
+      kicker: "Layer 02 · V11 structural-specification tokens",
       title: "Does the fitted structure match its assumptions?",
       summary:
         "Diagnostics adapt to the selected likelihood and coefficient structure instead of applying one universal regression checklist.",
     },
     causal: {
-      kicker: `Layer 03 · ${scoreWeightPercent("causal")}% learned weight`,
+      kicker: "Layer 03 · V11 causal-identification tokens",
       title: "How credible is the causal interpretation?",
       summary:
         "Qualified external prediction, refit stability, confounder stress, and temporal placebos test whether ROI survives reasonable challenges.",
     },
     decision: {
-      kicker: `Layer 04 · ${scoreWeightPercent("decision")}% learned weight`,
+      kicker: "Layer 04 · V11 posterior-decision tokens",
       title: "Are the channel ROI estimates usable for business decisions?",
       summary:
         "Posterior plausibility, stability, resolution, identification, and economic consistency test every material channel under its declared evidence contract.",
     },
     scoring: {
-      kicker: "Winner methodology",
-      title: "Decision regret ranks candidates only after gates",
+      kicker: "Frozen V11 selection methodology",
+      title: "Predicted downstream economic risk ranks the complete candidate set",
       summary:
-        "Offline simulation learned twenty diagnostic weights from known economic decision loss. Evidence, identification, and two-sided ROI plausibility gates remain immutable and cannot be traded for a higher score.",
+        "Evidence-adaptive RegretSet-MMM learns from known simulated economic loss, compares 48 paired FullRankADVI posterior candidates jointly, and preserves evidence and ROI gates as separate promotion safeguards.",
     },
   };
   return (
@@ -3823,7 +3879,7 @@ function ValidationGuide({
             ["structure", "Structure"],
             ["causal", "Causal"],
             ["decision", "ROI coherence"],
-            ["scoring", "Winner score"],
+            ["scoring", "V11 selection"],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -3968,28 +4024,24 @@ function ValidationGuide({
         {topic === "scoring" && (
           <div className="validation-guide-body">
             <section className="winner-formula">
-              <span>{ACTIVE_SCORE_CONTRACT.kind === "learned" ? "Learned winner score" : "Fallback winner score"}</span>
-              <h3>{activeScoreFormula()}</h3>
+              <span>V11 adjusted decision risk · lower is better</span>
+              <h3>0.65 × predicted mean loss + 0.35 × predicted P90 loss + danger and ensemble-uncertainty penalties</h3>
               <p>
-                V6 combines twenty diagnostic scores with non-negative learned
-                weights. Missing diagnostics receive a neutral research value;
-                immutable evidence and ROI-coherence gates determine eligibility
-                separately and cannot be overridden by the numeric rank.
+                Five frozen neural selectors read 232 observable tokens per
+                candidate and 63 business-context tokens. Four evidence-gated
+                expert pathways adapt the prediction to the advertiser&apos;s
+                evidence regime. The network is set-relative: it produces a
+                valid V11 risk only after all 48 declared posterior candidates
+                are available.
               </p>
             </section>
-            <section className="score-weight-visual">
-              {(["generalization", "structure", "causal", "decision"] as const).map((id) => (
-                <div key={id} style={{ width: `${scoreWeightPercent(id)}%` }}>
-                  <b>{scoreWeightPercent(id)}%</b>
-                  <span>{VALIDATION_LAYER_META[id].title}</span>
-                </div>
-              ))}
-            </section>
             <section className="validation-explanation-grid">
-              <article><span className="detail-icon mint">✓</span><h3>Learned rank</h3><p>Compares candidates within the highest available immutable eligibility tier using twenty diagnostic signals.</p></article>
-              <article><span className="detail-icon orange">◆</span><h3>Gates</h3><p>Gates determine eligibility, not score points. A higher V6 score can never repair a failed gate.</p></article>
-              <article><span className="detail-icon">A</span><h3>Evidence grade</h3><p>Reports how complete the validation evidence is independently of the numerical score.</p></article>
-              <article><span className="detail-icon">≠</span><h3>No false winner</h3><p>An untestable anchor does not lower the numeric score, but it caps the evidence grade and prevents a decision-grade label.</p></article>
+              <article><span className="detail-icon mint">P</span><h3>Predictive generalization</h3><p>Out-of-sample error, coverage, stability, and spend-regime behavior describe whether a candidate travels beyond its fitted periods.</p></article>
+              <article><span className="detail-icon">C</span><h3>Causal identification</h3><p>Confounder stress, temporal placebos, experiment recovery, evidence quality, conflict, and decision dependence describe causal fragility.</p></article>
+              <article><span className="detail-icon orange">β</span><h3>Posterior decision</h3><p>FullRankADVI geometry, ROI location and width, response uncertainty, contribution dependence, and decision draws describe downstream risk.</p></article>
+              <article><span className="detail-icon">S</span><h3>Structural specification</h3><p>Residual behavior, collinearity, likelihood, adstock, saturation, dynamics, and calibration identify specification mismatch.</p></article>
+              <article><span className="detail-icon mint">5</span><h3>Ensemble protection</h3><p>Five independently trained members reduce reliance on one neural fit; disagreement adds a penalty instead of being hidden.</p></article>
+              <article><span className="detail-icon orange">◆</span><h3>Promotion gates</h3><p>The lowest-risk candidate is promoted only if its posterior is labelled and its validation and material-channel ROI gates pass.</p></article>
             </section>
           </div>
         )}
@@ -4117,37 +4169,43 @@ function primaryDiagnostic(layer: ValidationLayerId): ValidationChartMode {
 
 function ValidationScoreSummary({
   result,
+  regretSet,
 }: {
   result: ModelValidationResult;
+  regretSet?: RegretSetV11CandidateReceipt;
 }) {
   const applicableGates = result.gates.filter((gate) => gate.applicable);
   const unavailableGates = result.gates.filter((gate) => !gate.applicable);
   const passedGates = applicableGates.filter((gate) => gate.passed);
-  const eligibilityLabel = result.eligible
-    ? "Eligible"
-    : unavailableGates.length
-      ? "Evidence-limited"
-      : "Gated";
+  const eligibilityLabel = regretSet
+    ? regretSet.selected
+      ? result.eligible
+        ? "Selected · validation pass"
+        : "Selected · validation gated"
+      : `V11 rank ${regretSet.rank}/48`
+    : "Not ranked by V11";
   return (
     <section className="validation-score-summary">
       <div className="validation-score-outcome">
-        <span className="eyebrow">Winner score</span>
+        <span className="eyebrow">V11 adjusted risk</span>
         <div>
-          <strong>
-            {result.finalScore === null ? "—" : Math.round(result.finalScore)}
-          </strong>
-          <small>{result.finalScore === null ? "Incomplete" : "/100"}</small>
+          <strong>{regretSet ? regretSet.adjustedRisk.toFixed(3) : "—"}</strong>
+          <small>{regretSet ? "lower is better" : "requires 48 candidates"}</small>
         </div>
         <span
           className={`validation-eligibility ${
-            result.eligible ? "pass" : unavailableGates.length ? "limited" : "review"
+            regretSet?.selected && result.eligible
+              ? "pass"
+              : unavailableGates.length
+                ? "limited"
+                : "review"
           }`}
         >
           {eligibilityLabel}
         </span>
       </div>
       <div className="validation-score-story">
-        <span className="eyebrow">Validation fingerprint</span>
+        <span className="eyebrow">Truth-blind diagnostic profile</span>
         <h2>{result.recommendation}</h2>
         <div className="validation-profile">
           {(["generalization", "structure", "causal", "decision"] as const).map((id) => {
@@ -4156,7 +4214,7 @@ function ValidationScoreSummary({
               <div key={id}>
                 <span>
                   {VALIDATION_LAYER_META[id].title}
-                  <small>{scoreWeightPercent(id)}% learned weight</small>
+                  <small>explanatory diagnostic · not a fixed V11 weight</small>
                 </span>
                 <i>
                   <b
@@ -4171,21 +4229,26 @@ function ValidationScoreSummary({
         </div>
       </div>
       <div className="validation-score-evidence">
-        <span className="eyebrow">
-          {result.scoreContract.kind === "learned" ? "Learned score · evidence" : "Fallback score · evidence"}
-        </span>
-        <strong>{result.evidenceGrade}</strong>
-        <p>
+        <span className="eyebrow">V11 selection receipt</span>
+        <strong>{regretSet ? result.evidenceGrade : "Set-relative"}</strong>
+        {regretSet ? (
+          <p>
+            Predicted mean {regretSet.predictedMean.toFixed(3)} · P90{" "}
+            {regretSet.predictedP90.toFixed(3)} · danger{" "}
+            {(100 * regretSet.predictedDanger).toFixed(1)}%
+          </p>
+        ) : (
+          <p>
+            Standalone validation produces diagnostics, not a V11 winner score.
+            Run Agentic to compare the frozen 24×2 FullRankADVI candidate set.
+          </p>
+        )}
+        <small className="validation-score-receipt">
           {passedGates.length}/{applicableGates.length} applicable gates passed
           {unavailableGates.length
             ? ` · ${unavailableGates.length} not testable`
             : ""}
-        </p>
-        {result.heuristicScore !== null && result.finalScore !== null && (
-          <small className="validation-score-receipt">
-            Fixed heuristic {result.heuristicScore.toFixed(1)} · artifact {result.scoreContract.version.replace("flux-score-learner-", "")}
-          </small>
-        )}
+        </small>
         <div className="validation-gates compact">
           {result.gates.map((gate) => (
             <span
@@ -4592,6 +4655,7 @@ function ValidationView({
   dataset,
   models,
   results,
+  agenticRuns,
   statuses,
   progress,
   anchorQualificationAvailable,
@@ -4604,6 +4668,7 @@ function ValidationView({
   dataset: Dataset;
   models: Partial<Record<ValidationModelKind, ModelResult>>;
   results: Partial<Record<ValidationModelKind, ModelValidationResult>>;
+  agenticRuns: AgenticCandidateRun[];
   statuses: Record<ValidationModelKind, JobStatus>;
   progress: Partial<Record<ValidationModelKind, ValidationProgress>>;
   anchorQualificationAvailable: boolean;
@@ -4656,19 +4721,34 @@ function ValidationView({
   }
 
   const selectedResult = results[activeKind];
+  const selectedModel = models[activeKind];
+  const selectedRegretSetRun = selectedModel
+    ? agenticRuns.find(
+        (run) =>
+          run.model?.fingerprint === selectedModel.fingerprint &&
+          Boolean(run.regretSet),
+      )
+    : undefined;
   const selectedProgress = progress[activeKind];
   const selectedStatus = statuses[activeKind];
   const partialLayers = selectedProgress?.layers ?? {};
-  const leaderBoard = availableKinds
-    .map((kind) => results[kind])
-    .filter((result): result is ModelValidationResult => Boolean(result))
-    .sort(
-      (a, b) =>
-        (b.finalScore ?? -1) - (a.finalScore ?? -1),
+  const comparisonRows = availableKinds
+    .flatMap((kind) => {
+      const result = results[kind];
+      const model = models[kind];
+      if (!result || !model) return [];
+      const run = agenticRuns.find(
+        (candidate) =>
+          candidate.model?.fingerprint === model.fingerprint &&
+          Boolean(candidate.regretSet),
+      );
+      return [{ kind, result, regretSet: run?.regretSet }];
+    })
+    .sort((left, right) =>
+      (left.regretSet?.rank ?? Number.POSITIVE_INFINITY) -
+        (right.regretSet?.rank ?? Number.POSITIVE_INFINITY) ||
+      left.kind.localeCompare(right.kind),
     );
-  const winner =
-    leaderBoard.find((result) => result.eligible) ??
-    leaderBoard.find((result) => result.finalScore !== null);
   const focusedResultLayer = focusedLayer
     ? selectedResult?.layers[focusedLayer] ?? partialLayers[focusedLayer]
     : undefined;
@@ -4687,12 +4767,13 @@ function ValidationView({
           <span className="kicker">Decision-grade review</span>
           <h1>Validation lab</h1>
           <p>
-            One model, four complementary challenges: generalization,
-            structural adequacy, causal credibility, and ROI decision coherence.
+            Inspect the observable diagnostics V11 uses alongside posterior
+            geometry. Only the complete Agentic candidate set produces a V11
+            economic-risk rank.
           </p>
         </div>
         <button className="button secondary" onClick={() => setGuideTopic("scoring")}>
-          How winner scoring works ↗
+          How V11 selection works ↗
         </button>
       </section>
 
@@ -4780,7 +4861,10 @@ function ValidationView({
       ) : (
         <>
           {selectedResult && (
-            <ValidationScoreSummary result={selectedResult} />
+            <ValidationScoreSummary
+              result={selectedResult}
+              regretSet={selectedRegretSetRun?.regretSet}
+            />
           )}
           <section className="validation-layer-grid">
             {(["generalization", "structure", "causal", "decision"] as const).map((id) => (
@@ -4802,38 +4886,42 @@ function ValidationView({
             <section className="validation-ranking-wrap">
               <article className="card validation-ranking-card">
                 <div className="card-heading">
-                  <div><span className="eyebrow">Comparable evidence</span><h2>Model leaderboard</h2></div>
-                  {winner && (
+                  <div><span className="eyebrow">Comparable evidence</span><h2>Validation profiles</h2></div>
+                  {selectedRegretSetRun?.regretSet && (
                     <span className="winner-tag">
-                      {winner.eligible ? "Eligible winner" : "Top score · not eligible"} ·{" "}
-                      {VALIDATION_MODEL_LABELS[winner.modelKind]}
+                      V11 rank {selectedRegretSetRun.regretSet.rank}/48 ·{" "}
+                      {selectedRegretSetRun.regretSet.adjustedRisk.toFixed(3)} risk
                     </span>
                   )}
                 </div>
                 <div className="validation-ranking">
-                  {leaderBoard.map((result, index) => (
+                  {comparisonRows.map(({ kind, result, regretSet }) => (
                     <button
-                      key={result.modelKind}
+                      key={kind}
                       onClick={() => {
                         setFocusedLayer(null);
-                        setSelectedKind(result.modelKind);
+                        setSelectedKind(kind);
                       }}
                     >
-                      <span>{index + 1}</span>
-                      <p><b>{VALIDATION_MODEL_LABELS[result.modelKind]}</b><small>{result.recommendation}</small></p>
+                      <span>{regretSet?.rank ?? "—"}</span>
+                      <p><b>{VALIDATION_MODEL_LABELS[kind]}</b><small>{result.recommendation}</small></p>
                       <div>
                         {(["generalization", "structure", "causal", "decision"] as const).map((id) => (
                           <i key={id} title={`${VALIDATION_LAYER_META[id].title}: ${Math.round(result.layers[id].score)}`} style={{ height: `${Math.max(result.layers[id].score, 5)}%` }} />
                         ))}
                       </div>
-                      <strong>{result.finalScore === null ? "—" : Math.round(result.finalScore)}</strong>
+                      <strong>{regretSet ? regretSet.adjustedRisk.toFixed(3) : "diagnostic"}</strong>
                     </button>
                   ))}
-                  {leaderBoard.length < availableKinds.length && (
+                  {comparisonRows.length < availableKinds.length && (
                     <p className="validation-ranking-note">
-                      Validate the remaining fitted models to complete the winner comparison.
+                      Validate the remaining fitted models to complete the diagnostic comparison.
                     </p>
                   )}
+                  <p className="validation-ranking-note">
+                    Rows without a V11 receipt have not been evaluated inside the
+                    frozen 48-candidate posterior set and are intentionally not ranked.
+                  </p>
                 </div>
               </article>
             </section>
@@ -4856,123 +4944,9 @@ function ValidationView({
 type AgenticWorkspaceStatus = "idle" | "running" | "complete";
 type AgenticWorkspacePanel = "contract" | "search" | "winner";
 
-function AgenticSearchConfidencePanel({
-  confidence,
-}: {
-  confidence: ReturnType<typeof agenticSearchConfidence>;
-}) {
-  const plotted = confidence.frontier.filter(
-    (point): point is typeof point & { score: number } =>
-      point.score !== null,
-  );
-  const maximumEvaluation = Math.max(
-    ...confidence.frontier.map((point) => point.evaluation),
-    1,
-  );
-  const chartPoints = plotted
-    .map((point) => {
-      const x = 12 + (point.evaluation / maximumEvaluation) * 276;
-      const y = 78 - (point.score / 100) * 64;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-  return (
-    <section className={`card agentic-confidence-card ${confidence.level}`}>
-      <div className="agentic-confidence-heading">
-        <div>
-          <span className="eyebrow">Search confidence</span>
-          <h2>
-            {confidence.level === "not-established"
-              ? "Best-known model is not yet stable"
-              : `${confidence.score}/100 · ${confidence.level} confidence`}
-          </h2>
-          <p>{confidence.summary}</p>
-        </div>
-        <span className="agentic-confidence-badge">
-          {confidence.level.replace("-", " ")}
-        </span>
-      </div>
-      <div className="agentic-confidence-body">
-        <div className="agentic-convergence-chart">
-          <div>
-            <b>Eligible frontier</b>
-            <small>Best score discovered by evaluation</small>
-          </div>
-          <svg viewBox="0 0 300 90" role="img" aria-label="Best eligible score over evaluated candidates">
-            <line x1="12" y1="14" x2="12" y2="78" />
-            <line x1="12" y1="78" x2="288" y2="78" />
-            {chartPoints && <polyline points={chartPoints} />}
-            {!chartPoints && (
-              <text x="150" y="48" textAnchor="middle">
-                No eligible frontier yet
-              </text>
-            )}
-          </svg>
-        </div>
-        <div className="agentic-confidence-metrics">
-          <div>
-            <span>Search-space coverage</span>
-            <b>{Math.round(confidence.structuralCoverage * 100)}%</b>
-            <small>Families, channel response, Advanced assumptions</small>
-          </div>
-          <div>
-            <span>Restart agreement</span>
-            <b>
-              {confidence.level === "not-established"
-                ? "—"
-                : `${Math.round(confidence.restartAgreement * 100)}%`}
-            </b>
-            <small>{confidence.restartCount}/3 eligible starts</small>
-          </div>
-          <div>
-            <span>Local challenges</span>
-            <b>{confidence.localChallengeCount}</b>
-            <small>{confidence.localImprovements} improved the prior champion</small>
-          </div>
-          <div>
-            <span>Frontier plateau</span>
-            <b>
-              {confidence.level === "not-established"
-                ? "—"
-                : confidence.evaluationsSinceImprovement}
-            </b>
-            <small>
-              {confidence.level === "not-established"
-                ? "No eligible frontier exists"
-                : "trials since a ≥0.25 point gain"}
-            </small>
-          </div>
-        </div>
-      </div>
-      <div className="agentic-restart-strip">
-        {confidence.restartWinners.map((winner) => (
-          <div key={winner.restart}>
-            <span>Start {winner.restart}</span>
-            <b>{winner.candidateId ?? "No eligible model"}</b>
-            <small>
-              {winner.score === undefined
-                ? "—"
-                : `${winner.score.toFixed(1)} · ${winner.family}`}
-            </small>
-          </div>
-        ))}
-      </div>
-      {confidence.boundaryParameters.length > 0 && (
-        <p className="agentic-confidence-warning">
-          <i>!</i>
-          Winning parameters touch declared bounds: {confidence.boundaryParameters.join(", ")}.
-        </p>
-      )}
-    </section>
-  );
-}
-
 function AgenticView({
+  demoMode,
   dataset,
-  contract,
-  setContract,
-  config,
-  advancedConfig,
   experiments,
   industryPriorChannels,
   benchmarkScreeningEnabled,
@@ -4985,11 +4959,8 @@ function AgenticView({
   onPromote,
   onForcePromote,
 }: {
+  demoMode: boolean;
   dataset: Dataset;
-  contract: AgenticSearchContract;
-  setContract: (contract: AgenticSearchContract) => void;
-  config: ModelConfig;
-  advancedConfig: AdvancedModelConfig;
   experiments: Experiment[];
   industryPriorChannels: string[];
   benchmarkScreeningEnabled: boolean;
@@ -5011,20 +4982,7 @@ function AgenticView({
     "all" | ValidationModelKind
   >("all");
   const [confirmForcePromotion, setConfirmForcePromotion] = useState(false);
-  const candidateCount = contract.candidateBudget;
-  const seedCount = agenticSeedBudget(contract);
-  const advancedChallengeCount = agenticAdvancedChallengeBudget(contract);
-  const searchCapabilities = {
-    likelihoodCalibration: experiments.length > 0,
-    mediaColumns: dataset.mediaColumns,
-  };
-  const adaptiveMinimum = agenticAdaptiveMinimumBudget(contract, searchCapabilities);
-  const adaptiveMaximum = agenticAdaptiveMaximumBudget(contract, searchCapabilities);
-  const localChallengeBudget = agenticLocalChallengeBudget(contract);
-  const responseChallengeCount = agenticChannelResponseBudget(
-    contract,
-    searchCapabilities,
-  );
+  const candidateCount = REGRETSET_V11_CANDIDATE_COUNT;
   const scoredRuns = runs.map((run) =>
     run.model
       ? {
@@ -5038,27 +4996,22 @@ function AgenticView({
         }
       : run,
   );
-  const responseCoverage = agenticChannelResponseCoverage(
-    scoredRuns,
-    contract,
-    searchCapabilities,
-  );
   const completed = scoredRuns.filter(
-    (run) => run.state === "complete" && run.spec.searchPhase !== "rescue",
+    (run) => run.state === "complete" && Boolean(run.regretSet),
   ).length;
-  const rescueCount = scoredRuns.filter(
-    (run) => run.state === "complete" && run.spec.searchPhase === "rescue",
+  const screened = scoredRuns.filter((run) => run.model && run.validation).length;
+  const posteriorReady = scoredRuns.filter(
+    (run) => run.regretSetProgress?.stage === "scoring" || Boolean(run.regretSet),
   ).length;
   const errors = scoredRuns.filter(
-    (run) => run.state === "error" && run.spec.searchPhase !== "rescue",
+    (run) => run.state === "error",
   ).length;
-  const gateEligible = scoredRuns.filter(
-    passesAgenticEligibility,
+  const restored = scoredRuns.filter(
+    (run) => run.restoredFromCache || run.regretSet?.posteriorCached,
   ).length;
-  const restored = scoredRuns.filter((run) => run.restoredFromCache).length;
   const ranked = rankAgenticCandidates(scoredRuns);
   const champion = selectAgenticWinner(scoredRuns);
-  const comparisonLeader = champion ?? ranked[0];
+  const comparisonLeader = ranked[0];
   const comparisonIndustryPriorChannels = comparisonLeader
     ? comparisonLeader.spec.family === "frequentist"
       ? []
@@ -5071,41 +5024,21 @@ function AgenticView({
   const boundaryParameters = comparisonLeader
     ? agenticBoundaryParameters(comparisonLeader.spec)
     : [];
-  const adaptiveCount = scoredRuns.filter(
-    (run) => run.spec.searchPhase === "adaptive",
-  ).length;
-  const advancedCoverage = agenticAdvancedCoverage(
-    scoredRuns,
-    contract,
-    searchCapabilities,
-  );
-  const searchConfidence = agenticSearchConfidence(
-    scoredRuns,
-    contract,
-    searchCapabilities,
-  );
   const activeRun = scoredRuns.find((run) => run.state === "running");
-  const searchStage =
-    status === "complete"
-      ? "select"
-      : agenticSearchStage(
-          completed + errors,
-          candidateCount,
-          seedCount,
-          advancedChallengeCount,
-          localChallengeBudget,
-          responseChallengeCount,
-        );
-  const activeFamilies = (
-    ["frequentist", "bayesian", "advanced"] as const
-  ).filter((family) => contract.families[family]);
+  const searchStage = status === "complete"
+    ? 3
+    : screened < candidateCount
+      ? 0
+      : posteriorReady < candidateCount
+        ? 1
+        : 2;
+  const activeFamilies = ["bayesian", "advanced"] as const;
   const candidateRows = scoredRuns.length
     ? scoredRuns
-    : generateAgenticSeeds(
-        config,
-        advancedConfig,
-        contract,
-        searchCapabilities,
+    : regretSetV11CandidateSpecifications(
+        dataset,
+        experiments,
+        benchmarkScreeningEnabled,
       ).map((spec): AgenticCandidateRun => ({
         spec,
         state: "queued" as const,
@@ -5126,15 +5059,6 @@ function AgenticView({
     return () => window.cancelAnimationFrame(frame);
   }, [status]);
 
-  const toggleFamily = (family: ValidationModelKind) => {
-    const nextFamilies = {
-      ...contract.families,
-      [family]: !contract.families[family],
-    };
-    if (!Object.values(nextFamilies).some(Boolean)) return;
-    setContract({ ...contract, families: nextFamilies });
-  };
-
   return (
     <div className="view agentic-view">
       <section className="page-heading compact-heading agentic-heading">
@@ -5142,11 +5066,11 @@ function AgenticView({
           <span className="kicker">Objective model search</span>
           <h1>Agentic modeler</h1>
           <p>
-            Find the best-known eligible specification through independent
-            starts, feasibility-aware refinement, and local champion challenges.
+            Compare the frozen 48-candidate posterior set and select the model
+            with the lowest V11-predicted downstream economic risk.
           </p>
         </div>
-        <span className="agentic-protocol-pill">Global channel search · active V6 score</span>
+        <span className="agentic-protocol-pill">Evidence-adaptive RegretSet-MMM · V11</span>
       </section>
 
       <section className="agentic-workspace-tabs" aria-label="Agentic search stages">
@@ -5172,72 +5096,43 @@ function AgenticView({
           <article className="card agentic-contract-card">
             <div className="card-heading">
               <div>
-                <span className="eyebrow">Searchable space</span>
-                <h2>Model families</h2>
+                <span className="eyebrow">Frozen candidate set</span>
+                <h2>24 specifications × 2 evidence regimes</h2>
               </div>
               <span className="subtle">{candidateCount} candidates</span>
             </div>
             <p className="agentic-card-copy">
-              Cover every model structure, refine several promising basins
-              across three starts, then challenge the champion locally.
+              Every Bayesian and Advanced specification is fitted once with
+              experiments only and once with benchmark gap-fill. V11 scores
+              the complete unordered set; no candidate may be added or removed.
             </p>
             <div className="agentic-family-grid">
               {([
-                ["frequentist", "F", "Naive reference"],
-                ["bayesian", "B", "Calibrated core"],
-                ["advanced", "A", "Opt-in complexity"],
+                ["bayesian", "B", "12 frozen structural specifications"],
+                ["advanced", "A", "12 frozen dynamic and robust specifications"],
               ] as const).map(([family, glyph, detail]) => (
-                <button
+                <div
                   key={family}
-                  className={contract.families[family] ? "selected" : ""}
-                  onClick={() => toggleFamily(family)}
-                  disabled={status === "running"}
-                  aria-pressed={contract.families[family]}
+                  className="selected"
                 >
                   <span>{glyph}</span>
                   <p>
                     <b>{agenticFamilyLabel(family)}</b>
                     <small>{detail}</small>
                   </p>
-                  <i>{contract.families[family] ? "Included" : "Off"}</i>
-                </button>
+                  <i>Locked</i>
+                </div>
               ))}
             </div>
             <div className="agentic-budget-control">
               <div>
-                <b>Candidate budget</b>
+                <b>Inference and evidence contract</b>
                 <small>
-                  {seedCount} global seeds
-                  {responseChallengeCount
-                    ? ` + ${responseChallengeCount} channel-response grid challenges`
-                    : ""}
-                  {advancedChallengeCount
-                    ? ` + ${advancedChallengeCount} paired Advanced challenges`
-                    : ""}
-                  {adaptiveMaximum > 0
-                    ? ` + ${adaptiveMinimum} restart-balanced refinements${adaptiveMaximum > adaptiveMinimum ? ` + ${adaptiveMaximum - adaptiveMinimum} additional feasibility-led proposals` : ""}`
-                    : "."}
-                  {localChallengeBudget
-                    ? ` + ${localChallengeBudget} champion-neighborhood challenges.`
-                    : ""}
+                  48 PyMC FullRankADVI fits · 232 observable candidate tokens ·
+                  63 business-context tokens · five frozen selector members.
                 </small>
               </div>
-              <div className="segmented-control">
-                {([96, 192, 384] as const).map((budget) => (
-                  <button
-                    key={budget}
-                    className={
-                      contract.candidateBudget === budget ? "active" : ""
-                    }
-                    onClick={() =>
-                      setContract({ ...contract, candidateBudget: budget })
-                    }
-                    disabled={status === "running"}
-                  >
-                    {budget}
-                  </button>
-                ))}
-              </div>
+              <span className="immutable-tag">◆ V11 frozen</span>
             </div>
           </article>
 
@@ -5252,15 +5147,11 @@ function AgenticView({
             <div className="agentic-contract-list">
               <div>
                 <span>Objective</span>
-                <b>
-                  {ACTIVE_SCORE_CONTRACT.kind === "learned"
-                    ? "Learned diagnostic decision-loss score · V6"
-                    : "Audited heuristic fallback"}
-                </b>
+                <b>65% predicted mean + 35% predicted P90 economic loss</b>
               </div>
               <div>
-                <span>Ranking weights</span>
-                <b>{activeScoreFormula().replace("100 × ", "")}</b>
+                <span>Selection adjustment</span>
+                <b>+ 0.50 danger probability + 0.25 ensemble uncertainty</b>
               </div>
               <div>
                 <span>ROI plausibility</span>
@@ -5285,18 +5176,15 @@ function AgenticView({
               </div>
               <div>
                 <span>Decision-grade rule</span>
-                <b>Score ≥75 + qualified anchor + gates</b>
+                <b>V11 selection + labelled posterior + validation and ROI gates</b>
               </div>
               <div>
                 <span>Evidence challenge</span>
-                <b>Paired refit for material implausible channels</b>
+                <b>Every specification receives both declared evidence regimes</b>
               </div>
               <div>
                 <span>Selection rule</span>
-                <b>
-                  Highest evidence-coherent score passing gates
-                  {benchmarkScreeningEnabled ? " + ROI screen" : ""}
-                </b>
+                <b>Lowest adjusted V11 economic risk in the finite posterior set</b>
               </div>
               <div>
                 <span>ROI plausibility</span>
@@ -5308,42 +5196,27 @@ function AgenticView({
               </div>
               <div>
                 <span>Parameter domain</span>
-                <b>Predeclared bounds · immutable during search</b>
+                <b>24 predeclared specifications · immutable during scoring</b>
               </div>
               <div>
-                <span>Advanced coverage</span>
-                <b>
-                  {advancedChallengeCount
-                    ? `${advancedChallengeCount} paired challengers required before convergence`
-                    : "Advanced family excluded"}
-                </b>
+                <span>Candidate completeness</span>
+                <b>All 48 candidates required; partial-set scoring prohibited</b>
               </div>
               <div>
-                <span>Channel-response coverage</span>
-                <b>
-                  {responseChallengeCount} covering-array candidates across{" "}
-                  {dataset.mediaColumns.length} channels
-                </b>
+                <span>Posterior inputs</span>
+                <b>FullRankADVI location, covariance, tails, response and decision geometry</b>
               </div>
               <div>
-                <span>Adaptive coverage</span>
-                <b>
-                  {adaptiveMinimum
-                    ? `${adaptiveMinimum} minimum refinements · 3 independent starts`
-                    : "Coverage screen only · no adaptive refinement"}
-                </b>
+                <span>Advertiser channels</span>
+                <b>{dataset.mediaColumns.length} channels · role-mapped where supported</b>
               </div>
               <div>
-                <span>Local optimality</span>
-                <b>
-                  {localChallengeBudget
-                    ? `${localChallengeBudget} global + channel-level champion perturbations reserved`
-                    : "No local refinement reserved"}
-                </b>
+                <span>Selector</span>
+                <b>Set-wise evidence-gated DeepSets ensemble</b>
               </div>
               <div>
                 <span>Inference engine</span>
-                <b>Fast analytic MAP/Laplace · no sampling</b>
+                <b>PyMC 6.2 FullRankADVI · two seeds + adjudication</b>
               </div>
             </div>
             <button
@@ -5352,9 +5225,13 @@ function AgenticView({
                 setConfirmForcePromotion(false);
                 onStart();
               }}
-              disabled={status === "running" || !activeFamilies.length}
+              disabled={status === "running" || demoMode}
             >
-              {status === "complete" ? "Start a fresh search" : "Start objective search"} →
+              {demoMode
+                ? "Run V11 locally from the open-source workspace"
+                : status === "complete"
+                  ? "Run a fresh V11 search →"
+                  : "Start V11 posterior search →"}
             </button>
           </article>
         </section>
@@ -5364,68 +5241,59 @@ function AgenticView({
         <>
           <section className="agentic-stat-grid">
             <article className="card">
-              <span>Evaluated</span>
+              <span>V11 scored</span>
               <strong>
                 {completed + errors} / {candidateCount}
               </strong>
               <small>
-                {restored} restored from cache
-                {rescueCount ? ` · ${rescueCount} evidence rescue${rescueCount === 1 ? "" : "s"}` : ""}
+                {screened} diagnostic screens · {posteriorReady} posteriors ready
               </small>
             </article>
             <article className="card">
-              <span>Eligible</span>
-              <strong>{gateEligible}</strong>
-              <small>Validation + ROI plausibility</small>
+              <span>Artifact reuse</span>
+              <strong>{restored}</strong>
+              <small>Matching screen or posterior restored from local cache</small>
             </article>
             <article className="card">
-              <span>Current leader</span>
+              <span>Selected V11 risk</span>
               <strong>
-                {comparisonLeader?.validation?.finalScore === null ||
-                comparisonLeader?.validation?.finalScore === undefined
-                  ? "—"
-                  : comparisonLeader.validation.finalScore.toFixed(1)}
+                {comparisonLeader?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}
               </strong>
               <small>
-                {comparisonLeader?.validation
-                  ? `Evidence grade ${comparisonLeader.validation.evidenceGrade}`
-                  : "Awaiting first score"}
+                {comparisonLeader?.regretSet
+                  ? "Lower predicted economic risk is better"
+                  : "Available only after all 48 posteriors"}
               </small>
             </article>
             <article className="card">
-              <span>Search confidence</span>
+              <span>Selection confidence</span>
               <strong>
-                {searchConfidence.level === "not-established"
-                  ? "—"
-                  : searchConfidence.score}
+                {comparisonLeader?.regretSet
+                  ? Math.round(100 * (1 - comparisonLeader.regretSet.confidenceRisk))
+                  : "—"}
               </strong>
               <small>
-                {searchConfidence.level === "not-established"
-                  ? "Awaiting eligible restart winners"
-                  : `${searchConfidence.level} · ${searchConfidence.restartCount}/3 starts`}
+                {comparisonLeader?.regretSet
+                  ? "Frozen ambiguity, danger and ensemble receipt"
+                  : "Awaiting set-wise scoring"}
               </small>
             </article>
           </section>
 
           <section className="agentic-pipeline" aria-label="Agentic search progress">
             {([
-              ["seed", "Screen", "Balanced family coverage"],
-              ["response", "Responses", "Per-channel covering array"],
-              ["advanced", "Challenge", "Paired Advanced coverage"],
-              ["adaptive", "Refine", "3-start constrained search"],
-              ["local", "Polish", "Champion neighborhood"],
-              ["select", "Select", "Rank candidates"],
+              [0, "Screen", "Fit 48 specifications and observable diagnostics"],
+              [1, "Infer", "Run the frozen FullRankADVI posterior contract"],
+              [2, "Tokenize", "Assemble 232 candidate and 63 context tokens"],
+              [3, "Select", "Rank the complete set by adjusted decision risk"],
             ] as const).map(([id, label, detail]) => {
-              const order = ["seed", "response", "advanced", "adaptive", "local", "select"];
-              const stateIndex = order.indexOf(searchStage);
-              const itemIndex = order.indexOf(id);
               return (
                 <div
                   key={id}
                   className={
-                    itemIndex < stateIndex
+                    id < searchStage
                       ? "complete"
-                      : itemIndex === stateIndex
+                      : id === searchStage
                         ? "active"
                         : ""
                   }
@@ -5437,102 +5305,6 @@ function AgenticView({
               );
             })}
           </section>
-
-          {responseChallengeCount > 0 && (
-            <details
-              className={`card agentic-coverage-card ${responseCoverage.complete ? "complete" : "running"}`}
-            >
-              <summary>
-                <div>
-                  <span className="eyebrow">Mandatory channel-response grid</span>
-                  <h2>
-                    {responseCoverage.completedChallenges}/
-                    {responseCoverage.requiredChallenges} response challengers
-                  </h2>
-                  <p>
-                    Every material media channel receives distinct carryover,
-                    saturation, half-saturation, and normalization challenges.
-                  </p>
-                </div>
-                <div className="agentic-coverage-progress">
-                  <span><i style={{ width: `${Math.min(100, responseCoverage.completedChallenges / Math.max(responseCoverage.requiredChallenges, 1) * 100)}%` }} /></span>
-                  <b>{responseCoverage.complete ? "Coverage complete ✓" : "Convergence locked"}</b>
-                </div>
-              </summary>
-              <div className="agentic-coverage-grid">
-                {responseCoverage.channels.map((channel) => (
-                  <div key={channel.channel} className={channel.complete ? "complete" : "pending"}>
-                    <span>{cleanChannel(channel.channel)}</span>
-                    <b>{channel.adstockFamilies.join(" · ") || "Awaiting response tests"}</b>
-                    <small>
-                      {channel.complete
-                        ? "Carryover · saturation · half-saturation · normalization covered"
-                        : "Required response profiles remain incomplete"}
-                    </small>
-                  </div>
-                ))}
-              </div>
-            </details>
-          )}
-
-          {advancedChallengeCount > 0 && (
-            <details
-              className={`card agentic-coverage-card ${advancedCoverage.complete ? "complete" : "running"}`}
-            >
-              <summary>
-                <div>
-                  <span className="eyebrow">Mandatory Advanced challenge</span>
-                  <h2>
-                    {advancedCoverage.completedChallenges}/
-                    {advancedCoverage.requiredChallenges} paired challengers
-                  </h2>
-                  <p>
-                    The strongest base response is held constant while Advanced
-                    assumptions receive a controlled, auditable challenge.
-                  </p>
-                </div>
-                <div className="agentic-coverage-progress">
-                  <span>
-                    <i
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          (advancedCoverage.completedChallenges /
-                            Math.max(advancedCoverage.requiredChallenges, 1)) *
-                            100,
-                        )}%`,
-                      }}
-                    />
-                  </span>
-                  <b>
-                    {advancedCoverage.complete
-                      ? "Coverage complete ✓"
-                      : "Convergence locked"}
-                  </b>
-                </div>
-              </summary>
-              <div className="agentic-coverage-grid">
-                {advancedCoverage.dimensions.map((dimension) => (
-                  <div
-                    key={dimension.id}
-                    className={dimension.complete ? "complete" : "pending"}
-                  >
-                    <span>{dimension.label}</span>
-                    <b>{dimension.tested.join(" · ") || "Awaiting test"}</b>
-                    <small>
-                      {dimension.complete
-                        ? "Required levels covered"
-                        : `Needs ${dimension.required
-                            .filter(
-                              (value) => !dimension.tested.includes(value),
-                            )
-                            .join(", ")}`}
-                    </small>
-                  </div>
-                ))}
-              </div>
-            </details>
-          )}
 
           <section className="card agentic-leaderboard-card">
             <div className="card-heading">
@@ -5578,7 +5350,7 @@ function AgenticView({
                 <span>S</span>
                 <span>C</span>
                 <span>D</span>
-                <span>Score</span>
+                <span>V11 risk</span>
                 <span>Gates</span>
               </div>
               {visibleCandidateRows.map((run) => {
@@ -5622,12 +5394,15 @@ function AgenticView({
                       ),
                     )}
                     <span className="agentic-final-score">
-                      {result?.finalScore === null ||
-                      result?.finalScore === undefined
-                        ? run.state === "running"
-                          ? "Running"
-                          : "—"
-                        : result.finalScore.toFixed(1)}
+                      {run.regretSet
+                        ? run.regretSet.adjustedRisk.toFixed(3)
+                        : run.state === "running"
+                          ? run.regretSetProgress?.stage === "posterior"
+                            ? "SVI"
+                            : run.regretSetProgress?.stage === "scoring"
+                              ? "Ready"
+                              : "Screen"
+                          : "—"}
                     </span>
                     <span
                       className={`agentic-gate-pill ${
@@ -5642,12 +5417,22 @@ function AgenticView({
                       }
                     >
                       {run.state === "running"
-                        ? "Testing"
+                        ? run.regretSetProgress?.stage === "posterior"
+                          ? "Posterior"
+                          : run.regretSetProgress?.stage === "scoring"
+                            ? "Set pending"
+                            : "Screening"
                         : run.state === "error"
                           ? "Error"
                           : result
-                            ? passes
-                              ? "Pass"
+                            ? run.regretSet?.selected
+                              ? passes
+                                ? "Selected"
+                                : "Selected · review"
+                              : run.regretSet
+                                ? `Rank ${run.regretSet.rank}`
+                              : passes
+                                ? "Pass"
                               : evidenceReview?.blockingChannels.length
                                 ? "Evidence fail"
                                 : roiReview
@@ -5671,21 +5456,22 @@ function AgenticView({
               <span className="eyebrow">Agent reasoning</span>
               <h2>{activeRun ? `Testing ${activeRun.spec.label}` : status === "complete" ? "Search complete" : "Ready to search"}</h2>
               <p>
-                {activeRun?.progress?.detail ??
+                {activeRun?.regretSetProgress?.detail ??
+                  activeRun?.progress?.detail ??
                   activeRun?.spec.hypothesis ??
                   (status === "complete"
-                    ? champion
-                      ? "The highest-scoring gate-passing candidate is ready for review."
-                      : "No candidate passed every validation and ROI plausibility check. Review the strongest challenger."
+                    ? comparisonLeader
+                      ? "The lowest-risk V11 candidate is ready for review."
+                      : "The complete V11 set could not be scored; review the failed candidates."
                     : "Approve the search contract to begin.")}
               </p>
             </article>
             <article className="card">
               <span className="eyebrow">Stopping rule</span>
-              <h2>Up to {contract.candidateBudget} bounded candidates</h2>
+              <h2>Exactly {REGRETSET_V11_CANDIDATE_COUNT} posterior candidates</h2>
               <p>
                 {stopReason ??
-                  `The search completes ${seedCount} global seeds, ${responseChallengeCount} channel-response grid challenges, ${advancedChallengeCount} Advanced structure challenges, ${adaptiveMaximum} feasibility-aware proposals, and ${localChallengeBudget} local champion tests before ranking the best-known eligible model.`}
+                  "V11 scores only after every paired specification has a finite posterior token record. Partial-set promotion is prohibited."}
               </p>
             </article>
           </section>
@@ -5702,8 +5488,8 @@ function AgenticView({
                     <div>
                       <span className="eyebrow">
                         {champion
-                          ? "Best-known eligible specification"
-                          : "Strongest candidate · gates unresolved"}
+                          ? "V11-selected eligible specification"
+                          : "V11-selected candidate · promotion gates unresolved"}
                       </span>
                       <h2>{comparisonLeader.spec.label}</h2>
                     </div>
@@ -5717,14 +5503,13 @@ function AgenticView({
                   </div>
                   <div className="agentic-champion-score">
                     <strong>
-                      {comparisonLeader.validation?.finalScore?.toFixed(1) ??
+                      {comparisonLeader.regretSet?.adjustedRisk.toFixed(3) ??
                         "—"}
                     </strong>
                     <span>
-                      Flux score
+                      V11 adjusted risk
                       <small>
-                        Evidence grade{" "}
-                        {comparisonLeader.validation?.evidenceGrade ?? "—"}
+                        Lower is better · rank {comparisonLeader.regretSet?.rank ?? "—"}/48
                       </small>
                     </span>
                   </div>
@@ -5780,10 +5565,10 @@ function AgenticView({
                     <p>
                       <i>{champion ? "✓" : "!"}</i>
                       <span>
-                        <b>{champion ? "Highest eligible score" : "Highest observed score"}</b>
+                        <b>Lowest adjusted predicted economic risk</b>
                         <small>
                           {champion
-                            ? "Ranked after validation, material-channel evidence, and ROI plausibility gates were evaluated. Benchmark agreement used in calibration earned no extra points."
+                            ? `V11 predicted mean loss ${comparisonLeader.regretSet?.predictedMean.toFixed(3)}, P90 loss ${comparisonLeader.regretSet?.predictedP90.toFixed(3)}, danger ${(100 * (comparisonLeader.regretSet?.predictedDanger ?? 0)).toFixed(1)}%, and ensemble uncertainty ${comparisonLeader.regretSet?.ensembleUncertainty.toFixed(3)}.`
                             : `No candidate passed every eligibility check. This candidate retains ${forceFailedGates.length} failed validation gate${forceFailedGates.length === 1 ? "" : "s"} and ${forceRoiViolations.length} ROI plausibility review${forceRoiViolations.length === 1 ? "" : "s"}.`}
                         </small>
                       </span>
@@ -5800,35 +5585,24 @@ function AgenticView({
                         </small>
                       </span>
                     </p>
-                    {advancedChallengeCount > 0 && (
-                      <p>
-                        <i>{advancedCoverage.complete ? "✓" : "△"}</i>
-                        <span>
-                          <b>Advanced challenge coverage</b>
-                          <small>
-                            {advancedCoverage.completedChallenges}/
-                            {advancedCoverage.requiredChallenges} paired
-                            challengers completed across dynamic effects,
-                            planning, calibration, and distributions.
-                          </small>
-                        </span>
-                      </p>
-                    )}
                     <p>
-                      <i>→</i>
+                      <i>5</i>
                       <span>
-                        <b>Winning hypothesis</b>
-                        <small>{comparisonLeader.spec.hypothesis}</small>
+                        <b>Frozen ensemble agreement</b>
+                        <small>
+                          Five independently trained V11 members evaluated the
+                          same complete set. Their disagreement is included in
+                          adjusted risk rather than hidden.
+                        </small>
                       </span>
                     </p>
                     <p>
-                      <i>↗</i>
+                      <i>48</i>
                       <span>
-                        <b>Adaptive convergence</b>
+                        <b>Complete-set comparison</b>
                         <small>
-                          {completed} models evaluated · {adaptiveCount} TPE
-                          proposals across three starts · {searchConfidence.localChallengeCount}{" "}
-                          local challenges. {stopReason}
+                          {completed}/48 paired posterior candidates were scored.
+                          Partial-set promotion is prohibited. {stopReason}
                         </small>
                       </span>
                     </p>
@@ -5836,15 +5610,13 @@ function AgenticView({
                 </article>
               </div>
 
-              <AgenticSearchConfidencePanel confidence={searchConfidence} />
-
               <section className="card agentic-finalists-card">
                 <div className="card-heading">
                   <div>
                     <span className="eyebrow">Final comparison</span>
                     <h2>Champion and challengers</h2>
                   </div>
-                  <span className="subtle">Same validation contract</span>
+                  <span className="subtle">Same frozen V11 contract</span>
                 </div>
                 <div className="agentic-finalists">
                   <div className="agentic-finalist-row head">
@@ -5853,7 +5625,7 @@ function AgenticView({
                     <span>S</span>
                     <span>C</span>
                     <span>D</span>
-                    <span>Score</span>
+                    <span>V11 risk</span>
                     <span>Decision</span>
                   </div>
                   {ranked.slice(0, 4).map((run, index) => {
@@ -5874,19 +5646,17 @@ function AgenticView({
                         <span>{Math.round(result.layers.causal.score)}</span>
                         <span>{Math.round(result.layers.decision.score)}</span>
                         <b>
-                          {result.finalScore === null
-                            ? "—"
-                            : result.finalScore.toFixed(1)}
+                          {run.regretSet?.adjustedRisk.toFixed(3) ?? "—"}
                         </b>
                         <span
                           className={`agentic-gate-pill ${
                             passes ? "pass" : "review"
                           }`}
                         >
-                          {run === champion
+                          {run.regretSet?.selected
                             ? "Selected"
                             : passes
-                              ? "Runner-up"
+                              ? `Rank ${run.regretSet?.rank ?? "—"}`
                               : result.evidenceCoherence.blockingChannels.length
                                 ? "Evidence fail"
                                 : roiReview
@@ -5943,8 +5713,8 @@ function AgenticView({
                   <div>
                     <b>Promote with unresolved evidence?</b>
                     <p>
-                      This preserves the {comparisonLeader.validation?.finalScore?.toFixed(1) ?? "—"}
-                      {" "}score, {forceFailedGates.length} failed validation gate
+                      This preserves the {comparisonLeader.regretSet?.adjustedRisk.toFixed(3) ?? "—"}
+                      {" "}V11 risk receipt, {forceFailedGates.length} failed validation gate
                       {forceFailedGates.length === 1 ? "" : "s"}, and{" "}
                       {forceRoiViolations.length} ROI plausibility review
                       {forceRoiViolations.length === 1 ? "" : "s"}. The model
@@ -6246,8 +6016,8 @@ function SamplingView({
           <b>{promotedRun?.spec.id} · {agenticFamilyLabel(promotedRun!.spec.family)}</b>
         </div>
         <div>
-          <span>Validation score</span>
-          <b>{promotedRun?.validation?.finalScore?.toFixed(1) ?? "—"}</b>
+          <span>V11 adjusted risk</span>
+          <b>{promotedRun?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</b>
         </div>
         <div>
           <span>Model contract</span>
@@ -6263,7 +6033,7 @@ function SamplingView({
             <b>Manual force-promotion override</b>
             <p>
               This candidate did not pass the normal promotion contract. Its
-              validation score, {forcedPromotion.failedGates.length} failed gate
+              diagnostic profile, {forcedPromotion.failedGates.length} failed gate
               {forcedPromotion.failedGates.length === 1 ? "" : "s"}, and{" "}
               {forcedPromotion.roiGuardrailViolations.length} ROI review
               {forcedPromotion.roiGuardrailViolations.length === 1 ? "" : "s"}
@@ -6720,7 +6490,7 @@ function SamplingView({
                 <span><b>Adstock</b>{promotedRun?.spec.config.adstockType}</span>
                 <span><b>Response parameters</b>Sampled around promoted values</span>
                 <span><b>Planning factor</b>{promotedRun?.spec.family === "advanced" && promotedRun.spec.advancedConfig.planningIntensity ? "Probabilistic latent factor" : "Not included"}</span>
-                <span><b>Validation</b>{promotedRun?.validation?.finalScore?.toFixed(1) ?? "—"}</span>
+                <span><b>V11 risk</b>{promotedRun?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</span>
               </div>
             </article>
             <article className="card sampling-artifact-card">
@@ -7445,6 +7215,12 @@ function CalibrationView({
   onRun: () => void;
 }) {
   const [showForm, setShowForm] = useState(false);
+  const experimentFileRef = useRef<HTMLInputElement>(null);
+  const [importNotice, setImportNotice] = useState<{
+    status: "success" | "error";
+    title: string;
+    details: string[];
+  }>();
   const defaultStartDate = String(
     dataset.rows[0]?.[dataset.dateColumn] ?? "2018-01-01",
   ).slice(0, 10);
@@ -7453,6 +7229,22 @@ function CalibrationView({
       dataset.dateColumn
     ] ?? defaultStartDate,
   ).slice(0, 10);
+  const defaultOutcomeEndDate = String(
+    dataset.rows[Math.min(12, Math.max(dataset.rows.length - 1, 0))]?.[
+      dataset.dateColumn
+    ] ?? defaultEndDate,
+  ).slice(0, 10);
+  const datasetDates = dataset.rows
+    .map((row) => String(row[dataset.dateColumn] ?? "").slice(0, 10))
+    .filter(Boolean)
+    .sort();
+  const experimentTemplateHref = `data:text/csv;charset=utf-8,${encodeURIComponent(
+    experimentCsvTemplate(dataset.mediaColumns[0] ?? "media_spend", {
+      startDate: defaultStartDate,
+      endDate: defaultEndDate,
+      outcomeEndDate: defaultOutcomeEndDate,
+    }),
+  )}`;
   const [draft, setDraft] = useState({
     channel: dataset.mediaColumns[0] ?? "",
     startDate: defaultStartDate,
@@ -7493,16 +7285,80 @@ function CalibrationView({
     industryChannelCount;
   const hasScreening = Object.keys(screeningRois).length > 0;
 
+  const importExperimentFile = async (file: File) => {
+    try {
+      const parsed = parseExperimentCsv(
+        await file.text(),
+        dataset.mediaColumns,
+        datasetDates.length
+          ? { minimum: datasetDates[0], maximum: datasetDates.at(-1) ?? datasetDates[0] }
+          : undefined,
+      );
+      const existing = new Set(experiments.map(importedExperimentSignature));
+      const imported = parsed.experiments.filter(
+        (experiment) => !existing.has(importedExperimentSignature(experiment)),
+      );
+      const skipped = parsed.experiments.length - imported.length;
+      if (!imported.length) {
+        throw new Error(
+          skipped
+            ? "Every row already exists in the evidence registry."
+            : "The CSV did not contain any experiment rows.",
+        );
+      }
+      setExperiments([...experiments, ...imported]);
+      setImportNotice({
+        status: "success",
+        title: `${imported.length} experiment${imported.length === 1 ? "" : "s"} imported from ${file.name}`,
+        details: [
+          ...(skipped ? [`Skipped ${skipped} exact duplicate${skipped === 1 ? "" : "s"}.`] : []),
+          ...parsed.warnings,
+        ],
+      });
+    } catch (error) {
+      setImportNotice({
+        status: "error",
+        title: `${file.name} was not imported`,
+        details: [error instanceof Error ? error.message : "The experiment CSV could not be read."],
+      });
+    } finally {
+      if (experimentFileRef.current) experimentFileRef.current.value = "";
+    }
+  };
+
   return (
     <div className="view">
       <section className="page-heading compact-heading">
         <div><span className="kicker">Ground-truth first</span><h1>Calibration evidence</h1><p>Register experimental ground truth, then optionally fill evidence gaps with conservative DTC benchmarks.</p></div>
-        <button className="button primary" onClick={() => setShowForm(!showForm)}>+ Add experiment</button>
+        <div className="calibration-heading-actions">
+          <button className="button secondary" onClick={() => experimentFileRef.current?.click()}>↑ Import experiments CSV</button>
+          <button className="button primary" onClick={() => setShowForm(!showForm)}>+ Add experiment</button>
+          <input
+            ref={experimentFileRef}
+            className="hidden-input"
+            type="file"
+            accept=".csv,text/csv"
+            aria-label="Import experiments CSV"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void importExperimentFile(file);
+            }}
+          />
+        </div>
       </section>
       <section className="calibration-banner">
         <div className="calibration-graphic"><span>Experiment evidence</span><b>Lift ROI ± uncertainty</b><i>→</i><span>Model routing</span><b>Prior or likelihood</b></div>
         <div><span className="eyebrow">Evidence routing</span><h2>Choose where experiment evidence enters</h2><p>Standard Bayesian models use experiments as informative priors. Advanced models can route experiments through the prior or likelihood. Industry benchmark fallbacks always remain priors.</p></div>
       </section>
+      {importNotice && (
+        <section className={`experiment-import-notice ${importNotice.status}`} role={importNotice.status === "error" ? "alert" : "status"}>
+          <div>
+            <b>{importNotice.title}</b>
+            {importNotice.details.map((detail) => <small key={detail}>{detail}</small>)}
+          </div>
+          <button aria-label="Dismiss import message" onClick={() => setImportNotice(undefined)}>×</button>
+        </section>
+      )}
       {showForm && (
         <form className="card experiment-form" onSubmit={(event) => {
           event.preventDefault();
@@ -7536,7 +7392,29 @@ function CalibrationView({
         </form>
       )}
       <section className="card">
-        <div className="card-heading"><div><span className="eyebrow">Evidence registry</span><h2>{experiments.length} calibration studies</h2></div><a className="text-button" href="/data/robyn_experiments.csv" download>↓ Schema template</a></div>
+        <div className="card-heading"><div><span className="eyebrow">Evidence registry</span><h2>{experiments.length} calibration studies</h2></div><a className="text-button" href={experimentTemplateHref} download="flux_experiments_template.csv">↓ Download CSV template</a></div>
+        <details className="experiment-import-guide">
+          <summary>
+            <span>CSV format and field definitions</span>
+            <small>Exact schema, accepted aliases and validation rules</small>
+          </summary>
+          <div className="experiment-schema-code">
+            channel,start_date,end_date,outcome_end_date,incremental_outcome,incremental_spend,standard_error,confidence,scope,source
+          </div>
+          <div className="experiment-schema-grid">
+            <p><b>channel</b><span>Must match a media column. Friendly names such as TV also map to tv_spend when unambiguous.</span></p>
+            <p><b>start_date · end_date</b><span>Campaign dates inside the uploaded dataset, preferably YYYY-MM-DD.</span></p>
+            <p><b>outcome_end_date</b><span>Optional. Extend beyond campaign end only when the lift study measures carryover.</span></p>
+            <p><b>incremental_outcome</b><span>Measured incremental revenue, sales or conversions. You may instead provide roi.</span></p>
+            <p><b>incremental_spend</b><span>Positive treatment spend used as the ROI denominator.</span></p>
+            <p><b>standard_error</b><span>Uncertainty in ROI units. Alternatively provide roi_low and roi_high.</span></p>
+            <p><b>confidence</b><span>Optional; defaults to 0.95. Both 0.95 and 95% are accepted.</span></p>
+            <p><b>scope · source</b><span>Scope is immediate or total. Source is the human-readable study name.</span></p>
+          </div>
+          <p className="experiment-schema-note">
+            Import is atomic: if a row is invalid, Flux adds nothing and reports the exact row. Common headers such as campaign_start, incremental_revenue, test_spend, ROI and roi_standard_error are recognized automatically.
+          </p>
+        </details>
         <div className="experiment-table">
           <div className="experiment-row experiment-head"><span>Channel</span><span>Study window</span><span>Incremental outcome</span><span>Spend</span><span>Observed ROI</span><span>Confidence</span><span /></div>
           {experiments.map((experiment, index) => (
@@ -8080,6 +7958,26 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       if (cancelled) return;
       if (checkpoint && checkpoint.payload.demoMode === demoMode) {
         const restored = checkpoint.payload;
+        if (
+          !demoMode &&
+          restored.dataset.contractVersion !== DATA_CONTRACT_VERSION &&
+          restored.validation.status === "blocked"
+        ) {
+          await loadCsv(
+            restored.dataset.rawCsv,
+            restored.dataset.name,
+            "advertiser-upload",
+          );
+          if (cancelled) return;
+          setView("data");
+          setWorkspaceSavedAt(undefined);
+          setWorkspaceSaveStatus("saving");
+          setWorkspaceReady(true);
+          setToast(
+            "The saved upload was revalidated with the safer date, semantic-role, and missing-value contract.",
+          );
+          return;
+        }
         const interruptedAgentic = restored.agenticStatus === "running";
         const interruptedSampling =
           restored.samplingStatus === "running" ||
@@ -8387,6 +8285,28 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       setEdaStatus("complete");
     }, 240);
   }, [experiments, resetAgenticSearch, resetSampling]);
+
+  const handleMissingValueRepair = useCallback(async (
+    strategy: MissingValueRepairStrategy,
+  ) => {
+    if (!dataset) return;
+    try {
+      const repaired = await applyMissingValueRepair(dataset, strategy);
+      handleDatasetChange(repaired);
+      const receipt = repaired.confirmedRepairs?.at(-1);
+      setToast(
+        receipt
+          ? `${receipt.title}: ${receipt.count} value${receipt.count === 1 ? "" : "s"}. The repair is included in the dataset fingerprint.`
+          : "The confirmed repair was applied.",
+      );
+    } catch (error) {
+      setToast(
+        error instanceof Error
+          ? error.message
+          : "The missing-value repair could not be applied.",
+      );
+    }
+  }, [dataset, handleDatasetChange]);
 
   const handleModelConfigChange = useCallback((nextConfig: ModelConfig) => {
     setConfig(nextConfig);
@@ -8828,198 +8748,103 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     void Promise.all(available.map((kind) => runRequestedValidation(kind)));
   }, [advancedResult, models, runRequestedValidation]);
 
-  const handleAgenticContractChange = useCallback(
-    (nextContract: AgenticSearchContract) => {
-      setAgenticContract(nextContract);
-      resetAgenticSearch();
-    },
-    [resetAgenticSearch],
-  );
 
-  const runAgenticSearch = useCallback(async () => {
+  const runRegretSetV11Search = useCallback(async () => {
     if (!dataset || !validation || validation.status === "blocked") {
-      setToast("Resolve blocking schema issues before starting model search.");
+      setToast("Resolve blocking schema issues before starting V11 model search.");
       setView("data");
+      return;
+    }
+    const service = await regretSetV11ServiceHealth();
+    if (!service.ready) {
+      setToast(
+        service.detail ??
+          "The frozen V11 search requires the local FullRankADVI service.",
+      );
       return;
     }
     const generation = agenticGenerationRef.current + 1;
     agenticGenerationRef.current = generation;
-    const capabilities = {
-      likelihoodCalibration: experiments.length > 0,
-      mediaColumns: dataset.mediaColumns,
-    };
-    const seedSpecifications = generateAgenticSeeds(
-      config,
-      advancedConfig,
-      agenticContract,
-      capabilities,
+    const specifications = regretSetV11CandidateSpecifications(
+      dataset,
+      experiments,
+      guardrailMode !== "off",
     );
-    const advancedChallengeBudget =
-      agenticAdvancedChallengeBudget(agenticContract);
-    const responseChallengeBudget = agenticChannelResponseBudget(
-      agenticContract,
-      capabilities,
-    );
-    const localChallengeBudget =
-      agenticLocalChallengeBudget(agenticContract);
-    const localChallengeStart =
-      agenticContract.candidateBudget - localChallengeBudget;
-    const selectedIndustryChannels =
-      guardrailMode === "off" ? [] : industryPriorChannels;
+    if (specifications.length !== REGRETSET_V11_CANDIDATE_COUNT) {
+      setToast("The frozen V11 candidate set failed its completeness check.");
+      return;
+    }
     setAgenticRuns(
-      seedSpecifications.map((spec) => ({ spec, state: "queued" })),
+      specifications.map((spec) => ({
+        spec,
+        state: "queued",
+        regretSetProgress: {
+          stage: "screening",
+          detail: "Waiting for truth-blind diagnostic screening.",
+        },
+      })),
     );
     setAgenticStatus("running");
     setAgenticStopReason(undefined);
     setPromotedAgenticSpecification(undefined);
     setView("agentic");
-    const evaluatedRuns: AgenticCandidateRun[] = [];
-    let finalStopReason: string | undefined;
+    const screened: AgenticCandidateRun[] = [];
 
-    for (
-      let attemptIndex = 0;
-      attemptIndex < agenticContract.candidateBudget;
-      attemptIndex += 1
-    ) {
+    for (const spec of specifications) {
       if (agenticGenerationRef.current !== generation) return;
-      let spec: AgenticCandidateRun["spec"];
-      if (attemptIndex < seedSpecifications.length) {
-        spec = seedSpecifications[attemptIndex];
-      } else if (
-        attemptIndex < seedSpecifications.length + responseChallengeBudget
-      ) {
-        spec = generateAgenticChannelResponseChallenge(
-          config,
-          advancedConfig,
-          agenticContract,
-          attemptIndex + 1,
-          capabilities,
-        );
-        setAgenticRuns((current) => [
-          ...current,
-          { spec, state: "queued" },
-        ]);
-      } else if (
-        attemptIndex <
-        seedSpecifications.length + responseChallengeBudget + advancedChallengeBudget
-      ) {
-        spec = generateAgenticAdvancedChallenge(
-          config,
-          agenticContract,
-          evaluatedRuns,
-          attemptIndex + 1,
-          capabilities,
-        );
-        setAgenticRuns((current) => [
-          ...current,
-          { spec, state: "queued" },
-        ]);
-      } else if (attemptIndex < localChallengeStart) {
-        try {
-          spec = proposeAgenticCandidate(
-            config,
-            advancedConfig,
-            agenticContract,
-            evaluatedRuns,
-            attemptIndex + 1,
-            capabilities,
-          );
-          setAgenticRuns((current) => [
-            ...current,
-            { spec, state: "queued" },
-          ]);
-        } catch (error) {
-          finalStopReason =
-            error instanceof Error
-              ? error.message
-              : "The bounded adaptive search space was exhausted.";
-          break;
-        }
-      } else {
-        try {
-          spec = generateAgenticLocalChallenge(
-            agenticContract,
-            evaluatedRuns,
-            attemptIndex + 1,
-            capabilities,
-          );
-          setAgenticRuns((current) => [
-            ...current,
-            { spec, state: "queued" },
-          ]);
-        } catch (error) {
-          finalStopReason =
-            error instanceof Error
-              ? error.message
-              : "The local champion challenge could not be generated.";
-          break;
-        }
-      }
-      const fitIndustryChannels =
-        spec.family === "frequentist"
-          ? []
-          : spec.evidencePriorChannels ?? selectedIndustryChannels;
-      spec = {
-        ...spec,
-        evidencePriorChannels: [...fitIndustryChannels],
-      };
       setAgenticRuns((current) =>
         current.map((run) =>
           run.spec.id === spec.id
-            ? { ...run, spec, state: "running", error: undefined }
+            ? {
+                ...run,
+                state: "running",
+                regretSetProgress: {
+                  stage: "screening",
+                  detail: "Fitting the declared specification and computing observable diagnostics.",
+                },
+              }
             : run,
         ),
       );
-      await delay(24);
-
       try {
-        const modelKey =
-          spec.family === "advanced"
-            ? await advancedModelFingerprint(
+        const fitIndustryChannels = spec.evidencePriorChannels ?? [];
+        const modelKey = spec.family === "advanced"
+          ? await advancedModelFingerprint(
+              dataset,
+              spec.config,
+              spec.advancedConfig,
+              experiments,
+              fitIndustryChannels,
+            )
+          : await modelFingerprint(
+              dataset,
+              spec.config,
+              experiments,
+              spec.family,
+              fitIndustryChannels,
+            );
+        let model = await getCachedModel(modelKey);
+        const modelWasCached = Boolean(model);
+        if (!model) {
+          model = spec.family === "advanced"
+            ? await runAdvancedModel(
                 dataset,
                 spec.config,
                 spec.advancedConfig,
                 experiments,
+                modelKey,
                 fitIndustryChannels,
               )
-            : await modelFingerprint(
+            : await runModel(
                 dataset,
                 spec.config,
                 experiments,
                 spec.family,
+                modelKey,
                 fitIndustryChannels,
               );
-        let model = await getCachedModel(modelKey);
-        const modelWasCached = Boolean(model);
-        if (!model) {
-          model =
-            spec.family === "advanced"
-              ? await runAdvancedModel(
-                  dataset,
-                  spec.config,
-                  spec.advancedConfig,
-                  experiments,
-                  modelKey,
-                  fitIndustryChannels,
-                )
-              : await runModel(
-                  dataset,
-                  spec.config,
-                  experiments,
-                  spec.family,
-                  modelKey,
-                  fitIndustryChannels,
-                );
           void persistModel(dataset.hash, model);
         }
-
-        const roiGuardrailViolations =
-          findAgenticRoiGuardrailViolations(
-            model,
-            experiments,
-            guardrailMode !== "off",
-            dataset,
-          );
         const validationOptions = {
           anchorIndependenceConfirmed,
           industryPriorChannels: fitIndustryChannels,
@@ -9033,8 +8858,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           experiments,
           validationOptions,
         );
-        let candidateValidation =
-          await getCachedValidation(validationKey);
+        let candidateValidation = await getCachedValidation(validationKey);
         const validationWasCached = Boolean(candidateValidation);
         if (!candidateValidation) {
           candidateValidation = await runModelValidation(
@@ -9048,9 +8872,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
               if (agenticGenerationRef.current !== generation) return;
               setAgenticRuns((current) =>
                 current.map((run) =>
-                  run.spec.id === spec.id
-                    ? { ...run, progress }
-                    : run,
+                  run.spec.id === spec.id ? { ...run, progress } : run,
                 ),
               );
             },
@@ -9058,240 +8880,228 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           );
           void persistValidation(dataset.hash, candidateValidation);
         }
-        if (agenticGenerationRef.current !== generation) return;
-        const completedRun: AgenticCandidateRun = {
+        const run: AgenticCandidateRun = {
           spec,
-          state: "complete",
+          state: "running",
           model,
           validation: candidateValidation,
-          roiGuardrailViolations,
-          restoredFromCache: modelWasCached && validationWasCached,
-        };
-        evaluatedRuns.push(completedRun);
-        setAgenticRuns((current) =>
-          current.map((run) =>
-            run.spec.id === spec.id
-              ? { ...completedRun, progress: undefined }
-              : run,
+          roiGuardrailViolations: findAgenticRoiGuardrailViolations(
+            model,
+            experiments,
+            guardrailMode !== "off",
+            dataset,
           ),
+          restoredFromCache: modelWasCached && validationWasCached,
+          regretSetProgress: {
+            stage: "posterior",
+            detail: "Diagnostic screen complete; FullRankADVI posterior queued.",
+          },
+        };
+        screened.push(run);
+        setAgenticRuns((current) =>
+          current.map((candidate) => candidate.spec.id === spec.id ? run : candidate),
         );
-        const stopping = agenticStoppingDecision(
-          evaluatedRuns,
-          agenticContract,
-          capabilities,
-        );
-        if (
-          attemptIndex + 1 >= seedSpecifications.length &&
-          stopping.shouldStop
-        ) {
-          finalStopReason = stopping.reason;
-          break;
-        }
       } catch (error) {
-        if (agenticGenerationRef.current !== generation) return;
-        const failedRun: AgenticCandidateRun = {
+        const failed: AgenticCandidateRun = {
           spec,
           state: "error",
-          error:
-            error instanceof Error
-              ? error.message
-              : "Candidate evaluation failed.",
+          error: error instanceof Error ? error.message : "V11 candidate screening failed.",
         };
-        evaluatedRuns.push(failedRun);
         setAgenticRuns((current) =>
-          current.map((run) =>
-            run.spec.id === spec.id
-              ? { ...failedRun, progress: undefined }
-              : run,
-          ),
+          current.map((candidate) => candidate.spec.id === spec.id ? failed : candidate),
         );
       }
     }
 
     if (agenticGenerationRef.current !== generation) return;
-    const rescueParents = rankAgenticCandidates(evaluatedRuns)
-      .filter(
-        (run) =>
-          run.state === "complete" &&
-          run.spec.family !== "frequentist" &&
-          Boolean(run.model) &&
-          findAgenticBenchmarkRescueRecommendations(
-            run.model!,
-            experiments,
-            guardrailMode !== "off",
-            dataset,
-            run.spec.evidencePriorChannels ?? [],
-          ).length > 0,
-      )
-      .slice(0, 3);
-
-    for (const parent of rescueParents) {
-      if (agenticGenerationRef.current !== generation) return;
-      const recommendations = findAgenticBenchmarkRescueRecommendations(
-        parent.model!,
-        experiments,
-        guardrailMode !== "off",
-        dataset,
-        parent.spec.evidencePriorChannels ?? [],
+    if (screened.length !== REGRETSET_V11_CANDIDATE_COUNT) {
+      setAgenticStatus("complete");
+      setAgenticStopReason(
+        `V11 was not scored: ${REGRETSET_V11_CANDIDATE_COUNT - screened.length} of 48 required candidates failed screening.`,
       );
-      const additionalChannels = recommendations.map(
-        (recommendation) => recommendation.channel,
-      );
-      const channelBenchmarks = recommendations.filter(
-        (recommendation) => recommendation.role === "channel-benchmark",
-      );
-      const weakFallbacks = recommendations.filter(
-        (recommendation) => recommendation.role === "weak-fallback",
-      );
-      const rescueIndustryChannels = Array.from(
-        new Set([
-          ...(parent.spec.evidencePriorChannels ?? []),
-          ...additionalChannels,
-        ]),
-      );
-      const rescueSpec: AgenticCandidateRun["spec"] = {
-        ...parent.spec,
-        id: `${parent.spec.id}R`,
-        label: `${parent.spec.label} · evidence rescue`,
-        summary: `Paired evidence refit of ${parent.spec.id} for ${additionalChannels.map(cleanChannel).join(", ")}`,
-        hypothesis:
-          `${channelBenchmarks.length ? `Channel benchmark: ${channelBenchmarks.map((item) => cleanChannel(item.channel)).join(", ")}. ` : ""}${weakFallbacks.length ? `Weak broad fallback: ${weakFallbacks.map((item) => cleanChannel(item.channel)).join(", ")}. ` : ""}The paired refit must improve the independent V6 score; benchmark agreement itself earns no validation credit.`,
-        searchPhase: "rescue",
-        rescueOf: parent.spec.id,
-        evidencePriorChannels: rescueIndustryChannels,
-        proposal: {
-          method: "evidence-rescue",
-          reason: `Triggered because ${parent.spec.id} placed material unanchored ROI outside its external plausibility range. The original fit remains unchanged for a non-circular paired comparison.`,
-        },
-      };
-      setAgenticRuns((current) => [
-        ...current,
-        { spec: rescueSpec, state: "running" },
-      ]);
-      try {
-        const modelKey =
-          rescueSpec.family === "advanced"
-            ? await advancedModelFingerprint(
-                dataset,
-                rescueSpec.config,
-                rescueSpec.advancedConfig,
-                experiments,
-                rescueIndustryChannels,
-              )
-            : await modelFingerprint(
-                dataset,
-                rescueSpec.config,
-                experiments,
-                "bayesian",
-                rescueIndustryChannels,
-              );
-        let rescueModel = await getCachedModel(modelKey);
-        const modelWasCached = Boolean(rescueModel);
-        if (!rescueModel) {
-          rescueModel =
-            rescueSpec.family === "advanced"
-              ? await runAdvancedModel(
-                  dataset,
-                  rescueSpec.config,
-                  rescueSpec.advancedConfig,
-                  experiments,
-                  modelKey,
-                  rescueIndustryChannels,
-                )
-              : await runModel(
-                  dataset,
-                  rescueSpec.config,
-                  experiments,
-                  "bayesian",
-                  modelKey,
-                  rescueIndustryChannels,
-                );
-          void persistModel(dataset.hash, rescueModel);
-        }
-        const validationOptions = {
-          anchorIndependenceConfirmed,
-          industryPriorChannels: rescueIndustryChannels,
-          industryBenchmarkScreeningEnabled: guardrailMode !== "off",
-        };
-        const validationKey = await validationFingerprint(
-          dataset,
-          rescueModel,
-          rescueSpec.config,
-          rescueSpec.advancedConfig,
-          experiments,
-          validationOptions,
-        );
-        let rescueValidation = await getCachedValidation(validationKey);
-        const validationWasCached = Boolean(rescueValidation);
-        if (!rescueValidation) {
-          rescueValidation = await runModelValidation(
-            dataset,
-            rescueModel,
-            rescueSpec.config,
-            rescueSpec.advancedConfig,
-            experiments,
-            validationKey,
-            undefined,
-            validationOptions,
-          );
-          void persistValidation(dataset.hash, rescueValidation);
-        }
-        const rescueRun: AgenticCandidateRun = {
-          spec: rescueSpec,
-          state: "complete",
-          model: rescueModel,
-          validation: rescueValidation,
-          roiGuardrailViolations: findAgenticRoiGuardrailViolations(
-            rescueModel,
-            experiments,
-            guardrailMode !== "off",
-            dataset,
-          ),
-          restoredFromCache: modelWasCached && validationWasCached,
-        };
-        evaluatedRuns.push(rescueRun);
-        setAgenticRuns((current) =>
-          current.map((run) =>
-            run.spec.id === rescueSpec.id ? rescueRun : run,
-          ),
-        );
-      } catch (error) {
-        const failedRescue: AgenticCandidateRun = {
-          spec: rescueSpec,
-          state: "error",
-          error:
-            error instanceof Error
-              ? error.message
-              : "Evidence rescue refit failed.",
-        };
-        evaluatedRuns.push(failedRescue);
-        setAgenticRuns((current) =>
-          current.map((run) =>
-            run.spec.id === rescueSpec.id ? failedRescue : run,
-          ),
-        );
-      }
+      setToast("V11 requires the complete paired candidate set; review the failed rows.");
+      return;
     }
 
-    const scoredCount = evaluatedRuns.filter(
-      (run) => run.validation?.finalScore !== null &&
-        run.validation?.finalScore !== undefined,
-    ).length;
-    setAgenticStopReason(
-      finalStopReason ??
-        `Search budget closed after ${evaluatedRuns.length} attempted specifications (${scoredCount} scored).`,
+    const posteriorAttempts = await mapWithConcurrency(
+      screened,
+      service.workers ?? 4,
+      async (run) => {
+        try {
+          if (agenticGenerationRef.current !== generation) {
+            throw new Error("V11 search was superseded by a new workspace run.");
+          }
+          const compiled = compileSamplingModel(
+            dataset,
+            run,
+            experiments,
+            run.spec.evidencePriorChannels ?? [],
+          );
+          // Candidate labels are provenance, not part of the statistical model.
+          // Excluding them lets evidence arms with identical likelihoods and priors
+          // share one posterior artifact while each candidate keeps its own label.
+          const inferenceEquivalentModel = Object.fromEntries(
+            Object.entries(compiled).filter(([key]) => key !== "promotedId"),
+          );
+          const fingerprint = await sha256(JSON.stringify({
+            version: REGRETSET_V11_VERSION,
+            selectorSha256: REGRETSET_V11_SELECTOR_SHA256,
+            model: inferenceEquivalentModel,
+            contract: REGRETSET_V11_INFERENCE_CONTRACT,
+          }));
+          const started = await startRegretSetV11PosteriorJob(
+            fingerprint,
+            compiled,
+            REGRETSET_V11_INFERENCE_CONTRACT,
+          );
+          setAgenticRuns((current) =>
+            current.map((candidate) =>
+              candidate.spec.id === run.spec.id
+                ? {
+                    ...candidate,
+                    regretSetProgress: {
+                      stage: "posterior",
+                      detail: started.cached
+                        ? "Restoring the identical FullRankADVI posterior."
+                        : "Fitting two independent FullRankADVI approximations.",
+                    },
+                  }
+                : candidate,
+            ),
+          );
+          let snapshot = await getRegretSetV11PosteriorJob(started.id);
+          while (snapshot.status === "queued" || snapshot.status === "running") {
+            if (agenticGenerationRef.current !== generation) {
+              throw new Error("V11 search was superseded by a new workspace run.");
+            }
+            setAgenticRuns((current) =>
+              current.map((candidate) =>
+                candidate.spec.id === run.spec.id
+                  ? {
+                      ...candidate,
+                      regretSetProgress: {
+                        stage: "posterior",
+                        detail: snapshot.progress.detail,
+                      },
+                    }
+                  : candidate,
+              ),
+            );
+            await delay(750);
+            snapshot = await getRegretSetV11PosteriorJob(started.id);
+          }
+          if (snapshot.status === "error" || !snapshot.result) {
+            throw new Error(snapshot.error ?? "FullRankADVI returned no posterior result.");
+          }
+          const posterior: SviApproximationResult = {
+            ...snapshot.result,
+            promotedId: compiled.promotedId,
+            promotedFingerprint: compiled.promotedFingerprint,
+          };
+          const observable = observableRegretSetV11Row(
+            dataset,
+            run,
+            experiments,
+            {
+              anchorIndependenceConfirmed,
+              industryPriorChannels: run.spec.evidencePriorChannels ?? [],
+              industryBenchmarkScreeningEnabled: guardrailMode !== "off",
+            },
+          );
+          const feature = regretSetV11FeatureVector(observable, posterior);
+          setAgenticRuns((current) =>
+            current.map((candidate) =>
+              candidate.spec.id === run.spec.id
+                ? {
+                    ...candidate,
+                    regretSetProgress: {
+                      stage: "scoring",
+                      detail: "Posterior tokens ready; waiting for the complete 48-candidate set.",
+                    },
+                  }
+                : candidate,
+            ),
+          );
+          return {
+            run,
+            feature,
+            posterior,
+            cached: Boolean(started.cached || (snapshot.result as SviApproximationResult & { cached?: boolean }).cached),
+          };
+        } catch (error) {
+          const message = error instanceof Error
+            ? error.message
+            : "FullRankADVI posterior inference failed.";
+          setAgenticRuns((current) =>
+            current.map((candidate) =>
+              candidate.spec.id === run.spec.id
+                ? {
+                    ...candidate,
+                    state: "error",
+                    error: message,
+                    regretSetProgress: undefined,
+                  }
+                : candidate,
+            ),
+          );
+          return { run, error: message };
+        }
+      },
     );
+
+    if (agenticGenerationRef.current !== generation) return;
+    const posteriorFailures = posteriorAttempts.filter(
+      (attempt) => "error" in attempt,
+    );
+    if (posteriorFailures.length > 0) {
+      setAgenticStatus("complete");
+      setAgenticStopReason(
+        `V11 was not scored: ${posteriorFailures.length} of 48 required FullRankADVI fits failed. No partial-set winner was produced.`,
+      );
+      setToast("V11 requires all 48 posterior candidates; review the failed rows.");
+      return;
+    }
+    const posteriorRows = posteriorAttempts.filter(
+      (attempt): attempt is Exclude<typeof attempt, { error: string }> =>
+        !("error" in attempt),
+    );
+    const receipts = scoreRegretSetV11(
+      posteriorRows.map(({ run, feature, posterior, cached }) => ({
+        candidateId: run.spec.id,
+        features: feature.values,
+        valid: posterior.diagnostics.finite,
+        posteriorStatus: posterior.status,
+        posteriorCached: cached,
+      })),
+    );
+    const receiptByCandidate = new Map(
+      receipts.map((receipt) => [receipt.candidateId, receipt]),
+    );
+    const completedRuns = posteriorRows.map(({ run }) => ({
+      ...run,
+      state: "complete" as const,
+      progress: undefined,
+      regretSetProgress: undefined,
+      regretSet: receiptByCandidate.get(run.spec.id),
+    }));
+    setAgenticRuns(completedRuns);
     setAgenticStatus("complete");
-    setToast("Adaptive Agentic search complete. The best eligible candidate is ready.");
+    const selected = completedRuns.find((run) => run.regretSet?.selected);
+    setAgenticStopReason(
+      selected
+        ? `Frozen V11 scored all 48 posterior candidates and selected ${selected.spec.id} at adjusted decision risk ${selected.regretSet!.adjustedRisk.toFixed(3)}.`
+        : "Frozen V11 completed without a selectable finite posterior.",
+    );
+    setToast(
+      selected
+        ? "Evidence-adaptive RegretSet-MMM completed. Review and promote the V11 selection."
+        : "V11 completed without a selectable finite posterior.",
+    );
   }, [
-    advancedConfig,
-    agenticContract,
     anchorIndependenceConfirmed,
-    config,
     dataset,
     experiments,
     guardrailMode,
-    industryPriorChannels,
     validation,
   ]);
 
@@ -9639,7 +9449,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
   const activeContent = useMemo(() => {
     if (!dataset || !validation) return <EmptyState />;
     if (view === "data") {
-      return <DataView dataset={dataset} validation={validation} onDatasetChange={handleDatasetChange} onUpload={upload} demoMode={demoMode} />;
+      return <DataView dataset={dataset} validation={validation} onDatasetChange={handleDatasetChange} onMissingValueRepair={handleMissingValueRepair} onUpload={upload} demoMode={demoMode} />;
     }
     if (view === "eda") {
       return <EdaView dataset={dataset} eda={eda} status={edaStatus} />;
@@ -9683,10 +9493,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     if (view === "agentic") {
       return (
         <AgenticView
-          contract={agenticContract}
-          setContract={handleAgenticContractChange}
-          config={config}
-          advancedConfig={advancedConfig}
+          demoMode={demoMode}
           experiments={experiments}
           industryPriorChannels={
             guardrailMode === "off" ? [] : industryPriorChannels
@@ -9699,7 +9506,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           promotedFingerprint={
             promotedAgenticSpecification?.run.model?.fingerprint
           }
-          onStart={() => void runAgenticSearch()}
+          onStart={() => void runRegretSetV11Search()}
           onInspect={inspectAgenticCandidate}
           onPromote={promoteAgenticCandidate}
           onForcePromote={forcePromoteAgenticCandidate}
@@ -9760,6 +9567,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
             advanced: advancedResult,
           }}
           results={validationResults}
+          agenticRuns={agenticRuns}
           statuses={validationStatuses}
           progress={validationProgress}
           anchorQualificationAvailable={
@@ -9793,7 +9601,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       );
     }
     return <OverviewView dataset={dataset} validation={validation} eda={eda} edaStatus={edaStatus} models={models} onNavigate={setView} />;
-  }, [advancedConfig, advancedResult, advancedStatus, agenticContract, agenticRuns, agenticStatus, agenticStopReason, anchorIndependenceConfirmed, applyRecommendedSamplingRetry, benchmarkScreeningRois, budgetContract, budgetProgress, budgetResult, budgetStatus, config, dataset, demoMode, eda, edaStatus, experiments, forcePromoteAgenticCandidate, guardrailMode, handleAdvancedConfigChange, handleAgenticContractChange, handleAnchorIndependenceChange, handleBudgetContractChange, handleDatasetChange, handleExperimentsChange, handleGuardrailModeChange, handleIndustryChannelToggle, handleModelConfigChange, industryPriorChannels, inspectAgenticCandidate, modelStatuses, models, prepareNewSamplingRun, promoteAgenticCandidate, promotedAgenticSpecification, resetBudget, runAgenticSearch, runAllValidations, runBudgetPlan, runProductionSampling, runRequestedAdvancedModel, runRequestedModel, runRequestedValidation, samplingContract, samplingHistory, samplingProgress, samplingResult, samplingServiceDetail, samplingServiceReady, samplingStatus, upload, validation, validationProgress, validationResults, validationStatuses, view]);
+  }, [advancedConfig, advancedResult, advancedStatus, agenticRuns, agenticStatus, agenticStopReason, anchorIndependenceConfirmed, applyRecommendedSamplingRetry, benchmarkScreeningRois, budgetContract, budgetProgress, budgetResult, budgetStatus, config, dataset, demoMode, eda, edaStatus, experiments, forcePromoteAgenticCandidate, guardrailMode, handleAdvancedConfigChange, handleAnchorIndependenceChange, handleBudgetContractChange, handleDatasetChange, handleExperimentsChange, handleGuardrailModeChange, handleIndustryChannelToggle, handleMissingValueRepair, handleModelConfigChange, industryPriorChannels, inspectAgenticCandidate, modelStatuses, models, prepareNewSamplingRun, promoteAgenticCandidate, promotedAgenticSpecification, resetBudget, runAllValidations, runBudgetPlan, runProductionSampling, runRegretSetV11Search, runRequestedAdvancedModel, runRequestedModel, runRequestedValidation, samplingContract, samplingHistory, samplingProgress, samplingResult, samplingServiceDetail, samplingServiceReady, samplingStatus, upload, validation, validationProgress, validationResults, validationStatuses, view]);
 
   if (!dataset || !validation) return <EmptyState />;
 

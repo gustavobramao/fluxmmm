@@ -54,6 +54,10 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
     auditArtifact,
     learnedScoreArtifact,
     scoreV6Artifact,
+    regretSetRuntimeSource,
+    regretSetApiSource,
+    regretSetSelectorArtifact,
+    regretSetCandidateArtifact,
   ] =
     await Promise.all([
       readFile(new URL("../public/data/robyn_weekly.csv", import.meta.url), "utf8"),
@@ -74,6 +78,10 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
       readFile(new URL("../research/score_v3/artifacts/simulator-audit-v3-summary.json", import.meta.url), "utf8"),
       readFile(new URL("../research/score_v4/artifacts/learned-score-v4.json", import.meta.url), "utf8"),
       readFile(new URL("../research/score_v6/artifacts/learned-score-v6-pilot.json", import.meta.url), "utf8"),
+      readFile(new URL("../lib/mmm/regretset-v11.ts", import.meta.url), "utf8"),
+      readFile(new URL("../lib/mmm/regretset-v11-api.ts", import.meta.url), "utf8"),
+      readFile(new URL("../lib/mmm/artifacts/regretset-v11-selector.json", import.meta.url), "utf8"),
+      readFile(new URL("../lib/mmm/artifacts/regretset-v11-candidates.json", import.meta.url), "utf8"),
     ]);
 
   assert.match(sample, /"DATE","revenue","tv_S"/);
@@ -84,15 +92,21 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(modelSource, /dataset\.periodsPerYear/);
   assert.match(workbenchSource, /Calibration evidence/);
   assert.match(workbenchSource, /Prior or likelihood/);
+  assert.match(workbenchSource, /Import experiments CSV/);
+  assert.match(workbenchSource, /CSV format and field definitions/);
+  assert.match(workbenchSource, /parseExperimentCsv/);
   assert.doesNotMatch(workbenchSource, /Prior, not likelihood/);
-  assert.match(workbenchSource, /Global channel search · active V6 score/);
-  assert.match(workbenchSource, /Mandatory channel-response grid/);
-  assert.match(workbenchSource, /Learned diagnostic decision-loss score · V6/);
+  assert.match(workbenchSource, /V11 adjusted decision risk · lower is better/);
+  assert.match(workbenchSource, /48 PyMC FullRankADVI fits · 232 observable candidate tokens/);
+  assert.match(workbenchSource, /Start V11 posterior search/);
+  assert.match(workbenchSource, /No partial-set winner was produced/);
+  assert.doesNotMatch(workbenchSource, /Global channel search · active V6 score/);
+  assert.doesNotMatch(workbenchSource, /Learned diagnostic decision-loss score · V6/);
   assert.match(workbenchSource, /Two-sided coherence gate · immutable/);
-  assert.match(workbenchSource, /Mandatory Advanced challenge/);
-  assert.match(workbenchSource, /restart-balanced refinements/);
-  assert.match(workbenchSource, /Champion neighborhood/);
-  assert.match(workbenchSource, /Search confidence/);
+  assert.match(workbenchSource, /Evidence-adaptive RegretSet-MMM/);
+  assert.match(workbenchSource, /Frozen V11 selection methodology/);
+  assert.match(workbenchSource, /Posterior tokens ready; waiting for the complete 48-candidate set/);
+  assert.match(workbenchSource, /Selection confidence/);
   assert.match(workbenchSource, /Exact winning configuration loaded/);
   assert.match(workbenchSource, /Winning base settings inherited/);
   assert.match(workbenchSource, /View all \{parameterCount\} parameters/);
@@ -190,6 +204,13 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(scoreV6Artifact, /"runtimeContractChanged": true/);
   assert.match(scoreV6Artifact, /"ready": false/);
   assert.match(scoreV6Artifact, /"candidates": 14400/);
+  assert.match(regretSetRuntimeSource, /REGRETSET_V11_CANDIDATE_COUNT = 48/);
+  assert.match(regretSetRuntimeSource, /values\.length !== 232/);
+  assert.match(regretSetRuntimeSource, /adjustedRisk/);
+  assert.match(regretSetApiSource, /\/v1\/svi\/health/);
+  assert.match(regretSetSelectorArtifact, /"contextNames"/);
+  assert.match(regretSetSelectorArtifact, /"danger_penalty"\s*:\s*0\.5/);
+  assert.equal(JSON.parse(regretSetCandidateArtifact).length, 24);
   await access(new URL("../public/og.png", import.meta.url));
   await assert.rejects(
     access(new URL("../app/chatgpt-auth.ts", import.meta.url)),

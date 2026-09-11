@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -121,6 +123,53 @@ def synthetic_contract(planning: bool = False) -> tuple[dict, float]:
 
 
 class McmcContractTests(unittest.TestCase):
+    def test_svi_cache_reuses_only_inference_equivalent_candidates(self) -> None:
+        contract = {"method": "fullrank-advi"}
+        model = {"promotedId": "C18-experiment", "matrix": [[1.0]], "target": [2.0]}
+        equivalent = {**model, "promotedId": "C18-benchmark"}
+        different = {**model, "target": [3.0]}
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            previous_root = MCMC.SVI_ARTIFACT_ROOT
+            MCMC.SVI_ARTIFACT_ROOT = Path(temporary_directory)
+            try:
+                artifact = MCMC.SVI_ARTIFACT_ROOT / "legacy"
+                artifact.mkdir()
+                (artifact / "payload.json").write_text(
+                    json.dumps({"model": model, "contract": contract}),
+                    encoding="utf-8",
+                )
+                (artifact / "summary.json").write_text(
+                    json.dumps({"promotedId": model["promotedId"], "channels": []}),
+                    encoding="utf-8",
+                )
+                reused = MCMC.cached_svi_result("0" * 64, equivalent, contract)
+                self.assertIsNotNone(reused)
+                self.assertTrue(reused["cacheEquivalent"])
+                self.assertIsNone(
+                    MCMC.cached_svi_result("1" * 64, different, contract)
+                )
+            finally:
+                MCMC.SVI_ARTIFACT_ROOT = previous_root
+
+    def test_v11_fullrank_advi_contract_is_exact_and_frozen(self) -> None:
+        contract = {
+            "method": "fullrank-advi",
+            "iterations": 5000,
+            "draws": 256,
+            "primarySeeds": [30071, 81119],
+            "adjudicationSeed": 190081,
+            "learningRate": 0.001,
+            "initialScale": 0.01,
+            "gradientNorm": 10,
+            "elboWindow": 250,
+            "maximumElboDrift": 0.05,
+            "maximumSeedLogRoiDifference": 0.25,
+        }
+        MCMC.validate_svi_contract(contract)
+        changed = {**contract, "iterations": 4999}
+        with self.assertRaisesRegex(ValueError, "frozen FullRankADVI"):
+            MCMC.validate_svi_contract(changed)
+
     def test_stale_contract_fails_before_sampling(self) -> None:
         contract, _ = synthetic_contract()
         del contract["media"][0]["rawSpend"]

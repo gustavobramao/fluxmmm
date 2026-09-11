@@ -15,6 +15,16 @@ function launch(command, args, label) {
     cwd: root,
     env: {
       ...process.env,
+      PATH: [path.dirname(process.execPath), process.env.PATH]
+        .filter(Boolean)
+        .join(path.delimiter),
+      MPLBACKEND: process.env.MPLBACKEND || "Agg",
+      MPLCONFIGDIR:
+        process.env.MPLCONFIGDIR ||
+        path.join(root, ".flux-artifacts", "matplotlib-cache"),
+      XDG_CACHE_HOME:
+        process.env.XDG_CACHE_HOME ||
+        path.join(root, ".flux-artifacts", "python-cache"),
       WRANGLER_LOG_PATH: ".wrangler/wrangler.log",
     },
     stdio: "inherit",

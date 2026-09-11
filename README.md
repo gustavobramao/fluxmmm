@@ -89,11 +89,19 @@ research/svi_score_v11_amss_confirmatory/  Fresh AMSS protocol and audit receipt
 docs/regretset-mmm-paper.pdf                Publication-format working paper
 ```
 
-The interactive Agentic workspace still uses fast analytic MAP/Laplace
-screening to keep broad local search responsive. The frozen V11 selector
-evaluates a complete 48-candidate SVI pool with its exact token and context
-contract. The UI states this boundary rather than silently relabelling the
-analytic runtime as V11.
+The interactive Agentic workspace now runs the frozen V11 selection contract
+directly. It screens 24 predeclared specifications under two evidence regimes,
+fits the resulting complete 48-candidate pool with the declared FullRankADVI
+contract, builds the exact 232 candidate and 63 business-context tokens, and
+ranks candidates by adjusted predicted economic risk. MAP/Laplace remains a
+fast diagnostic screen inside each candidate workflow; it is not substituted
+for the posterior inputs expected by V11. After promotion, NUTS independently
+samples the selected specification before budget planning.
+
+Inference-equivalent evidence arms share one posterior artifact when their
+compiled data, likelihood, priors, and inference contract are identical. This
+can reduce a fully experiment-anchored search from 48 to 24 unique posterior
+fits without changing the V11 candidate set or its selection semantics.
 
 ## Product capabilities
 
@@ -112,8 +120,8 @@ analytic runtime as V11.
   log-normal outcome likelihoods.
 - Pivoted QR/SVD fallback, rank and condition diagnostics, evidence attribution,
   and non-negative-boundary disclosure.
-- Bounded, family-aware specification search with immutable evidence,
-  parameter bounds, validation gates, multi-start coverage, and local challenges.
+- Frozen V11 selection across 48 paired FullRankADVI candidates, with immutable
+  evidence, complete-set scoring, validation gates, and reproducible receipts.
 - PyMC NUTS sampling of the frozen winner with modern convergence diagnostics.
 - Fixed-budget, outcome-target, and economic-ceiling allocation with posterior
   uncertainty, support warnings, and channel constraints.
@@ -200,6 +208,8 @@ pnpm test:svi-score-v9
 pnpm test:svi-score-v10-amss
 pnpm test:svi-score-v11-ea
 pnpm test:svi-score-v11-amss
+pnpm test:experiment-csv
+pnpm test:regretset-v11-runtime
 ```
 
 After `pnpm mcmc:setup`, the Python selector-equivalence checks are available as
