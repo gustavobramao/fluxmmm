@@ -16,9 +16,9 @@ import { SVI_SCORE_V3_CONTRACT } from "../../research/svi_score_v3/contract";
 import type { SviApproximationResult } from "../../research/svi_score_v3/types";
 
 export const REGRETSET_V11_VERSION =
-  "flux-svi-score-v11.0.0-evidence-adaptive-regretset";
+  "flux-regretset-relative-log-regret-1.0.0";
 export const REGRETSET_V11_SELECTOR_SHA256 =
-  "5c5cc9d7fb2128bb8bedd90d44df2393e30147856aae8e13b6d7c02afd423731";
+  "8096f31fd7a30728796de77937c79f9f4d2263ebc4c4f54d741a45b667ff1a33";
 export const REGRETSET_V11_CANDIDATE_SHA256 =
   "ec40ca53b0f94243694a16ae5e1b4d1779bad284e42aa8cc38f7d4d529ef6270";
 export const REGRETSET_V11_CANDIDATE_COUNT = 48;
@@ -59,7 +59,6 @@ export interface RegretSetV11CandidateReceipt {
   adjustedRisk: number;
   runnerUpMargin: number;
   confidenceRisk: number;
-  evidenceGate: Record<RegretSetV11Expert, number>;
 }
 
 interface FrozenModel {
@@ -67,7 +66,7 @@ interface FrozenModel {
   scales: number[];
   contextMeans: number[];
   contextScales: number[];
-  expertIndices: Record<RegretSetV11Expert, number[]>;
+  featureIndexes: number[];
   parameters: Record<string, number[] | number[][]>;
 }
 
@@ -75,9 +74,13 @@ interface FrozenSelector {
   artifactId: string;
   version: string;
   activation: string;
+  architecture: string;
+  rawFeatureNames: string[];
   featureNames: string[];
   contextNames: string[];
   policy: {
+    mean_weight: number;
+    p90_weight: number;
     danger_penalty: number;
     uncertainty_penalty: number;
   };
@@ -527,7 +530,7 @@ export function regretSetV11FeatureVector(
   if (
     names.length !== 232 ||
     values.length !== 232 ||
-    names.some((name, index) => name !== SELECTOR.featureNames[index]) ||
+    names.some((name, index) => name !== SELECTOR.rawFeatureNames[index]) ||
     values.some((value) => !Number.isFinite(value))
   ) {
     throw new Error("The runtime V11 candidate token registry does not match the frozen selector.");
@@ -542,7 +545,7 @@ function summary(values: readonly number[]): [number, number, number] {
 export function regretSetV11Context(
   candidates: readonly { candidateId: string; features: number[] }[],
 ): number[] {
-  const featureIndex = new Map(SELECTOR.featureNames.map((name, index) => [name, index]));
+  const featureIndex = new Map(SELECTOR.rawFeatureNames.map((name, index) => [name, index]));
   const experimentIndex = featureIndex.get("posterior:channel-set:evidence-experiment:mean");
   const benchmarkIndex = featureIndex.get("posterior:channel-set:evidence-benchmark:mean");
   if (experimentIndex === undefined || benchmarkIndex === undefined) {
@@ -629,11 +632,50 @@ function add(left: readonly number[], right: readonly number[]): number[] {
   return left.map((value, index) => value + right[index]);
 }
 
-function softmax(values: readonly number[]): number[] {
-  const maximum = Math.max(...values);
-  const exponential = values.map((value) => Math.exp(Math.max(-60, Math.min(0, value - maximum))));
-  const total = Math.max(exponential.reduce((sum, value) => sum + value, 0), 1e-12);
-  return exponential.map((value) => value / total);
+function quantile(values: readonly number[], probability: number): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((left, right) => left - right);
+  const position = Math.max(0, Math.min(sorted.length - 1, probability * (sorted.length - 1)));
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  const fraction = position - lower;
+  return sorted[lower] * (1 - fraction) + sorted[upper] * fraction;
+}
+
+function candidateRelativeFeatures(
+  features: readonly number[][],
+  valid: readonly boolean[],
+): number[][] {
+  const active = features.map((_, index) => index).filter((index) => valid[index]);
+  if (!active.length) throw new Error("RegretSet-MMM has no active candidates for relative tokenization.");
+  const ranks = features.map(() => Array(features[0].length).fill(0));
+  const robust = features.map(() => Array(features[0].length).fill(0));
+  for (let feature = 0; feature < features[0].length; feature += 1) {
+    const ordered = active
+      .map((index) => ({ index, value: features[index][feature] }))
+      .sort((left, right) => left.value - right.value || left.index - right.index);
+    let cursor = 0;
+    while (cursor < ordered.length) {
+      let end = cursor + 1;
+      while (end < ordered.length && ordered[end].value === ordered[cursor].value) end += 1;
+      const averageRank = (cursor + end - 1) / 2;
+      for (let position = cursor; position < end; position += 1) {
+        ranks[ordered[position].index][feature] = ordered.length === 1
+          ? 0.5
+          : averageRank / (ordered.length - 1);
+      }
+      cursor = end;
+    }
+    const values = active.map((index) => features[index][feature]);
+    const median = quantile(values, 0.5);
+    const scale = quantile(values, 0.75) - quantile(values, 0.25);
+    active.forEach((index) => {
+      robust[index][feature] = scale > 1e-8
+        ? Math.max(-8, Math.min(8, (features[index][feature] - median) / scale))
+        : 0;
+    });
+  }
+  return features.map((row, index) => [...row, ...ranks[index], ...robust[index]]);
 }
 
 function modelPrediction(
@@ -641,7 +683,7 @@ function modelPrediction(
   features: readonly number[][],
   context: readonly number[],
   valid: readonly boolean[],
-): { heads: number[][]; gate: number[] } {
+): { heads: number[][] } {
   const standardized = features.map((row) =>
     row.map((value, index) => Math.max(-8, Math.min(8, (value - model.means[index]) / model.scales[index]))),
   );
@@ -649,34 +691,15 @@ function modelPrediction(
     Math.max(-8, Math.min(8, (value - model.contextMeans[index]) / model.contextScales[index])),
   );
   const parameters = model.parameters;
-  const joint = standardized.map((row) =>
+  const candidate = standardized.map((row) =>
     add(
-      vectorMatrix(row, parameters.joint_w1 as number[][]),
-      parameters.joint_b1 as number[],
+      vectorMatrix(
+        [...model.featureIndexes.map((index) => row[index]), ...standardizedContext],
+        parameters.w1 as number[][],
+      ),
+      parameters.b1 as number[],
     ).map(silu),
   );
-  const gate = softmax(add(
-    vectorMatrix(standardizedContext, parameters.gate_w as number[][]),
-    parameters.gate_b as number[],
-  ));
-  const expertEmbeddings = REGRETSET_V11_EXPERTS.map((expert, expertIndex) =>
-    standardized.map((row) => {
-      const selected = model.expertIndices[expert].map((index) => row[index]);
-      return add(
-        vectorMatrix(selected, parameters[`expert_w1_${expertIndex}`] as number[][]),
-        parameters[`expert_b1_${expertIndex}`] as number[],
-      ).map(silu);
-    }),
-  );
-  const candidate = joint.map((jointRow, rowIndex) => [
-    ...jointRow,
-    ...jointRow.map((_, column) =>
-      expertEmbeddings.reduce(
-        (sum, expert, expertIndex) => sum + gate[expertIndex] * expert[rowIndex][column],
-        0,
-      ),
-    ),
-  ]);
   const validCount = Math.max(valid.filter(Boolean).length, 1);
   const pooled = candidate[0].map((_, column) =>
     candidate.reduce(
@@ -709,7 +732,7 @@ function modelPrediction(
     output[9] = sigmoid(raw[9]);
     return output;
   });
-  return { heads, gate };
+  return { heads };
 }
 
 export function scoreRegretSetV11(
@@ -725,9 +748,13 @@ export function scoreRegretSetV11(
     throw new Error(`V11 requires exactly ${REGRETSET_V11_CANDIDATE_COUNT} candidates.`);
   }
   const context = regretSetV11Context(candidates);
-  const features = candidates.map((candidate) => candidate.features);
   const valid = candidates.map((candidate) => candidate.valid);
   if (!valid.some(Boolean)) throw new Error("V11 has no finite posterior candidate to rank.");
+  const rawFeatures = candidates.map((candidate) => candidate.features);
+  const features = candidateRelativeFeatures(rawFeatures, valid);
+  if (features[0].length !== SELECTOR.featureNames.length) {
+    throw new Error("The runtime relative-token contract does not match the frozen selector.");
+  }
   const predictions = SELECTOR.models.map((model) =>
     modelPrediction(model, features, context, valid),
   );
@@ -736,12 +763,12 @@ export function scoreRegretSetV11(
     const heads = memberHeads[0].map((_, head) =>
       average(memberHeads.map((member) => member[head])),
     );
-    const memberRisks = memberHeads.map((member) => 0.65 * member[0] + 0.35 * member[2]);
+    const memberRisks = memberHeads.map((member) =>
+      SELECTOR.policy.mean_weight * member[0] + SELECTOR.policy.p90_weight * member[2]
+    );
     const predictedRisk = average(memberRisks);
     const ensembleUncertainty = standardDeviation(memberRisks, true);
-    const adjustedRisk = predictedRisk +
-      SELECTOR.policy.danger_penalty * heads[9] +
-      SELECTOR.policy.uncertainty_penalty * ensembleUncertainty;
+    const adjustedRisk = predictedRisk;
     return {
       candidate,
       heads,
@@ -771,12 +798,6 @@ export function scoreRegretSetV11(
   const confidenceRisk = 0.4 * winner.prediction.heads[9] +
     0.3 * Math.min(selectedRelativeUncertainty, 1) +
     0.3 * ambiguity;
-  const gate = Object.fromEntries(
-    REGRETSET_V11_EXPERTS.map((expert, index) => [
-      expert,
-      average(predictions.map((prediction) => prediction.gate[index])),
-    ]),
-  ) as Record<RegretSetV11Expert, number>;
   return candidatePredictions.map((prediction, index) => ({
     version: REGRETSET_V11_VERSION,
     selectorSha256: REGRETSET_V11_SELECTOR_SHA256,
@@ -802,7 +823,6 @@ export function scoreRegretSetV11(
     adjustedRisk: prediction.adjustedRisk,
     runnerUpMargin: index === winner.index ? runnerUpMargin : 0,
     confidenceRisk: index === winner.index ? confidenceRisk : 0,
-    evidenceGate: gate,
   }));
 }
 
@@ -811,6 +831,8 @@ export function regretSetV11SelectorMetadata() {
     version: SELECTOR.version,
     artifactId: SELECTOR.artifactId,
     activation: SELECTOR.activation,
+    architecture: SELECTOR.architecture,
+    rawFeatureNames: [...SELECTOR.rawFeatureNames],
     featureNames: [...SELECTOR.featureNames],
     contextNames: [...SELECTOR.contextNames],
     modelCount: SELECTOR.models.length,

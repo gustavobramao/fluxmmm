@@ -1,0 +1,330 @@
+{
+  "artifactId": "regretset-final-selector-importance-v1",
+  "status": "development-only-grouped-cross-validation-complete",
+  "estimand": "change in cross-fitted 65%-mean/35%-P90 log1p excess-loss objective after removing a pillar and refitting",
+  "method": "drop raw tokens and their within-advertiser percentile-rank and robust-z counterparts; refit on outer-training advertisers",
+  "data": {
+    "businesses": 420,
+    "candidateFitsReused": 20160,
+    "groupedFolds": 5
+  },
+  "finalSelector": {
+    "rawTokens": 232,
+    "relativeTokens": 464,
+    "candidateTokens": 696,
+    "contextTokens": 63,
+    "trainingRegretTransform": "log1p(excess economic loss)",
+    "postPredictionPenalty": "none"
+  },
+  "baselineObjective": 0.804591076778812,
+  "pillars": [
+    {
+      "pillar": "Predictive generalization",
+      "rawTokenCount": 9,
+      "finalTokenCount": 27,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 0.8544670368171956,
+      "absoluteIncrease": 0.04987596003838357,
+      "relativeIncrease": 0.061989203556746426,
+      "positiveFoldShare": 0.6,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": 0.04987596003838357,
+            "relativeChange": 0.061989203556746426,
+            "twoSided95Interval": [
+              -0.035227670581065455,
+              0.1336483089716997
+            ],
+            "bootstrapProbabilityCandidateLower": 0.1082
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": 0.16878411356245682,
+            "relativeChange": 0.1006026934876641,
+            "twoSided95Interval": [
+              -0.16131569223482534,
+              0.5044055193420164
+            ],
+            "bootstrapProbabilityCandidateLower": 0.1335
+          },
+          "capped": {
+            "candidateMinusFrozenV11": 0.009636787904288346,
+            "relativeChange": 0.014365989273799886,
+            "twoSided95Interval": [
+              -0.015085386817737302,
+              0.03402886852410791
+            ],
+            "bootstrapProbabilityCandidateLower": 0.2255
+          }
+        },
+        "candidateLowerBusinessShare": 0.27380952380952384,
+        "tiedBusinessShare": 0.36666666666666664,
+        "candidateHigherBusinessShare": 0.3595238095238095,
+        "resamples": 10000,
+        "seed": 91811,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    },
+    {
+      "pillar": "Structural adequacy",
+      "rawTokenCount": 16,
+      "finalTokenCount": 48,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 0.8768241335625548,
+      "absoluteIncrease": 0.07223305678374281,
+      "relativeIncrease": 0.0897761097139289,
+      "positiveFoldShare": 0.8,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": 0.07223305678374281,
+            "relativeChange": 0.0897761097139289,
+            "twoSided95Interval": [
+              -0.015966530294531676,
+              0.1458514707898035
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0586
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": 0.32613634126793456,
+            "relativeChange": 0.19439148438354162,
+            "twoSided95Interval": [
+              -0.032328800963220924,
+              0.6496246332637114
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0389
+          },
+          "capped": {
+            "candidateMinusFrozenV11": -0.001014019793795784,
+            "relativeChange": -0.0015116445049712622,
+            "twoSided95Interval": [
+              -0.025425526127877494,
+              0.023449440294444828
+            ],
+            "bootstrapProbabilityCandidateLower": 0.5444
+          }
+        },
+        "candidateLowerBusinessShare": 0.26904761904761904,
+        "tiedBusinessShare": 0.3880952380952381,
+        "candidateHigherBusinessShare": 0.34285714285714286,
+        "resamples": 10000,
+        "seed": 91812,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    },
+    {
+      "pillar": "Causal and temporal robustness",
+      "rawTokenCount": 31,
+      "finalTokenCount": 93,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 0.7981039325285215,
+      "absoluteIncrease": -0.006487144250290511,
+      "relativeIncrease": -0.008062659949277406,
+      "positiveFoldShare": 0.6,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": -0.006487144250290511,
+            "relativeChange": -0.008062659949277406,
+            "twoSided95Interval": [
+              -0.090549762964716,
+              0.07335371009297252
+            ],
+            "bootstrapProbabilityCandidateLower": 0.5708
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": -0.04923465618084011,
+            "relativeChange": -0.029346002536540423,
+            "twoSided95Interval": [
+              -0.3791581717560659,
+              0.24693030250879758
+            ],
+            "bootstrapProbabilityCandidateLower": 0.6441
+          },
+          "capped": {
+            "candidateMinusFrozenV11": 0.00706170220844049,
+            "relativeChange": 0.010527194246547732,
+            "twoSided95Interval": [
+              -0.01635391282094683,
+              0.03095795180190692
+            ],
+            "bootstrapProbabilityCandidateLower": 0.2741
+          }
+        },
+        "candidateLowerBusinessShare": 0.33095238095238094,
+        "tiedBusinessShare": 0.34523809523809523,
+        "candidateHigherBusinessShare": 0.3238095238095238,
+        "resamples": 10000,
+        "seed": 91813,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    },
+    {
+      "pillar": "Decision and evidence coherence",
+      "rawTokenCount": 29,
+      "finalTokenCount": 87,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 0.8136401348859423,
+      "absoluteIncrease": 0.009049058107130303,
+      "relativeIncrease": 0.011246779100954354,
+      "positiveFoldShare": 0.6,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": 0.009049058107130303,
+            "relativeChange": 0.011246779100954354,
+            "twoSided95Interval": [
+              -0.08523494067614307,
+              0.1011334158458028
+            ],
+            "bootstrapProbabilityCandidateLower": 0.3979
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": 0.05276283501411072,
+            "relativeChange": 0.03144895100865385,
+            "twoSided95Interval": [
+              -0.31743383823630433,
+              0.42418682463379287
+            ],
+            "bootstrapProbabilityCandidateLower": 0.3586
+          },
+          "capped": {
+            "candidateMinusFrozenV11": -0.0008344725699260813,
+            "relativeChange": -0.0012439854553096131,
+            "twoSided95Interval": [
+              -0.025193044379949903,
+              0.023493643897100847
+            ],
+            "bootstrapProbabilityCandidateLower": 0.5144
+          }
+        },
+        "candidateLowerBusinessShare": 0.30238095238095236,
+        "tiedBusinessShare": 0.38571428571428573,
+        "candidateHigherBusinessShare": 0.3119047619047619,
+        "resamples": 10000,
+        "seed": 91814,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    },
+    {
+      "pillar": "Posterior decision geometry",
+      "rawTokenCount": 105,
+      "finalTokenCount": 315,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 1.1465611764283592,
+      "absoluteIncrease": 0.34197009964954717,
+      "relativeIncrease": 0.42502348027351694,
+      "positiveFoldShare": 1.0,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": 0.34197009964954717,
+            "relativeChange": 0.42502348027351694,
+            "twoSided95Interval": [
+              0.2171926974323572,
+              0.4531967301704572
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": 1.5596918701928344,
+            "relativeChange": 0.9296443832324817,
+            "twoSided95Interval": [
+              0.922162956569101,
+              2.2602547733185085
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0
+          },
+          "capped": {
+            "candidateMinusFrozenV11": 0.06827831156190522,
+            "relativeChange": 0.10178552244519211,
+            "twoSided95Interval": [
+              0.04064027110016946,
+              0.09530655403860966
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0
+          }
+        },
+        "candidateLowerBusinessShare": 0.3047619047619048,
+        "tiedBusinessShare": 0.1976190476190476,
+        "candidateHigherBusinessShare": 0.4976190476190476,
+        "resamples": 10000,
+        "seed": 91815,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    },
+    {
+      "pillar": "Specification context",
+      "rawTokenCount": 42,
+      "finalTokenCount": 126,
+      "allTokenObjective": 0.804591076778812,
+      "dropColumnObjective": 0.8561250222774528,
+      "absoluteIncrease": 0.051533945498640765,
+      "relativeIncrease": 0.06404985959446306,
+      "positiveFoldShare": 0.6,
+      "pairedComparison": {
+        "objectives": {
+          "log1p": {
+            "candidateMinusFrozenV11": 0.051533945498640765,
+            "relativeChange": 0.06404985959446306,
+            "twoSided95Interval": [
+              -0.034844028290465616,
+              0.14351199431503328
+            ],
+            "bootstrapProbabilityCandidateLower": 0.1095
+          },
+          "uncapped": {
+            "candidateMinusFrozenV11": 0.17573379446519932,
+            "relativeChange": 0.10474500642777954,
+            "twoSided95Interval": [
+              -0.1605289815475648,
+              0.5599509215217867
+            ],
+            "bootstrapProbabilityCandidateLower": 0.1385
+          },
+          "capped": {
+            "candidateMinusFrozenV11": 0.018652779770941486,
+            "relativeChange": 0.027806530223276248,
+            "twoSided95Interval": [
+              -0.005487466901172293,
+              0.044025984367834926
+            ],
+            "bootstrapProbabilityCandidateLower": 0.0715
+          }
+        },
+        "candidateLowerBusinessShare": 0.2976190476190476,
+        "tiedBusinessShare": 0.3547619047619048,
+        "candidateHigherBusinessShare": 0.3476190476190476,
+        "resamples": 10000,
+        "seed": 91816,
+        "familyStratified": true,
+        "pairedByBusiness": true
+      }
+    }
+  ],
+  "timingsSeconds": {
+    "all": 107.68403244018555,
+    "without:Predictive generalization": 109.97994422912598,
+    "without:Structural adequacy": 114.20333433151245,
+    "without:Causal and temporal robustness": 115.59496212005615,
+    "without:Decision and evidence coherence": 122.32822394371033,
+    "without:Posterior decision geometry": 103.94521594047546,
+    "without:Specification context": 111.15514492988586
+  },
+  "runtimeSeconds": 828.9494602680206,
+  "checks": {
+    "allBusinessesCrossFitted": true,
+    "pillarRegistryExhaustive": true,
+    "allDerivedCounterpartsRemoved": true,
+    "noPosteriorRefits": true,
+    "auditCohortsAccessed": false
+  },
+  "provenance": {
+    "developmentDatasetSha256": "f0212faf7e8d2e8894149c61f67de83e685b8a36f4d5a8f96e07af4fedc28739"
+  }
+}

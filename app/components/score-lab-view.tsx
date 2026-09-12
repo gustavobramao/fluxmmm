@@ -441,7 +441,7 @@ export function ScoreLabView() {
     <div className="view score-lab-view">
       <section className="page-heading compact-heading score-lab-heading">
         <div>
-          <span className="kicker">RegretSet-MMM · evidence-adaptive V11 release</span>
+          <span className="kicker">RegretSet-MMM · relative log-regret release</span>
           <h1>Score research</h1>
           <p>Learn how posterior and validation evidence predicts economic decision loss across advertisers.</p>
         </div>
@@ -450,13 +450,13 @@ export function ScoreLabView() {
 
       <section className="score-lab-mode-tabs compact" aria-label="Score research views">
         <button className={labMode === "evidence" ? "active" : ""} onClick={() => setLabMode("evidence")}>
-          <span>1</span><b>External evidence</b><small>Fresh V11 audit on Google AMSS</small>
+          <span>1</span><b>Out-of-sample evidence</b><small>Five-fold advertiser-grouped evaluation</small>
         </button>
         <button className={labMode === "method" ? "active" : ""} onClick={() => setLabMode("method")}>
           <span>2</span><b>How it learns</b><small>Truth firewall, tokens, and loss</small>
         </button>
         <button className={labMode === "findings" ? "active" : ""} onClick={() => setLabMode("findings")}>
-          <span>3</span><b>What mattered</b><small>Importance and evidence attribution</small>
+          <span>3</span><b>Selector insights</b><small>Information, routing, and attribution</small>
         </button>
         <button className={labMode === "example" ? "active" : ""} onClick={() => setLabMode("example")}>
           <span>4</span><b>Worked example</b><small>Why score learning matters</small>

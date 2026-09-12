@@ -1,3 +1,64 @@
+# FluxMMM 5.0.0 — Relative Log-Regret RegretSet-MMM
+
+Released September 2026.
+
+This release replaces the evidence-gated selector with the final
+candidate-relative RegretSet-MMM architecture evaluated by advertiser-grouped
+cross-validation. The production selector now uses the same frozen model and
+decision rule reported in the paper.
+
+## What changed
+
+- **Candidate-relative learning.** Every one of the 232 observable candidate
+  tokens is augmented with its within-advertiser percentile rank and robust
+  median/IQR distance, yielding 696 candidate tokens plus 63 business-context
+  tokens.
+- **Uncapped ranking target.** Ranking losses use
+  `log(1 + excess economic loss)`, preserving ordering among severe mistakes
+  that the earlier capped target treated as ties.
+- **Simpler selection policy.** The selected risk is exactly 65% predicted mean
+  loss plus 35% predicted P90 loss. Danger probability and ensemble
+  disagreement remain visible diagnostics but no longer receive hand-set
+  post-prediction penalties.
+- **Frozen runtime.** Three independently trained DeepSets members score the
+  complete 48-candidate FullRankADVI set. The UI, runtime artifact, paper, and
+  public research page share this exact contract.
+- **Updated evidence.** Public claims now focus on five-fold
+  advertiser-grouped out-of-sample evaluation across 420 synthetic advertiser
+  worlds and 20,160 previously fitted candidates.
+
+## Main grouped-CV result
+
+The primary objective is 65% mean plus 35% P90 of
+`log(1 + uncapped excess economic loss)`; lower is better.
+
+| Selector | Objective |
+| --- | ---: |
+| RegretSet-MMM, raw + candidate-relative tokens | **0.805** |
+| Raw-token RegretSet-MMM | 0.837 |
+| Posterior-geometry-only DeepSets | 1.031 |
+| Prediction-only | 1.188 |
+| Classic Pareto | 1.243 |
+| Uniform random valid | 1.377 |
+
+The final selector reduced the primary objective by 32.3% relative to
+prediction-only selection. Posterior geometry was the strongest information
+pillar in drop-column refits, but the posterior-only model remained 28.1% worse
+than the full selector, supporting joint interpretation with generalization,
+structure, evidence, and specification context.
+
+## Verification
+
+```bash
+pnpm exec tsc --noEmit
+node --import tsx --test tests/regretset-v11-runtime.test.ts
+pnpm test
+```
+
+The runtime test verifies the selector checksum, 232-to-696 relative-token
+contract, complete 24-by-2 candidate set, finite scoring, and permutation
+equivariance.
+
 # FluxMMM 4.1.0 — Frozen V11 Runtime Selection
 
 Released 11 September 2026.

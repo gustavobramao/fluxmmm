@@ -40,7 +40,7 @@ export async function regretSetV11ServiceHealth(): Promise<{
       detail:
         health.contractVersion === REGRETSET_V11_SERVICE_CONTRACT
           ? undefined
-          : "The local FullRankADVI service does not match the frozen V11 runtime contract.",
+          : "The local FullRankADVI service does not match the frozen RegretSet-MMM runtime contract.",
     };
   } catch {
     return {

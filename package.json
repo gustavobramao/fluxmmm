@@ -1,6 +1,6 @@
 {
   "name": "fluxmmm",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "Local-first Bayesian marketing mix modeling with evidence-adaptive RegretSet-MMM decision-focused model selection.",
   "private": true,
   "license": "MIT",

@@ -1,147 +1,106 @@
 {
   "method": "RegretSet-MMM",
-  "researchVersion": "V11",
-  "releaseLabel": "Evidence-adaptive RegretSet-MMM",
-  "status": "Frozen and externally validated in simulation",
+  "researchVersion": "Relative log-regret",
+  "releaseLabel": "RegretSet-MMM with candidate-relative tokens",
+  "status": "Frozen after advertiser-grouped cross-validation",
   "development": {
     "businesses": 420,
     "candidatesPerBusiness": 48,
     "candidateFits": 20160,
-    "candidateTokens": 232,
+    "rawCandidateTokens": 232,
+    "relativeCandidateTokens": 464,
+    "totalCandidateTokens": 696,
     "contextTokens": 63,
-    "evidenceRegimes": 3,
     "posteriorEngine": "PyMC 6.2 FullRankADVI",
     "decisionScenarios": 4
   },
-  "lineage": {
-    "v9": "One joint 232-token DeepSets pathway applied identically across evidence environments.",
-    "v11": "The V9 joint pathway plus four evidence-conditioned residual experts and 63 candidate-independent context tokens.",
-    "unchanged": "Ten supervised heads, theorem-aligned economic-loss target, truth firewall, and the declared 65% mean / 35% P90 risk utility."
-  },
-  "adaptiveExperts": [
-    {
-      "id": "posterior",
-      "label": "Posterior decision",
-      "weight": 0.288,
-      "description": "ROI geometry, uncertainty, predictive coverage, and variational stability."
-    },
-    {
-      "id": "structural",
-      "label": "Structural specification",
-      "weight": 0.278,
-      "description": "Adstock, saturation, likelihood, dynamics, and model-contract fit."
-    },
-    {
-      "id": "predictive",
-      "label": "Predictive generalization",
-      "weight": 0.223,
-      "description": "Rolling and spend-regime generalization evidence."
-    },
-    {
-      "id": "causal",
-      "label": "Causal identification",
-      "weight": 0.211,
-      "description": "Anchors, placebos, confounder stress, and evidence dependence."
-    }
-  ],
-  "externalAudit": {
-    "simulator": "Google AMSS 1.0.1",
-    "businesses": 100,
-    "candidateFits": 4800,
-    "frozenActions": 19200,
-    "evidenceGroups": 4,
-    "checksPassed": 3,
-    "checksTotal": 3,
+  "crossValidation": {
+    "folds": 5,
+    "maximumObjective": 1.3771534794,
+    "objectiveReductionVsPrediction": 0.3228449412,
     "selectors": [
       {
-        "id": "adaptive",
-        "label": "Adaptive RegretSet (V11)",
-        "description": "Confirmatory target; evidence-conditioned frozen selector.",
-        "status": "confirmatory target",
-        "mean": 0.1347148797,
-        "p90": 0.3286962488,
-        "p95": 0.4009677748,
-        "objective": 0.2026083589
+        "id": "relative",
+        "label": "RegretSet-MMM",
+        "description": "Full DeepSets selector with raw and within-advertiser relative tokens.",
+        "objective": 0.8045910768,
+        "uncappedObjective": 1.6777295688,
+        "uncappedP95": 5.1636964134,
+        "dangerRate": 0.2880952381
+      },
+      {
+        "id": "raw",
+        "label": "Raw-token RegretSet",
+        "description": "Same architecture and log-regret target without relative tokens.",
+        "objective": 0.8373785423,
+        "uncappedObjective": 1.8330882747,
+        "uncappedP95": 5.7014929773,
+        "dangerRate": 0.3119047619
+      },
+      {
+        "id": "posterior",
+        "label": "Posterior geometry only",
+        "description": "DeepSets ablation restricted to posterior-decision geometry.",
+        "objective": 1.0307046389,
+        "uncappedObjective": 2.6857808292,
+        "uncappedP95": 7.0956922025,
+        "dangerRate": 0.3690476190
       },
       {
         "id": "prediction",
-        "label": "Prediction-only",
-        "description": "Strongest frozen three-fold rolling out-of-sample score.",
-        "status": "primary comparator",
-        "mean": 0.2173227449,
-        "p90": 0.6054498912,
-        "p95": 0.9094598641,
-        "objective": 0.3531672461
-      },
-      {
-        "id": "v9",
-        "label": "Original RegretSet (V9)",
-        "description": "Frozen non-adaptive predecessor using the same economic targets.",
-        "status": "primary comparator",
-        "mean": 0.2473484274,
-        "p90": 0.6877698979,
-        "p95": 0.9072139153,
-        "objective": 0.4014959421
-      },
-      {
-        "id": "random",
-        "label": "Uniform random valid",
-        "description": "Conditional expected risk from equal-probability valid choices.",
-        "status": "descriptive chance",
-        "mean": 0.3951182991,
-        "p90": 0.5758665189,
-        "p95": 0.6157384683,
-        "objective": 0.4583801760
+        "label": "Prediction only",
+        "description": "Lowest rolling out-of-sample predictive error.",
+        "objective": 1.1882165181,
+        "uncappedObjective": 3.4917103435,
+        "uncappedP95": 9.2037256028,
+        "dangerRate": 0.4428571429
       },
       {
         "id": "pareto",
         "label": "Classic Pareto",
-        "description": "Prediction, decomposition, and same-window experiment compromise.",
-        "status": "additional benchmark",
-        "mean": 0.5392707106,
-        "p90": 1.0,
-        "p95": 1.0,
-        "objective": 0.7005259619
+        "description": "Prediction, decomposition, and experiment-calibration compromise.",
+        "objective": 1.2430724445,
+        "uncappedObjective": 3.7038515029,
+        "uncappedP95": 9.7502417300,
+        "dangerRate": 0.4833333333
+      },
+      {
+        "id": "random",
+        "label": "Uniform random valid",
+        "description": "Expected loss from an equal-probability valid candidate choice.",
+        "objective": 1.3771534794,
+        "uncappedObjective": 4.5799038967,
+        "uncappedP95": 12.1319733406,
+        "dangerRate": 0.5318867610
       },
       {
         "id": "oracle",
         "label": "In-pool oracle",
-        "description": "Truth-informed lower bound within the same 48 candidates.",
-        "status": "not deployable",
-        "mean": 0.0170282488,
-        "p90": 0.0520214675,
-        "p95": 0.0638838441,
-        "objective": 0.0292758753
+        "description": "Truth-informed, unattainable lower bound in the same candidate pool.",
+        "objective": 0.0,
+        "uncappedObjective": 0.0,
+        "uncappedP95": 0.0,
+        "dangerRate": 0.0
       }
-    ],
-    "objectiveReductionVsPrediction": 0.4263005674,
-    "objectiveReductionVsV9": 0.4953663609,
-    "objectiveReductionVsRandom": 0.5580008151,
-    "objectiveReductionVsPareto": 0.7107769115,
-    "pairedV11MinusV9": {
-      "difference": -0.1988875831,
-      "interval95": [-0.2918873515, -0.0801360181]
-    },
-    "pairedV11MinusPrediction": {
-      "difference": -0.1505588871,
-      "interval95": [-0.2981362478, -0.0541343130]
-    },
-    "pairedV11MinusParetoMean": {
-      "difference": -0.4045558309,
-      "interval95": [-0.4692290706, -0.3373506971],
-      "lower": 88,
-      "tied": 2,
-      "higher": 10
-    }
+    ]
+  },
+  "selectorInsights": {
+    "pillars": [
+      {"id": "predictive", "label": "Predictive generalization", "tokenCount": 27, "relativeLossChange": 0.0619892036, "positiveFoldShare": 0.6, "question": "Does the model forecast new periods and spend regimes?"},
+      {"id": "structural", "label": "Structural adequacy", "tokenCount": 48, "relativeLossChange": 0.0897761097, "positiveFoldShare": 0.8, "question": "Do residual, variance, rank, and likelihood checks expose misspecification?"},
+      {"id": "causal", "label": "Causal and temporal robustness", "tokenCount": 93, "relativeLossChange": -0.0080626599, "positiveFoldShare": 0.6, "question": "Do anchors, placebos, confounder stress, and carryover support survive challenge?"},
+      {"id": "decision", "label": "Decision and evidence coherence", "tokenCount": 87, "relativeLossChange": 0.0112467791, "positiveFoldShare": 0.6, "question": "Are ROI, source conflict, and evidence-deletion decisions coherent?"},
+      {"id": "posterior", "label": "Posterior decision geometry", "tokenCount": 315, "relativeLossChange": 0.4250234803, "positiveFoldShare": 1.0, "question": "Are ROI location, tails, uncertainty, contribution stability, and channel dependence usable?"},
+      {"id": "specification", "label": "Specification context", "tokenCount": 126, "relativeLossChange": 0.0643935317, "positiveFoldShare": 0.6, "question": "Which adstock, saturation, likelihood, calibration, and dynamic assumptions produced the evidence?"}
+    ]
   },
   "evidenceAttribution": {
-    "basis": "Spend-weighted Flux development mean",
+    "basis": "Spend-weighted development mean",
     "observational": 0.4496941191,
     "experiment": 0.3403780296,
     "benchmark": 0.0607159883,
     "regularization": 0.1492118630,
-    "conditionalDataShareMean": 0.0853776455,
     "note": "Local curvature shares describe where ROI precision came from. They do not prove that a source is valid or causal."
   },
-  "claimBoundary": "The evidence establishes external synthetic transport under the declared AMSS adapter, candidate pool, FullRankADVI contract, and utility. It does not establish real-advertiser effectiveness or universal state-of-the-art performance."
+  "claimBoundary": "The evidence is advertiser-grouped out-of-sample performance within the declared synthetic population. It supports the selection mechanism under that design; it does not establish real-advertiser effectiveness or universal state-of-the-art performance."
 }

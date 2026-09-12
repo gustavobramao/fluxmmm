@@ -1,0 +1,251 @@
+{
+  "artifactId": "regretset-candidate-relative-development-v1",
+  "status": "development-only-grouped-cross-validation-complete",
+  "method": {
+    "modelName": "RegretSet-MMM \u2014 relative log-regret",
+    "baseCandidateTokens": 232,
+    "derivedTokenBlocks": [
+      "within-advertiser candidate percentile rank with average ties",
+      "within-advertiser candidate median/IQR robust z-score"
+    ],
+    "derivedTokens": 464,
+    "rawPlusRelativeTokens": 696,
+    "trainingRegretTransform": "log1p(excess economic loss)",
+    "outcomeOrTruthUsedInRelativeFeatures": false
+  },
+  "data": {
+    "businesses": 420,
+    "candidateFitsReused": 20160,
+    "outerGroupedFolds": 5
+  },
+  "results": {
+    "raw-log1p": {
+      "metrics": {
+        "businesses": 420,
+        "capped": {
+          "mean": 0.4943952409026192,
+          "p90": 1.0,
+          "p95": 1.0,
+          "objective65Mean35P90": 0.6713569065867024
+        },
+        "uncapped": {
+          "mean": 1.267673526701455,
+          "p90": 2.883144235175082,
+          "p95": 5.701492977338733,
+          "objective65Mean35P90": 1.8330882746672243
+        },
+        "log1p": {
+          "mean": 0.5578248106682546,
+          "p90": 1.3565497580613446,
+          "p95": 1.9023300490577224,
+          "objective65Mean35P90": 0.8373785422558362
+        },
+        "oracleRecall": 0.1357142857142857,
+        "dangerousFalseChampionRate": 0.3119047619047619
+      },
+      "ranking": {
+        "meanWithinBusinessSpearman": 0.3587131172847703,
+        "medianWithinBusinessSpearman": 0.3967507798044418,
+        "positiveSpearmanBusinessShare": 0.8714285714285714,
+        "meanSelectedTrueRankOf48": 16.235714285714284,
+        "medianSelectedTrueRankOf48": 11.5,
+        "meanOraclePredictedRankOf48": 13.05,
+        "oracleInPredictedTop5Share": 0.4023809523809524
+      }
+    },
+    "raw-plus-relative-log1p": {
+      "metrics": {
+        "businesses": 420,
+        "capped": {
+          "mean": 0.4935472750280931,
+          "p90": 1.0,
+          "p95": 1.0,
+          "objective65Mean35P90": 0.6708057287682605
+        },
+        "uncapped": {
+          "mean": 1.1333207736687383,
+          "p90": 2.6887744739665105,
+          "p95": 5.163696413350655,
+          "objective65Mean35P90": 1.6777295687729585
+        },
+        "log1p": {
+          "mean": 0.5349830521163168,
+          "p90": 1.3052916940091606,
+          "p95": 1.8186746778001004,
+          "objective65Mean35P90": 0.804591076778812
+        },
+        "oracleRecall": 0.12142857142857143,
+        "dangerousFalseChampionRate": 0.28809523809523807
+      },
+      "ranking": {
+        "meanWithinBusinessSpearman": 0.349017836765672,
+        "medianWithinBusinessSpearman": 0.3851972749721163,
+        "positiveSpearmanBusinessShare": 0.8761904761904762,
+        "meanSelectedTrueRankOf48": 15.551190476190476,
+        "medianSelectedTrueRankOf48": 10.75,
+        "meanOraclePredictedRankOf48": 13.971428571428572,
+        "oracleInPredictedTop5Share": 0.36666666666666664
+      }
+    },
+    "relative-only-log1p": {
+      "metrics": {
+        "businesses": 420,
+        "capped": {
+          "mean": 0.5112953082864118,
+          "p90": 1.0,
+          "p95": 1.0,
+          "objective65Mean35P90": 0.6823419503861676
+        },
+        "uncapped": {
+          "mean": 1.3694415606268757,
+          "p90": 3.790811688791887,
+          "p95": 6.112043221024253,
+          "objective65Mean35P90": 2.2169211054846296
+        },
+        "log1p": {
+          "mean": 0.5857684542006694,
+          "p90": 1.5666790336477914,
+          "p95": 1.9617835500283851,
+          "objective65Mean35P90": 0.929087157007162
+        },
+        "oracleRecall": 0.1261904761904762,
+        "dangerousFalseChampionRate": 0.30238095238095236
+      },
+      "ranking": {
+        "meanWithinBusinessSpearman": 0.32987299268408,
+        "medianWithinBusinessSpearman": 0.37204205833727766,
+        "positiveSpearmanBusinessShare": 0.861904761904762,
+        "meanSelectedTrueRankOf48": 17.052380952380954,
+        "medianSelectedTrueRankOf48": 13.0,
+        "meanOraclePredictedRankOf48": 13.916666666666666,
+        "oracleInPredictedTop5Share": 0.3761904761904762
+      }
+    }
+  },
+  "ranking": [
+    {
+      "variant": "raw-plus-relative-log1p",
+      "log1pObjective": 0.804591076778812,
+      "uncappedObjective": 1.6777295687729585,
+      "uncappedP95": 5.163696413350655
+    },
+    {
+      "variant": "raw-log1p",
+      "log1pObjective": 0.8373785422558362,
+      "uncappedObjective": 1.8330882746672243,
+      "uncappedP95": 5.701492977338733
+    },
+    {
+      "variant": "relative-only-log1p",
+      "log1pObjective": 0.929087157007162,
+      "uncappedObjective": 2.2169211054846296,
+      "uncappedP95": 6.112043221024253
+    }
+  ],
+  "pairedComparisonsVersusRawLogRegret": {
+    "raw-plus-relative-log1p": {
+      "objectives": {
+        "log1p": {
+          "candidateMinusFrozenV11": -0.03278746547702416,
+          "relativeChange": -0.039154890915519686,
+          "twoSided95Interval": [
+            -0.13787996034692512,
+            0.04015142048262664
+          ],
+          "bootstrapProbabilityCandidateLower": 0.8439
+        },
+        "uncapped": {
+          "candidateMinusFrozenV11": -0.15535870589426581,
+          "relativeChange": -0.08475244102604353,
+          "twoSided95Interval": [
+            -0.5974955439571514,
+            0.1223720684412962
+          ],
+          "bootstrapProbabilityCandidateLower": 0.8966
+        },
+        "capped": {
+          "candidateMinusFrozenV11": -0.0005511778184419391,
+          "relativeChange": -0.0008209907621926836,
+          "twoSided95Interval": [
+            -0.02491149652630967,
+            0.023796687867126336
+          ],
+          "bootstrapProbabilityCandidateLower": 0.5177
+        }
+      },
+      "candidateLowerBusinessShare": 0.38571428571428573,
+      "tiedBusinessShare": 0.29523809523809524,
+      "candidateHigherBusinessShare": 0.319047619047619,
+      "resamples": 10000,
+      "seed": 91732,
+      "familyStratified": true,
+      "pairedByBusiness": true
+    },
+    "relative-only-log1p": {
+      "objectives": {
+        "log1p": {
+          "candidateMinusFrozenV11": 0.09170861475132586,
+          "relativeChange": 0.10951870644340801,
+          "twoSided95Interval": [
+            -0.03567494131064554,
+            0.17704499928208342
+          ],
+          "bootstrapProbabilityCandidateLower": 0.0879
+        },
+        "uncapped": {
+          "candidateMinusFrozenV11": 0.38383283081740527,
+          "relativeChange": 0.2093913512632585,
+          "twoSided95Interval": [
+            -0.1530501167026277,
+            0.7618029851776805
+          ],
+          "bootstrapProbabilityCandidateLower": 0.0894
+        },
+        "capped": {
+          "candidateMinusFrozenV11": 0.010985043799465188,
+          "relativeChange": 0.016362449975103555,
+          "twoSided95Interval": [
+            -0.01757518686393466,
+            0.03989254190777246
+          ],
+          "bootstrapProbabilityCandidateLower": 0.2278
+        }
+      },
+      "candidateLowerBusinessShare": 0.3761904761904762,
+      "tiedBusinessShare": 0.22380952380952382,
+      "candidateHigherBusinessShare": 0.4,
+      "resamples": 10000,
+      "seed": 91733,
+      "familyStratified": true,
+      "pairedByBusiness": true
+    }
+  },
+  "checks": {
+    "allRequestedFoldsRun": true,
+    "allAssessmentBusinessesUnique": true,
+    "allDevelopmentBusinessesCrossFitted": true,
+    "relativeFeatureShapeCorrect": true,
+    "relativeFeaturesFinite": true,
+    "noPosteriorRefits": true,
+    "sealedAuditAccessed": false,
+    "amssAccessed": false
+  },
+  "governance": {
+    "developmentOnly": true,
+    "posteriorRefits": 0,
+    "productionChanged": false,
+    "sealedAuditAccessed": false,
+    "amssAccessed": false
+  },
+  "timingsSeconds": {
+    "raw-log1p": 90.54127740859985,
+    "raw-plus-relative-log1p": 126.6045572757721,
+    "relative-only-log1p": 109.31056356430054
+  },
+  "runtimeSeconds": 347.98331093788147,
+  "provenance": {
+    "developmentDatasetSha256": "f0212faf7e8d2e8894149c61f67de83e685b8a36f4d5a8f96e07af4fedc28739",
+    "python": "3.12.14",
+    "numpy": "2.3.5"
+  }
+}

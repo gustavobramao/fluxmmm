@@ -651,7 +651,7 @@ function Sidebar({
           <i>◎</i>
           <span>
             <b>RegretSet-MMM</b>
-            <small>Adaptive V11 · externally audited</small>
+            <small>Relative log-regret · cross-validated</small>
           </span>
         </div>
         <button className="user-chip">
@@ -2147,11 +2147,11 @@ function SpecificationInspector({
 
         <section className="specification-summary-strip">
           <div>
-            <span>V11 adjusted risk</span>
+            <span>Predicted economic risk</span>
             <strong>{run.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</strong>
           </div>
           <div>
-            <span>V11 selection</span>
+            <span>RegretSet selection</span>
             <strong className={eligible ? "pass" : "review"}>
               {run.regretSet
                 ? run.regretSet.selected
@@ -2410,7 +2410,7 @@ function PromotedSpecificationBanner({
           : "Evidence changed since promotion";
   const detail =
     forced && (state === "exact" || state === "inherited")
-      ? `${promotion.run.spec.id} was manually promoted with ${failedEvidenceCount} unresolved evidence item${failedEvidenceCount === 1 ? "" : "s"} preserved. Its V11 receipt and eligibility were not changed.`
+      ? `${promotion.run.spec.id} was manually promoted with ${failedEvidenceCount} unresolved evidence item${failedEvidenceCount === 1 ? "" : "s"} preserved. Its RegretSet receipt and eligibility were not changed.`
       : state === "exact"
       ? `All ${parameterCount} applicable settings and the fitted artifact match ${promotion.run.spec.id}.`
       : state === "inherited"
@@ -2437,7 +2437,7 @@ function PromotedSpecificationBanner({
       </div>
       <div className="promotion-receipt-meta">
         <span>
-          {promotion.run.regretSet?.adjustedRisk.toFixed(3) ?? "—"} V11 risk
+          {promotion.run.regretSet?.adjustedRisk.toFixed(3) ?? "—"} predicted risk
         </span>
         <span>{agenticFamilyLabel(promotedFamily)}</span>
         {forced && <span>Forced override</span>}
@@ -3823,34 +3823,34 @@ function ValidationGuide({
     { kicker: string; title: string; summary: string }
   > = {
     generalization: {
-      kicker: "Layer 01 · V11 predictive-generalization tokens",
+      kicker: "Layer 01 · predictive-generalization tokens",
       title: "Can the model handle unseen conditions?",
       summary:
         "Temporal folds and observed spend-regime holdouts test prediction without allowing future outcomes into training.",
     },
     structure: {
-      kicker: "Layer 02 · V11 structural-specification tokens",
+      kicker: "Layer 02 · structural-specification tokens",
       title: "Does the fitted structure match its assumptions?",
       summary:
         "Diagnostics adapt to the selected likelihood and coefficient structure instead of applying one universal regression checklist.",
     },
     causal: {
-      kicker: "Layer 03 · V11 causal-identification tokens",
+      kicker: "Layer 03 · causal-identification tokens",
       title: "How credible is the causal interpretation?",
       summary:
         "Qualified external prediction, refit stability, confounder stress, and temporal placebos test whether ROI survives reasonable challenges.",
     },
     decision: {
-      kicker: "Layer 04 · V11 posterior-decision tokens",
+      kicker: "Layer 04 · posterior-decision tokens",
       title: "Are the channel ROI estimates usable for business decisions?",
       summary:
         "Posterior plausibility, stability, resolution, identification, and economic consistency test every material channel under its declared evidence contract.",
     },
     scoring: {
-      kicker: "Frozen V11 selection methodology",
+      kicker: "Frozen RegretSet-MMM selection methodology",
       title: "Predicted downstream economic risk ranks the complete candidate set",
       summary:
-        "Evidence-adaptive RegretSet-MMM learns from known simulated economic loss, compares 48 paired FullRankADVI posterior candidates jointly, and preserves evidence and ROI gates as separate promotion safeguards.",
+        "RegretSet-MMM learns from known simulated economic loss, compares 48 paired FullRankADVI posterior candidates jointly, and preserves evidence and ROI gates as separate promotion safeguards.",
     },
   };
   return (
@@ -3879,7 +3879,7 @@ function ValidationGuide({
             ["structure", "Structure"],
             ["causal", "Causal"],
             ["decision", "ROI coherence"],
-            ["scoring", "V11 selection"],
+            ["scoring", "RegretSet selection"],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -4024,15 +4024,14 @@ function ValidationGuide({
         {topic === "scoring" && (
           <div className="validation-guide-body">
             <section className="winner-formula">
-              <span>V11 adjusted decision risk · lower is better</span>
-              <h3>0.65 × predicted mean loss + 0.35 × predicted P90 loss + danger and ensemble-uncertainty penalties</h3>
+              <span>Predicted decision risk · lower is better</span>
+              <h3>0.65 × predicted mean loss + 0.35 × predicted P90 loss</h3>
               <p>
-                Five frozen neural selectors read 232 observable tokens per
-                candidate and 63 business-context tokens. Four evidence-gated
-                expert pathways adapt the prediction to the advertiser&apos;s
-                evidence regime. The network is set-relative: it produces a
-                valid V11 risk only after all 48 declared posterior candidates
-                are available.
+                Three frozen neural selectors read 232 observable tokens, 464
+                within-advertiser relative tokens, and 63 business-context
+                tokens. The network compares every candidate with the same
+                advertiser&apos;s alternative set and produces a valid risk only
+                after all 48 declared posterior candidates are available.
               </p>
             </section>
             <section className="validation-explanation-grid">
@@ -4040,7 +4039,7 @@ function ValidationGuide({
               <article><span className="detail-icon">C</span><h3>Causal identification</h3><p>Confounder stress, temporal placebos, experiment recovery, evidence quality, conflict, and decision dependence describe causal fragility.</p></article>
               <article><span className="detail-icon orange">β</span><h3>Posterior decision</h3><p>FullRankADVI geometry, ROI location and width, response uncertainty, contribution dependence, and decision draws describe downstream risk.</p></article>
               <article><span className="detail-icon">S</span><h3>Structural specification</h3><p>Residual behavior, collinearity, likelihood, adstock, saturation, dynamics, and calibration identify specification mismatch.</p></article>
-              <article><span className="detail-icon mint">5</span><h3>Ensemble protection</h3><p>Five independently trained members reduce reliance on one neural fit; disagreement adds a penalty instead of being hidden.</p></article>
+              <article><span className="detail-icon mint">3</span><h3>Ensemble diagnostics</h3><p>Three independently trained members reduce reliance on one neural fit. Their disagreement remains visible but does not alter the ranking.</p></article>
               <article><span className="detail-icon orange">◆</span><h3>Promotion gates</h3><p>The lowest-risk candidate is promoted only if its posterior is labelled and its validation and material-channel ROI gates pass.</p></article>
             </section>
           </div>
@@ -4182,12 +4181,12 @@ function ValidationScoreSummary({
       ? result.eligible
         ? "Selected · validation pass"
         : "Selected · validation gated"
-      : `V11 rank ${regretSet.rank}/48`
-    : "Not ranked by V11";
+      : `RegretSet rank ${regretSet.rank}/48`
+    : "Not ranked by RegretSet-MMM";
   return (
     <section className="validation-score-summary">
       <div className="validation-score-outcome">
-        <span className="eyebrow">V11 adjusted risk</span>
+        <span className="eyebrow">Predicted economic risk</span>
         <div>
           <strong>{regretSet ? regretSet.adjustedRisk.toFixed(3) : "—"}</strong>
           <small>{regretSet ? "lower is better" : "requires 48 candidates"}</small>
@@ -4214,7 +4213,7 @@ function ValidationScoreSummary({
               <div key={id}>
                 <span>
                   {VALIDATION_LAYER_META[id].title}
-                  <small>explanatory diagnostic · not a fixed V11 weight</small>
+                  <small>explanatory diagnostic · not a fixed score weight</small>
                 </span>
                 <i>
                   <b
@@ -4229,7 +4228,7 @@ function ValidationScoreSummary({
         </div>
       </div>
       <div className="validation-score-evidence">
-        <span className="eyebrow">V11 selection receipt</span>
+        <span className="eyebrow">RegretSet selection receipt</span>
         <strong>{regretSet ? result.evidenceGrade : "Set-relative"}</strong>
         {regretSet ? (
           <p>
@@ -4239,7 +4238,7 @@ function ValidationScoreSummary({
           </p>
         ) : (
           <p>
-            Standalone validation produces diagnostics, not a V11 winner score.
+            Standalone validation produces diagnostics, not a RegretSet winner score.
             Run Agentic to compare the frozen 24×2 FullRankADVI candidate set.
           </p>
         )}
@@ -4767,13 +4766,13 @@ function ValidationView({
           <span className="kicker">Decision-grade review</span>
           <h1>Validation lab</h1>
           <p>
-            Inspect the observable diagnostics V11 uses alongside posterior
-            geometry. Only the complete Agentic candidate set produces a V11
+            Inspect the observable diagnostics RegretSet-MMM uses alongside posterior
+            geometry. Only the complete Agentic candidate set produces an
             economic-risk rank.
           </p>
         </div>
         <button className="button secondary" onClick={() => setGuideTopic("scoring")}>
-          How V11 selection works ↗
+          How RegretSet selection works ↗
         </button>
       </section>
 
@@ -4889,7 +4888,7 @@ function ValidationView({
                   <div><span className="eyebrow">Comparable evidence</span><h2>Validation profiles</h2></div>
                   {selectedRegretSetRun?.regretSet && (
                     <span className="winner-tag">
-                      V11 rank {selectedRegretSetRun.regretSet.rank}/48 ·{" "}
+                      RegretSet rank {selectedRegretSetRun.regretSet.rank}/48 ·{" "}
                       {selectedRegretSetRun.regretSet.adjustedRisk.toFixed(3)} risk
                     </span>
                   )}
@@ -4919,7 +4918,7 @@ function ValidationView({
                     </p>
                   )}
                   <p className="validation-ranking-note">
-                    Rows without a V11 receipt have not been evaluated inside the
+                    Rows without a RegretSet receipt have not been evaluated inside the
                     frozen 48-candidate posterior set and are intentionally not ranked.
                   </p>
                 </div>
@@ -5067,10 +5066,10 @@ function AgenticView({
           <h1>Agentic modeler</h1>
           <p>
             Compare the frozen 48-candidate posterior set and select the model
-            with the lowest V11-predicted downstream economic risk.
+            with the lowest predicted downstream economic risk.
           </p>
         </div>
-        <span className="agentic-protocol-pill">Evidence-adaptive RegretSet-MMM · V11</span>
+        <span className="agentic-protocol-pill">RegretSet-MMM · relative log-regret</span>
       </section>
 
       <section className="agentic-workspace-tabs" aria-label="Agentic search stages">
@@ -5103,7 +5102,7 @@ function AgenticView({
             </div>
             <p className="agentic-card-copy">
               Every Bayesian and Advanced specification is fitted once with
-              experiments only and once with benchmark gap-fill. V11 scores
+              experiments only and once with benchmark gap-fill. RegretSet-MMM scores
               the complete unordered set; no candidate may be added or removed.
             </p>
             <div className="agentic-family-grid">
@@ -5128,11 +5127,11 @@ function AgenticView({
               <div>
                 <b>Inference and evidence contract</b>
                 <small>
-                  48 PyMC FullRankADVI fits · 232 observable candidate tokens ·
-                  63 business-context tokens · five frozen selector members.
+                  48 PyMC FullRankADVI fits · 232 observable + 464 relative candidate tokens ·
+                  63 business-context tokens · three frozen selector members.
                 </small>
               </div>
-              <span className="immutable-tag">◆ V11 frozen</span>
+              <span className="immutable-tag">◆ RegretSet frozen</span>
             </div>
           </article>
 
@@ -5150,8 +5149,8 @@ function AgenticView({
                 <b>65% predicted mean + 35% predicted P90 economic loss</b>
               </div>
               <div>
-                <span>Selection adjustment</span>
-                <b>+ 0.50 danger probability + 0.25 ensemble uncertainty</b>
+                <span>Training target</span>
+                <b>log(1 + uncapped excess economic loss)</b>
               </div>
               <div>
                 <span>ROI plausibility</span>
@@ -5176,7 +5175,7 @@ function AgenticView({
               </div>
               <div>
                 <span>Decision-grade rule</span>
-                <b>V11 selection + labelled posterior + validation and ROI gates</b>
+                <b>RegretSet selection + labelled posterior + validation and ROI gates</b>
               </div>
               <div>
                 <span>Evidence challenge</span>
@@ -5184,7 +5183,7 @@ function AgenticView({
               </div>
               <div>
                 <span>Selection rule</span>
-                <b>Lowest adjusted V11 economic risk in the finite posterior set</b>
+                <b>Lowest predicted economic risk in the finite posterior set</b>
               </div>
               <div>
                 <span>ROI plausibility</span>
@@ -5228,10 +5227,10 @@ function AgenticView({
               disabled={status === "running" || demoMode}
             >
               {demoMode
-                ? "Run V11 locally from the open-source workspace"
+                ? "Run RegretSet locally from the open-source workspace"
                 : status === "complete"
-                  ? "Run a fresh V11 search →"
-                  : "Start V11 posterior search →"}
+                  ? "Run a fresh RegretSet search →"
+                  : "Start RegretSet posterior search →"}
             </button>
           </article>
         </section>
@@ -5241,7 +5240,7 @@ function AgenticView({
         <>
           <section className="agentic-stat-grid">
             <article className="card">
-              <span>V11 scored</span>
+              <span>RegretSet scored</span>
               <strong>
                 {completed + errors} / {candidateCount}
               </strong>
@@ -5255,7 +5254,7 @@ function AgenticView({
               <small>Matching screen or posterior restored from local cache</small>
             </article>
             <article className="card">
-              <span>Selected V11 risk</span>
+              <span>Selected economic risk</span>
               <strong>
                 {comparisonLeader?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}
               </strong>
@@ -5274,7 +5273,7 @@ function AgenticView({
               </strong>
               <small>
                 {comparisonLeader?.regretSet
-                  ? "Frozen ambiguity, danger and ensemble receipt"
+                  ? "Ambiguity, danger and ensemble diagnostics"
                   : "Awaiting set-wise scoring"}
               </small>
             </article>
@@ -5284,8 +5283,8 @@ function AgenticView({
             {([
               [0, "Screen", "Fit 48 specifications and observable diagnostics"],
               [1, "Infer", "Run the frozen FullRankADVI posterior contract"],
-              [2, "Tokenize", "Assemble 232 candidate and 63 context tokens"],
-              [3, "Select", "Rank the complete set by adjusted decision risk"],
+              [2, "Tokenize", "Assemble 696 candidate and 63 context tokens"],
+              [3, "Select", "Rank the complete set by predicted decision risk"],
             ] as const).map(([id, label, detail]) => {
               return (
                 <div
@@ -5350,7 +5349,7 @@ function AgenticView({
                 <span>S</span>
                 <span>C</span>
                 <span>D</span>
-                <span>V11 risk</span>
+                <span>Predicted risk</span>
                 <span>Gates</span>
               </div>
               {visibleCandidateRows.map((run) => {
@@ -5461,8 +5460,8 @@ function AgenticView({
                   activeRun?.spec.hypothesis ??
                   (status === "complete"
                     ? comparisonLeader
-                      ? "The lowest-risk V11 candidate is ready for review."
-                      : "The complete V11 set could not be scored; review the failed candidates."
+                      ? "The lowest-risk RegretSet candidate is ready for review."
+                      : "The complete RegretSet set could not be scored; review the failed candidates."
                     : "Approve the search contract to begin.")}
               </p>
             </article>
@@ -5471,7 +5470,7 @@ function AgenticView({
               <h2>Exactly {REGRETSET_V11_CANDIDATE_COUNT} posterior candidates</h2>
               <p>
                 {stopReason ??
-                  "V11 scores only after every paired specification has a finite posterior token record. Partial-set promotion is prohibited."}
+                  "RegretSet-MMM scores only after every paired specification has a finite posterior token record. Partial-set promotion is prohibited."}
               </p>
             </article>
           </section>
@@ -5488,8 +5487,8 @@ function AgenticView({
                     <div>
                       <span className="eyebrow">
                         {champion
-                          ? "V11-selected eligible specification"
-                          : "V11-selected candidate · promotion gates unresolved"}
+                          ? "RegretSet-selected eligible specification"
+                          : "RegretSet-selected candidate · promotion gates unresolved"}
                       </span>
                       <h2>{comparisonLeader.spec.label}</h2>
                     </div>
@@ -5507,7 +5506,7 @@ function AgenticView({
                         "—"}
                     </strong>
                     <span>
-                      V11 adjusted risk
+                      predicted economic risk
                       <small>
                         Lower is better · rank {comparisonLeader.regretSet?.rank ?? "—"}/48
                       </small>
@@ -5565,10 +5564,10 @@ function AgenticView({
                     <p>
                       <i>{champion ? "✓" : "!"}</i>
                       <span>
-                        <b>Lowest adjusted predicted economic risk</b>
+                        <b>Lowest predicted economic risk</b>
                         <small>
                           {champion
-                            ? `V11 predicted mean loss ${comparisonLeader.regretSet?.predictedMean.toFixed(3)}, P90 loss ${comparisonLeader.regretSet?.predictedP90.toFixed(3)}, danger ${(100 * (comparisonLeader.regretSet?.predictedDanger ?? 0)).toFixed(1)}%, and ensemble uncertainty ${comparisonLeader.regretSet?.ensembleUncertainty.toFixed(3)}.`
+                            ? `RegretSet-MMM predicted mean loss ${comparisonLeader.regretSet?.predictedMean.toFixed(3)} and P90 loss ${comparisonLeader.regretSet?.predictedP90.toFixed(3)}. Danger ${(100 * (comparisonLeader.regretSet?.predictedDanger ?? 0)).toFixed(1)}% and ensemble uncertainty ${comparisonLeader.regretSet?.ensembleUncertainty.toFixed(3)} remain diagnostics, not ranking penalties.`
                             : `No candidate passed every eligibility check. This candidate retains ${forceFailedGates.length} failed validation gate${forceFailedGates.length === 1 ? "" : "s"} and ${forceRoiViolations.length} ROI plausibility review${forceRoiViolations.length === 1 ? "" : "s"}.`}
                         </small>
                       </span>
@@ -5586,13 +5585,13 @@ function AgenticView({
                       </span>
                     </p>
                     <p>
-                      <i>5</i>
+                      <i>3</i>
                       <span>
                         <b>Frozen ensemble agreement</b>
                         <small>
-                          Five independently trained V11 members evaluated the
-                          same complete set. Their disagreement is included in
-                          adjusted risk rather than hidden.
+                          Three independently trained members evaluated the
+                          same complete set. Their disagreement is reported
+                          without changing the selected risk.
                         </small>
                       </span>
                     </p>
@@ -5616,7 +5615,7 @@ function AgenticView({
                     <span className="eyebrow">Final comparison</span>
                     <h2>Champion and challengers</h2>
                   </div>
-                  <span className="subtle">Same frozen V11 contract</span>
+                  <span className="subtle">Same frozen RegretSet contract</span>
                 </div>
                 <div className="agentic-finalists">
                   <div className="agentic-finalist-row head">
@@ -5625,7 +5624,7 @@ function AgenticView({
                     <span>S</span>
                     <span>C</span>
                     <span>D</span>
-                    <span>V11 risk</span>
+                    <span>Predicted risk</span>
                     <span>Decision</span>
                   </div>
                   {ranked.slice(0, 4).map((run, index) => {
@@ -5714,7 +5713,7 @@ function AgenticView({
                     <b>Promote with unresolved evidence?</b>
                     <p>
                       This preserves the {comparisonLeader.regretSet?.adjustedRisk.toFixed(3) ?? "—"}
-                      {" "}V11 risk receipt, {forceFailedGates.length} failed validation gate
+                      {" "}RegretSet risk receipt, {forceFailedGates.length} failed validation gate
                       {forceFailedGates.length === 1 ? "" : "s"}, and{" "}
                       {forceRoiViolations.length} ROI plausibility review
                       {forceRoiViolations.length === 1 ? "" : "s"}. The model
@@ -6016,7 +6015,7 @@ function SamplingView({
           <b>{promotedRun?.spec.id} · {agenticFamilyLabel(promotedRun!.spec.family)}</b>
         </div>
         <div>
-          <span>V11 adjusted risk</span>
+          <span>Predicted economic risk</span>
           <b>{promotedRun?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</b>
         </div>
         <div>
@@ -6490,7 +6489,7 @@ function SamplingView({
                 <span><b>Adstock</b>{promotedRun?.spec.config.adstockType}</span>
                 <span><b>Response parameters</b>Sampled around promoted values</span>
                 <span><b>Planning factor</b>{promotedRun?.spec.family === "advanced" && promotedRun.spec.advancedConfig.planningIntensity ? "Probabilistic latent factor" : "Not included"}</span>
-                <span><b>V11 risk</b>{promotedRun?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</span>
+                <span><b>Predicted risk</b>{promotedRun?.regretSet?.adjustedRisk.toFixed(3) ?? "—"}</span>
               </div>
             </article>
             <article className="card sampling-artifact-card">
@@ -8751,7 +8750,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
 
   const runRegretSetV11Search = useCallback(async () => {
     if (!dataset || !validation || validation.status === "blocked") {
-      setToast("Resolve blocking schema issues before starting V11 model search.");
+      setToast("Resolve blocking schema issues before starting RegretSet model search.");
       setView("data");
       return;
     }
@@ -8759,7 +8758,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     if (!service.ready) {
       setToast(
         service.detail ??
-          "The frozen V11 search requires the local FullRankADVI service.",
+          "The frozen RegretSet search requires the local FullRankADVI service.",
       );
       return;
     }
@@ -8771,7 +8770,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       guardrailMode !== "off",
     );
     if (specifications.length !== REGRETSET_V11_CANDIDATE_COUNT) {
-      setToast("The frozen V11 candidate set failed its completeness check.");
+      setToast("The frozen RegretSet candidate set failed its completeness check.");
       return;
     }
     setAgenticRuns(
@@ -8905,7 +8904,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
         const failed: AgenticCandidateRun = {
           spec,
           state: "error",
-          error: error instanceof Error ? error.message : "V11 candidate screening failed.",
+          error: error instanceof Error ? error.message : "RegretSet candidate screening failed.",
         };
         setAgenticRuns((current) =>
           current.map((candidate) => candidate.spec.id === spec.id ? failed : candidate),
@@ -8917,9 +8916,9 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     if (screened.length !== REGRETSET_V11_CANDIDATE_COUNT) {
       setAgenticStatus("complete");
       setAgenticStopReason(
-        `V11 was not scored: ${REGRETSET_V11_CANDIDATE_COUNT - screened.length} of 48 required candidates failed screening.`,
+        `RegretSet-MMM was not scored: ${REGRETSET_V11_CANDIDATE_COUNT - screened.length} of 48 required candidates failed screening.`,
       );
-      setToast("V11 requires the complete paired candidate set; review the failed rows.");
+      setToast("RegretSet-MMM requires the complete paired candidate set; review the failed rows.");
       return;
     }
 
@@ -8929,7 +8928,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
       async (run) => {
         try {
           if (agenticGenerationRef.current !== generation) {
-            throw new Error("V11 search was superseded by a new workspace run.");
+            throw new Error("RegretSet search was superseded by a new workspace run.");
           }
           const compiled = compileSamplingModel(
             dataset,
@@ -8972,7 +8971,7 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
           let snapshot = await getRegretSetV11PosteriorJob(started.id);
           while (snapshot.status === "queued" || snapshot.status === "running") {
             if (agenticGenerationRef.current !== generation) {
-              throw new Error("V11 search was superseded by a new workspace run.");
+              throw new Error("RegretSet search was superseded by a new workspace run.");
             }
             setAgenticRuns((current) =>
               current.map((candidate) =>
@@ -9056,9 +9055,9 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     if (posteriorFailures.length > 0) {
       setAgenticStatus("complete");
       setAgenticStopReason(
-        `V11 was not scored: ${posteriorFailures.length} of 48 required FullRankADVI fits failed. No partial-set winner was produced.`,
+        `RegretSet-MMM was not scored: ${posteriorFailures.length} of 48 required FullRankADVI fits failed. No partial-set winner was produced.`,
       );
-      setToast("V11 requires all 48 posterior candidates; review the failed rows.");
+      setToast("RegretSet-MMM requires all 48 posterior candidates; review the failed rows.");
       return;
     }
     const posteriorRows = posteriorAttempts.filter(
@@ -9089,13 +9088,13 @@ export function MmmWorkbench({ demoMode = false }: { demoMode?: boolean }) {
     const selected = completedRuns.find((run) => run.regretSet?.selected);
     setAgenticStopReason(
       selected
-        ? `Frozen V11 scored all 48 posterior candidates and selected ${selected.spec.id} at adjusted decision risk ${selected.regretSet!.adjustedRisk.toFixed(3)}.`
-        : "Frozen V11 completed without a selectable finite posterior.",
+        ? `Frozen RegretSet-MMM scored all 48 posterior candidates and selected ${selected.spec.id} at predicted decision risk ${selected.regretSet!.adjustedRisk.toFixed(3)}.`
+        : "Frozen RegretSet-MMM completed without a selectable finite posterior.",
     );
     setToast(
       selected
-        ? "Evidence-adaptive RegretSet-MMM completed. Review and promote the V11 selection."
-        : "V11 completed without a selectable finite posterior.",
+        ? "RegretSet-MMM completed. Review and promote the selected candidate."
+        : "RegretSet-MMM completed without a selectable finite posterior.",
     );
   }, [
     anchorIndependenceConfirmed,

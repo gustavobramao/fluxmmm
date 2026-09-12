@@ -22,7 +22,7 @@ function sha256(path: string): string {
     .digest("hex");
 }
 
-test("runtime artifacts are byte-identical to the frozen V11 contract", () => {
+test("runtime artifacts are byte-identical to the frozen RegretSet contract", () => {
   assert.equal(
     sha256("lib/mmm/artifacts/regretset-v11-selector.json"),
     REGRETSET_V11_SELECTOR_SHA256,
@@ -32,8 +32,9 @@ test("runtime artifacts are byte-identical to the frozen V11 contract", () => {
     REGRETSET_V11_CANDIDATE_SHA256,
   );
   const metadata = regretSetV11SelectorMetadata();
-  assert.equal(metadata.modelCount, 5);
-  assert.equal(metadata.featureNames.length, 232);
+  assert.equal(metadata.modelCount, 3);
+  assert.equal(metadata.rawFeatureNames.length, 232);
+  assert.equal(metadata.featureNames.length, 696);
   assert.equal(metadata.contextNames.length, 63);
 });
 
@@ -68,11 +69,12 @@ test("production candidate generator preserves the frozen 24 by 2 paired set", (
   );
 });
 
-test("V11 scoring is finite, complete-set only, and permutation equivariant", () => {
+test("RegretSet scoring is finite, complete-set only, and permutation equivariant", () => {
   const selector = selectorJson as unknown as {
+    rawFeatureNames: string[];
     models: { means: number[] }[];
   };
-  const base = selector.models[0].means;
+  const base = selector.models[0].means.slice(0, selector.rawFeatureNames.length);
   const candidates = Array.from({ length: 24 }, (_, index) =>
     (["benchmark-gap-fill", "experiments-only"] as const).map((arm) => ({
       candidateId: `V6-C${String(index + 1).padStart(2, "0")} · ${arm}`,
