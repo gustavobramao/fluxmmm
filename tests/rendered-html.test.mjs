@@ -96,15 +96,15 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(workbenchSource, /CSV format and field definitions/);
   assert.match(workbenchSource, /parseExperimentCsv/);
   assert.doesNotMatch(workbenchSource, /Prior, not likelihood/);
-  assert.match(workbenchSource, /V11 adjusted decision risk · lower is better/);
-  assert.match(workbenchSource, /48 PyMC FullRankADVI fits · 232 observable candidate tokens/);
-  assert.match(workbenchSource, /Start V11 posterior search/);
+  assert.match(workbenchSource, /Predicted decision risk · lower is better/);
+  assert.match(workbenchSource, /48 PyMC FullRankADVI fits · 232 observable \+ 464 relative candidate tokens/);
+  assert.match(workbenchSource, /Start RegretSet posterior search/);
   assert.match(workbenchSource, /No partial-set winner was produced/);
   assert.doesNotMatch(workbenchSource, /Global channel search · active V6 score/);
   assert.doesNotMatch(workbenchSource, /Learned diagnostic decision-loss score · V6/);
   assert.match(workbenchSource, /Two-sided coherence gate · immutable/);
-  assert.match(workbenchSource, /Evidence-adaptive RegretSet-MMM/);
-  assert.match(workbenchSource, /Frozen V11 selection methodology/);
+  assert.match(workbenchSource, /RegretSet-MMM · relative log-regret/);
+  assert.match(workbenchSource, /Frozen RegretSet-MMM selection methodology/);
   assert.match(workbenchSource, /Posterior tokens ready; waiting for the complete 48-candidate set/);
   assert.match(workbenchSource, /Selection confidence/);
   assert.match(workbenchSource, /Exact winning configuration loaded/);
@@ -209,7 +209,9 @@ test("ships the Robyn fixtures and local-only model contracts", async () => {
   assert.match(regretSetRuntimeSource, /adjustedRisk/);
   assert.match(regretSetApiSource, /\/v1\/svi\/health/);
   assert.match(regretSetSelectorArtifact, /"contextNames"/);
-  assert.match(regretSetSelectorArtifact, /"danger_penalty"\s*:\s*0\.5/);
+  assert.match(regretSetSelectorArtifact, /"architecture":"context-no-gate-deepsets"/);
+  assert.match(regretSetSelectorArtifact, /"danger_penalty":0\.0/);
+  assert.match(regretSetSelectorArtifact, /"uncertainty_penalty":0\.0/);
   assert.equal(JSON.parse(regretSetCandidateArtifact).length, 24);
   await access(new URL("../public/og.png", import.meta.url));
   await assert.rejects(
